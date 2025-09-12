@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from ramanujantools.cmf import CMF
+from data_managment.util_types import CMFtup
 
 
 class Formatter(ABC):
@@ -16,5 +16,5 @@ class Formatter(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def to_cmf(self) -> CMF:
+    def to_cmf(self) -> CMFtup:
         raise NotImplementedError()

@@ -5,6 +5,7 @@ from ramanujantools.cmf.pfq import pFq
 import sympy as sp
 
 from data_managment.formatter import Formatter
+from data_managment.util_types import *
 
 
 @dataclass()
@@ -20,7 +21,7 @@ class pFq_formatter(Formatter):
     p: int
     q: int
     z: sp.Expr
-    shifts: list[sp.Rational | int | None] = field(default_factory=list)
+    shifts: List[Shift] = field(default_factory=List)
 
     def __post_init__(self):
         if self.p <= 0 or self.q <= 0:
@@ -59,7 +60,7 @@ class pFq_formatter(Formatter):
             }
         }
 
-    def to_cmf(self) -> (CMF, list):
+    def to_cmf(self) -> CMFtup:
         """
         Converts the pFq_formatter to a CMF.
         :return: A tuple (CMF, shifts)
