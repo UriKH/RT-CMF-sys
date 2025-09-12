@@ -2,6 +2,9 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+packages = ["configs", "experiments", "data_managment"]
+
 [project]
 name = "RT-CMF-sys"
 version = "0.1.0"
