@@ -6,4 +6,4 @@ class Searchable(ABC):
     def search(self, points):
         raise NotImplementedError
 
-    def
+    # def

@@ -1,11 +1,10 @@
 import json
 from dataclasses import dataclass, field
-from ramanujantools.cmf import CMF
 from ramanujantools.cmf.pfq import pFq
-import sympy as sp
 
 from data_managment.formatter import Formatter
-from data_managment.util_types import *
+from utils.util_types import *
+from configs.database import *
 
 
 @dataclass()
@@ -53,8 +52,8 @@ class pFq_formatter(Formatter):
         :return: A dictionary representation of the pFq_formatter matching the JSON format.
         """
         return {
-            "type": self.__class__.__name__,
-            "data": {
+            TYPE_ANNOTATE: self.__class__.__name__,
+            DATA_ANNOTATE: {
                 "p": self.p, "q": self.q, "z": str(self.z) if isinstance(self.z, sp.Expr) else self.z, "shifts":
                     [str(shift) if isinstance(shift, sp.Expr) else shift for shift in self.shifts]
             }

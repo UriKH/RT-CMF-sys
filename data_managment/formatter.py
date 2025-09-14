@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from data_managment.util_types import CMFtup
+from utils.util_types import CMFtup
 
 
 class Formatter(ABC):

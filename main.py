@@ -4,7 +4,6 @@ import configs.database
 from data_managment.database import DBManager
 from data_managment.functions.pFq_fmt import pFq_formatter
 from pprint import pprint
-import json
 import sympy as sp
 
 

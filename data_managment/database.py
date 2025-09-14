@@ -1,7 +1,7 @@
 from configs.database import *
 from data_managment.formatter import Formatter
 from data_managment.errors import *
-from data_managment.util_types import CMFlist
+from utils.util_types import CMFlist
 import data_managment.functions as functions
 
 from peewee import SqliteDatabase, Model, CharField
@@ -51,7 +51,9 @@ class DBManager:
         data = self.__get_as_json(constant)
         cmfs = []
         for func_json in (data if data else []):
-            cmfs.append(getattr(functions, func_json['type']).from_json(json.dumps(func_json['data'])).to_cmf())
+            cmfs.append(
+                getattr(functions, func_json[TYPE_ANNOTATE]).from_json(json.dumps(func_json[DATA_ANNOTATE])).to_cmf()
+            )
         return cmfs
 
     def set(self, constant: str, funcs: list[Formatter] | Formatter, replace=False) -> None:
