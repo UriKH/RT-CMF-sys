@@ -1,7 +1,7 @@
 from configs.database import *
 from data_managment.formatter import Formatter
 from data_managment.errors import *
-from utils.util_types import CMFlist
+from utils.util_types import *
 import data_managment.functions as functions
 
 from peewee import SqliteDatabase, Model, CharField
@@ -56,7 +56,10 @@ class DBManager:
             )
         return cmfs
 
-    def set(self, constant: str, funcs: list[Formatter] | Formatter, replace=False) -> None:
+    def set(self,
+            constant: str,
+            funcs: List[Formatter] | Formatter,
+            replace=False) -> None:
         """
         Set the inspiration functions corresponding to the given constant.
         :param constant: The constant for which to retrieve the CMFs.
@@ -97,7 +100,7 @@ class DBManager:
         data.remove(func.to_json())
         DBManager.DB.replace(constant=constant, family=json.dumps(data)).execute()
 
-    def __get_as_json(self, constant: str) -> list[dict]:
+    def __get_as_json(self, constant: str) -> List[Dict]:
         query = DBManager.DB.select().where(DBManager.DB.constant == constant)
         data = query.first()
         if not data:
@@ -105,7 +108,7 @@ class DBManager:
         return json.loads(data.family)
 
     @staticmethod
-    def __check_if_defined(func: Formatter, data: list[dict]) -> bool:
+    def __check_if_defined(func: Formatter, data: List[Dict]) -> bool:
         if not data:
             return True
 
