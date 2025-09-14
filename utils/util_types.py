@@ -8,3 +8,6 @@ CMFlist = List[CMFtup]
 EqTup = Tuple[sp.Expr, sp.Expr]           # Hyperplane equation representation
 eps = 1e-5
 ShardVec = Tuple[int, ...]
+
+Point = Tuple[int | sp.Rational, ...]
+Trajectory = Point

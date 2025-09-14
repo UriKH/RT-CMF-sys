@@ -38,6 +38,13 @@ class Shard(Searchable):
         """
         return hash(self.shard_id)
 
+    def __repr__(self):
+        """
+        Shard representation is the unique +-1 tuple representing it
+        :return: The string representation of the tuple
+        """
+        return str(self.shard_id)
+
     def in_shard(self, point: Tuple[int | sp.Rational, ...]) -> bool:
         """
         Checks if a point is within the Shard's borders.
@@ -47,9 +54,6 @@ class Shard(Searchable):
         point = {sym: v for sym, v in zip(self.symbols, point)}
         return all(exp.subs(point) == indicator for exp, indicator in zip(self.hps, self.shard_id))
 
-    def __repr__(self):
-        """
-        Shard representation is the unique +-1 tuple representing it
-        :return: The string representation of the tuple
-        """
-        return str(self.shard_id)
+    def search(self, start: Point, trajectories: List[Trajectory] | Trajectory):
+        raise NotImplementedError
+    
