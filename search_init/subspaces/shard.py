@@ -45,15 +45,13 @@ class Shard(Searchable):
         """
         return str(self.shard_id)
 
-    def in_shard(self, point: Tuple[int | sp.Rational, ...]) -> bool:
+    def in_shard(self, point: Position) -> bool:
         """
         Checks if a point is within the Shard's borders.
         :param point: A tuple representing a coordinate in the lattice
         :return: True if the point is within the shard, else False.
         """
-        point = {sym: v for sym, v in zip(self.symbols, point)}
         return all(exp.subs(point) == indicator for exp, indicator in zip(self.hps, self.shard_id))
 
-    def search(self, start: Point, trajectories: List[Trajectory] | Trajectory):
+    def search(self, start: Position, trajectories: List[Position] | Position):
         raise NotImplementedError
-    

@@ -7,7 +7,7 @@ from utils.util_types import *
 from configs.database import *
 
 
-@dataclass()
+@dataclass
 class pFq_formatter(Formatter):
     """
     Represents a pFq and its CMF + allows conversion to and from JSON.
@@ -20,16 +20,18 @@ class pFq_formatter(Formatter):
     p: int
     q: int
     z: sp.Expr
-    shifts: List[Shift] = field(default_factory=List)
+    shifts: Position | List[sp.Expr | None] = field(default_factory=list)
 
     def __post_init__(self):
         if self.p <= 0 or self.q <= 0:
             raise ValueError("Non-positive values")
 
-        if self.p + self.q < len(self.shifts):
-            raise ValueError("Too many shifts")
-        elif self.p + self.q > len(self.shifts):
-            self.shifts = self.shifts + [None for _ in range(len(self.shifts), self.p + self.q)]
+        if self.p + self.q != len(self.shifts) and len(self.shifts) != 0:
+            raise ValueError("Shifts should be of length p + q or 0")
+        if isinstance(self.shifts, list):
+            self.shifts = Position(self.shifts)
+        if len(self.shifts) == 0:
+            self.shifts = Position([None for _ in range(self.p + self.q)])
 
     @classmethod
     def from_json(cls, s_json: str) -> "pFq_formatter":
@@ -40,10 +42,7 @@ class pFq_formatter(Formatter):
         """
         data = json.loads(s_json)
         data['z'] = sp.sympify(data['z']) if isinstance(data['z'], str) else data['z']
-
-        for i, shift in enumerate(data['shifts']):
-            if isinstance(shift, str):
-                data['shifts'][i] = sp.sympify(shift)
+        data['shifts'] = [sp.sympify(shift) if isinstance(shift, str) else shift for shift in data['shifts']]
         return cls(**data)
 
     def to_json(self) -> dict:
@@ -55,7 +54,7 @@ class pFq_formatter(Formatter):
             TYPE_ANNOTATE: self.__class__.__name__,
             DATA_ANNOTATE: {
                 "p": self.p, "q": self.q, "z": str(self.z) if isinstance(self.z, sp.Expr) else self.z, "shifts":
-                    [str(shift) if isinstance(shift, sp.Expr) else shift for shift in self.shifts]
+                    [str(shift) if isinstance(shift, sp.Expr) else shift for shift in self.shifts.as_list()]
             }
         }
 
@@ -64,8 +63,10 @@ class pFq_formatter(Formatter):
         Converts the pFq_formatter to a CMF.
         :return: A tuple (CMF, shifts)
         """
-        return pFq(self.p, self.q, self.z), self.shifts
+        cmf = pFq(self.p, self.q, self.z)
+        self.shifts.set_axis(list(cmf.matrices.keys()))
+        return cmf, self.shifts
 
-    def __str__(self):
+    def __repr__(self):
         return json.dumps(self.to_json())
     

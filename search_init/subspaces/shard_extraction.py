@@ -12,7 +12,7 @@ class ShardExtractor:
     """
     A functional class in charge of the Shards extraction for later use
     """
-    def __init__(self, cmf: CMF, shifts: List[Shift]):
+    def __init__(self, cmf: CMF, shifts: List[Position]):
         self.cmf = cmf
         self.shifts = shifts
         self.hps, self.symbols = self.__extract_shard_hyperplanes(cmf)
@@ -96,7 +96,6 @@ class ShardExtractor:
                 row, rhs = expr_to_ineq(ineq, indicator == 1)
                 A.append(row)
                 b.append(rhs)
-            # TODO: I am not sure if we DO ignore false shards we can get by linprog() - i.e. just intersections of many hyperplanes
             return linprog(c=list(np.zeros(len(self.symbols))), A_ub=A, b_ub=b, method="highs").success
 
         res = [permutation for permutation in product([+1, -1], repeat=len(self.hps)) if
@@ -104,13 +103,10 @@ class ShardExtractor:
         expr_to_ineq.cache_clear()
         return res
 
-    def encode_point(self, point: Tuple[int | sp.Rational, ...]) -> ShardVec:
+    def encode_point(self, point: Position) -> ShardVec:
         """
         Encodes the shard that the point is within its borders.
         :param point: The point as a tuple
         :return: The Shard encoding +-1's vector
         """
-        # TODO: notice that the order of symbols matter to the interpetation of the point!
-        #  this is importent in maybe other few cases!
-        point = {sym: val for sym, val in zip(self.symbols, point)}
         return tuple((1 if exp.subs(point) > 0 else -1) for exp in self.hps)

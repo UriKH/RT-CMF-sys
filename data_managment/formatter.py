@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
 from utils.util_types import CMFtup
+from dataclasses import dataclass, field
+from ramanujantools.position import Position
 
 
+@dataclass
 class Formatter(ABC):
     @abstractmethod
     def from_json(self, s_json: str) -> "Formatter":
@@ -12,7 +15,7 @@ class Formatter(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def __str__(self):
+    def __repr__(self):
         raise NotImplementedError()
 
     @abstractmethod

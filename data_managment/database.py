@@ -96,11 +96,12 @@ class DBManager:
         """
         data = self.__get_as_json(constant)
         if not self.__check_if_defined(func, data):
-            raise FunctionAlreadyExists()
+            raise FunctionDoesNotExist()
         data.remove(func.to_json())
         DBManager.DB.replace(constant=constant, family=json.dumps(data)).execute()
 
-    def __get_as_json(self, constant: str) -> List[Dict]:
+    @staticmethod
+    def __get_as_json(constant: str) -> List[Dict]:
         query = DBManager.DB.select().where(DBManager.DB.constant == constant)
         data = query.first()
         if not data:
