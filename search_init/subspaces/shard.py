@@ -52,6 +52,3 @@ class Shard(Searchable):
         :return: True if the point is within the shard, else False.
         """
         return all(exp.subs(point) == indicator for exp, indicator in zip(self.hps, self.shard_id))
-
-    def search(self, start: Position, trajectories: List[Position] | Position):
-        raise NotImplementedError

@@ -12,7 +12,7 @@ x0, x1 = sp.symbols('x0 x1')
 def main():
     db = DBManager()
     try:
-        db.set('pi', pFq_formatter(2, 1, sp.Rational(1, 2)))
+        db.set('pi', pFq_formatter(11, 1, sp.Rational(1, 2)))
         db.add_inspiration_function('pi', pFq_formatter(2, 2, sp.Rational(1, 2), [0, None, sp.Rational(1, 2), 0]))
 
         print(db.get('pi'))
