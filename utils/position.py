@@ -28,7 +28,7 @@ class Position(rt_pos.Position):
     @staticmethod
     def __build_mapping(pos: List[sp.Expr | None], symbols: List[sp.Symbol] | None):
         if symbols is None:
-            symbols = [sp.Symbol(f"x{i}") for i in range(len(pos))]
+            symbols = sp.symbols(f"x:{len(pos)}")
         elif len(symbols) < len(pos) or len(set(symbols)) < len(pos):
             raise ValueError("Invalid symbols")
 
