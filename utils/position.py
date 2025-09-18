@@ -11,7 +11,7 @@ class Position(rt_pos.Position):
     Later it is possible to add corresponding symbols.
     """
 
-    def __init__(self, pos: List[sp.Expr | None], symbols: Optional[List[sp.Symbol]] = None):
+    def __init__(self, pos: List[sp.Expr | int | None], symbols: Optional[List[sp.Symbol]] = None):
         """
         This constructor initializes an instance of a class with a mapping derived
         from the provided position list and symbols list. It maps symbolic expressions
@@ -52,3 +52,5 @@ class Position(rt_pos.Position):
         """
         return list(self.values())
 
+    def as_sp_matrix(self):
+        return sp.Matrix(self.as_list())

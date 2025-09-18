@@ -1,4 +1,5 @@
 from utils.util_types import *
+from utils.plane import Plane
 from configs.analysis import *
 from ramanujantools.cmf import CMF
 
@@ -18,7 +19,7 @@ class ShardExtractor:
         self.hps, self.symbols = self.__extract_shard_hyperplanes(cmf)
 
     @staticmethod
-    def __extract_shard_hyperplanes(cmf: CMF) -> Tuple[List[sp.Expr], List[sp.Symbol]]:
+    def __extract_shard_hyperplanes(cmf: CMF) -> Tuple[List[Plane], List[sp.Symbol]]:
         """
         Extract the CMF's hyperplanes that form the shards
         :param cmf: The CMF to analyze
@@ -62,7 +63,8 @@ class ShardExtractor:
             undef, z_det = solve_shards(mat)
             data = data.union(z_det.union(undef))
         data = unfreeze(data)
-        return [exp1 - exp2 for exp1, exp2 in data], list(cmf.matrices.keys())
+        symbols = list(cmf.matrices.keys())
+        return [Plane(exp1 - exp2, symbols) for exp1, exp2 in data], symbols
 
     def get_shards(self) -> List[ShardVec]:
         """
@@ -103,10 +105,11 @@ class ShardExtractor:
         expr_to_ineq.cache_clear()
         return res
 
-    def encode_point(self, point: Position) -> ShardVec:
+    def populate_shards(self) -> None:
         """
-        Encodes the shard that the point is within its borders.
-        :param point: The point as a tuple
-        :return: The Shard encoding +-1's vector
+        1. Create a set of points - potential start points (with respect to the shifts)
+        2. Sort the start points to Shards
+        3. Create a set of points - potential trajectories
+        4. Sort the trajectories to Shards
         """
-        return tuple((1 if exp.subs(point) > 0 else -1) for exp in self.hps)
+        raise NotImplementedError
