@@ -2,7 +2,7 @@ from utils.util_types import *
 from utils.plane import Plane
 from configs.analysis import *
 from ramanujantools.cmf import CMF
-from analysis_stage.subspaces.shard import Shard
+from s_analysis.subspaces.shard import Shard
 from utils.point_generator import PointGenerator
 
 from itertools import product

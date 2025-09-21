@@ -1,6 +1,6 @@
-from search_stage.serial_searcher import SerialSearcher
+from s_search.serial_searcher import SerialSearcher
 from module import Module
-from analysis_stage.subspaces.shard_extraction import ShardExtractor
+from s_analysis.subspaces.shard_extraction import ShardExtractor
 from utils.util_types import *
 from utils.logger import Logger
 
@@ -17,7 +17,7 @@ class Analyzer(Module):
         )
         self.cmfs = cmfs
         self.constant = constant
-    
+
     def execute(self):
         """
         The main function of the module. It performs the following steps:

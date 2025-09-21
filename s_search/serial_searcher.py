@@ -1,5 +1,5 @@
-from analysis_stage.searchable import Searchable
-from search_stage.search_method import SearchMethod
+from s_analysis.subspaces.searchable import Searchable
+from s_search.search_method import SearchMethod
 from utils.util_types import *
 from utils.point_generator import PointGenerator
 
@@ -7,7 +7,16 @@ import sympy as sp
 
 
 class SerialSearcher(SearchMethod):
+    """
+    Serial trajectory searcher. \n
+    No parallelism or smart co-boundary. \n
+    """
+
     def __init__(self, space: Searchable):
+        """
+        Creates a searcher
+        :param space: The space to search in.
+        """
         super().__init__()
         self.space = space
         self.trajectories: Set[Position] = set()
@@ -45,11 +54,24 @@ class SerialSearcher(SearchMethod):
         for start in starts:
             for t in self.trajectories:
                 # TODO: implement search and data manager
+                """
+                limit = <COMPUTE LIMIT>     (This should be dependant on type1 / type2 or something doesn't it?)
+                delta = <COMPUTE DELTA>
+                eigen_values = <COMPUTE EIGEN VALUES>
+                rho = <COMPUTE RHO>
+                self.data_manager.add_data(start, trajectory, limit, delta, eigen_values, rho)
+                """
                 # t_mat = self.space.cmf.trajectory_matrix(t, start)
                 # limit = self.space.cmf.limit(t, 1000, start)
                 pass
 
     def get_data(self):
+        """
+        :return:
+        """
+        """
+        return self.data_manager.get_data()
+        """
         raise NotImplementedError
 
     def enrich_trajectories(self):

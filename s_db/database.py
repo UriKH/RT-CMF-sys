@@ -1,8 +1,8 @@
 from configs.database import *
-from db_stage.formatter import Formatter
-from db_stage.errors import *
+from s_db.functions.formatter import Formatter
+from s_db.errors import *
 from utils.util_types import *
-import db_stage.functions as functions
+import s_db.functions as functions
 
 from peewee import SqliteDatabase, Model, CharField
 import json

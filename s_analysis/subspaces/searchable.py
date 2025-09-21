@@ -8,6 +8,7 @@ class Searchable(ABC):
         self.cmf = cmf
         self.symbols = symbols
         self._start_points: Set[Position] = set()
+        self.data = None
 
     @abstractmethod
     def in_space(self, point: Position) -> bool:

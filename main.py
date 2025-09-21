@@ -1,8 +1,8 @@
 import os
 
 import configs.database
-from db_stage.database import DBManager
-from db_stage.functions.pFq_fmt import pFq_formatter
+from s_db.database import DBManager
+from s_db.functions.pFq_fmt import pFq_formatter
 from pprint import pprint
 import sympy as sp
 

@@ -1,7 +1,6 @@
-from analysis_stage.searchable import Searchable
-from analysis_stage.subspaces.shard_extraction import ShardExtractor
+from s_analysis.subspaces.searchable import Searchable
+from s_analysis.subspaces.shard_extraction import ShardExtractor
 from utils.util_types import *
-from utils.plane import Plane
 
 
 class Shard(Searchable):
