@@ -8,7 +8,7 @@ from utils.util_types import *
 Visualize 1D data of a CMF:
 *   search_via_expr     -   given an expression using spherical coordinates or cartesian coordinates, 
                             and a starting point search in the CMF.
-*   
+*   show delta for trajectories along axis / some hyeprplane
 """
 
 

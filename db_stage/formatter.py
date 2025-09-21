@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from utils.util_types import CMFtup
-from dataclasses import dataclass, field
-from ramanujantools.position import Position
+from dataclasses import dataclass
 
 
 @dataclass

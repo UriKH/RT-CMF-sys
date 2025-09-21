@@ -2,6 +2,7 @@ from utils.util_types import *
 
 import ramanujantools.position as rt_pos
 import sympy as sp
+import numpy as np
 
 
 class Position(rt_pos.Position):
@@ -54,3 +55,6 @@ class Position(rt_pos.Position):
 
     def as_sp_matrix(self):
         return sp.Matrix(self.as_list())
+
+    def as_np_array(self):
+        return np.array(self.as_list())

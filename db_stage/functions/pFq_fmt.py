@@ -2,7 +2,7 @@ import json
 from dataclasses import dataclass, field
 from ramanujantools.cmf.pfq import pFq
 
-from data_managment.formatter import Formatter
+from db_stage.formatter import Formatter
 from utils.util_types import *
 from configs.database import *
 
@@ -20,18 +20,21 @@ class pFq_formatter(Formatter):
     p: int
     q: int
     z: sp.Expr
-    shifts: Position | List[sp.Expr | None] = field(default_factory=list)
+    shifts: Position | List[sp.Expr] = field(default_factory=list)
 
     def __post_init__(self):
         if self.p <= 0 or self.q <= 0:
             raise ValueError("Non-positive values")
+        if not isinstance(self.shifts, list) and not isinstance(self.shifts, Position):
+            raise ValueError("Shifts should be a list or Position")
 
         if self.p + self.q != len(self.shifts) and len(self.shifts) != 0:
             raise ValueError("Shifts should be of length p + q or 0")
-        if isinstance(self.shifts, list):
-            self.shifts = Position(self.shifts)
+
         if len(self.shifts) == 0:
-            self.shifts = Position([None for _ in range(self.p + self.q)])
+            self.shifts = Position([0 for _ in range(self.p + self.q)])
+        elif isinstance(self.shifts, list):
+            self.shifts = Position(self.shifts)
 
     @classmethod
     def from_json(cls, s_json: str) -> "pFq_formatter":

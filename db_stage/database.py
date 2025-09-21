@@ -1,12 +1,13 @@
 from configs.database import *
-from data_managment.formatter import Formatter
-from data_managment.errors import *
+from db_stage.formatter import Formatter
+from db_stage.errors import *
 from utils.util_types import *
-import data_managment.functions as functions
+import db_stage.functions as functions
 
 from peewee import SqliteDatabase, Model, CharField
 import json
 from typing import Optional
+from tqdm import tqdm
 
 
 class DBManager:
@@ -50,7 +51,7 @@ class DBManager:
         """
         data = self.__get_as_json(constant)
         cmfs = []
-        for func_json in (data if data else []):
+        for func_json in tqdm((data if data else []), desc="Loading CMFs from DB"):
             cmfs.append(
                 getattr(functions, func_json[TYPE_ANNOTATE]).from_json(json.dumps(func_json[DATA_ANNOTATE])).to_cmf()
             )
