@@ -35,7 +35,7 @@ class Analyzer(Module):
                 start = shard.choose_start_point()
                 searcher = SerialSearcher(shard)
                 searcher.generate_trajectories('sphere', 4, clear=False)
-                searcher.search(start)
+                searcher.search(start, partial_search_factor=0.5)
                 data = searcher.get_data()
                 # TODO: when finishing the implementation of SerialSearcher update this too!
                 """

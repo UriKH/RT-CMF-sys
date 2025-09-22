@@ -1,12 +1,21 @@
 from abc import ABC, abstractmethod
+from copy import copy
+
+from s_analysis.subspaces.searchable import Searchable
+from s_search.data_manager import DataManager
 from utils.util_types import *
 
 
 class SearchMethod(ABC):
-    def __init__(self):
+    def __init__(self,
+                 space: Searchable,
+                 data_manager: DataManager = None,
+                 share_data: bool = True):
+        self.space = space
         self.best_delta = -1
         self.trajectories = set()
         self.start_points = set()
+        self.data_manager = data_manager if not share_data else copy(data_manager)
 
     @abstractmethod
     def generate_trajectories(self, method: str, length: int | sp.Rational, n: Optional[int] = None):
