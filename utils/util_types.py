@@ -1,6 +1,6 @@
 from ramanujantools.cmf import CMF
 import sympy as sp
-from typing import Union, List, Dict, Tuple, Set, FrozenSet, Annotated, Optional, Callable
+from typing import Union, List, Dict, Tuple, Set, FrozenSet, Annotated, Optional, Callable, Any
 
 from utils.position import Position
 

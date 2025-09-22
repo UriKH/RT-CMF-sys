@@ -54,11 +54,8 @@ class pFq_formatter(Formatter):
         :return: A dictionary representation of the pFq_formatter matching the JSON format.
         """
         return {
-            TYPE_ANNOTATE: self.__class__.__name__,
-            DATA_ANNOTATE: {
-                "p": self.p, "q": self.q, "z": str(self.z) if isinstance(self.z, sp.Expr) else self.z, "shifts":
-                    [str(shift) if isinstance(shift, sp.Expr) else shift for shift in self.shifts.as_list()]
-            }
+            "p": self.p, "q": self.q, "z": str(self.z) if isinstance(self.z, sp.Expr) else self.z, "shifts":
+                [str(shift) if isinstance(shift, sp.Expr) else shift for shift in self.shifts.as_list()]
         }
 
     def to_cmf(self) -> CMFtup:

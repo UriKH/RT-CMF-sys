@@ -1,30 +1,69 @@
-import os
+# import os
+#
+# import configs.database
+# from s_db.database import DBManager
+# from s_db.functions.pFq_fmt import pFq_formatter
+# from pprint import pprint
+# import sympy as sp
 
-import configs.database
-from s_db.database import DBManager
-from s_db.functions.pFq_fmt import pFq_formatter
-from pprint import pprint
-import sympy as sp
+# x0, x1 = sp.symbols('x0 x1')
+#
+#
+# def main():
+#     db = DBManager()
+#     try:
+#         db.set('pi', pFq_formatter(11, 1, sp.Rational(1, 2)))
+#         db.add_inspiration_function('pi', pFq_formatter(2, 2, sp.Rational(1, 2), [0, None, sp.Rational(1, 2), 0]))
+#
+#         print(db.get('pi'))
+#
+#         db.remove_inspiration_function('pi', pFq_formatter(2, 2, sp.Rational(1, 2), [0, None, sp.Rational(1, 2), 0]))
+#         print(db.get('pi'))
+#     finally:
+#         db.db.close()
+#         os.remove(configs.database.DEFAULT_PATH)
 
-x0, x1 = sp.symbols('x0 x1')
+import argparse
 
 
-def main():
-    db = DBManager()
-    try:
-        db.set('pi', pFq_formatter(11, 1, sp.Rational(1, 2)))
-        db.add_inspiration_function('pi', pFq_formatter(2, 2, sp.Rational(1, 2), [0, None, sp.Rational(1, 2), 0]))
+def main(args=None):
+    print('Hello World!')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--interactive', type=int, default=1)
+    parsed_args = parser.parse_args(args)
 
-        print(db.get('pi'))
-
-        db.remove_inspiration_function('pi', pFq_formatter(2, 2, sp.Rational(1, 2), [0, None, sp.Rational(1, 2), 0]))
-        print(db.get('pi'))
-    finally:
-        db.db.close()
-        os.remove(configs.database.DEFAULT_PATH)
+    if parsed_args.interactive:
+        """
+        * Ask user for a constant
+        * fetch
+        * ask user to choose analyzer based on configurations and allow configuration change
+        * run analysis
+        * visualize results to user and wait for action, ask confirmation to continue
+        * ask for deep search method (user can change configs)
+        * run deep search
+        """
+        pass
+    else:
+        """
+        Run the predefined system as given in the config file
+        """
+        pass
 
 
 if __name__ == '__main__':
-    # main()
-    s = set([1])
-    print(s)
+    """
+    we want:
+    System("euler-gamma", DBMod, Analyzer, Searcher).load_and_run()
+    
+    how do we make sure this works?
+    Connectors: define interface for DBMod, Analyzer, Searcher and in it define connectors that make sure that the data
+     sent to the next module is in valid format.
+     
+    * DB's only job is to fetch the constant's inspiration functions. 
+        (We want to allow DB combining if we have 2 different DB's and we want to aggregate them)
+    * Analyzer is a specific method implementation for prioritization. 
+        (We want to allow different implementations of prioritization methods, in case we want user input on both options)
+    * Searcher is a specific method implementation for trajectory search.
+        (Here we can provide a list of search methods and execute all of them while checking cached trajectories)
+    """
+    main()

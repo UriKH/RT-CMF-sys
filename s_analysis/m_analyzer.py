@@ -1,8 +1,7 @@
-from s_search.serial_searcher import SerialSearcher
+from s_search.serial.serial_searcher import SerialSearcher
 from module import Module
-from s_analysis.subspaces.shard_extraction import ShardExtractor
+from s_analysis.subspaces.shard.shard_extraction import ShardExtractor
 from utils.util_types import *
-from utils.logger import Logger
 
 
 class Analyzer(Module):

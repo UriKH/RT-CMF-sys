@@ -12,5 +12,5 @@ class Module(ABC):
         self.version = version
 
     @abstractmethod
-    def execute(self):
+    def execute(self, *args, **kwargs):
         raise NotImplementedError

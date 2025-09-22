@@ -2,7 +2,7 @@ from utils.util_types import *
 from utils.plane import Plane
 from configs.analysis import *
 from ramanujantools.cmf import CMF
-from s_analysis.subspaces.shard import Shard
+from s_analysis.subspaces.shard.shard import Shard
 from utils.point_generator import PointGenerator
 
 from itertools import product
@@ -92,8 +92,8 @@ class ShardExtractor:
             """
             coeffs = expr.as_coefficients_dict()
             sign = 1 if greater_than_0 else -1
-            row = [-sign * coeffs.get(v, 0) for v in self.symbols]
-            b = sign * coeffs.get(1, 0) - SHARD_EXTRACTOR_ERR
+            row = [-sign * coeffs.select(v, 0) for v in self.symbols]
+            b = sign * coeffs.select(1, 0) - SHARD_EXTRACTOR_ERR
             return row, b
 
         def validate_shard(shard: ShardVec) -> Tuple[bool, List[int | float, ...]]:

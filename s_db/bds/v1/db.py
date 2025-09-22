@@ -1,16 +1,16 @@
-from configs.database import *
+from s_db.bds.v1.config import *
 from s_db.functions.formatter import Formatter
 from s_db.errors import *
-from utils.util_types import *
 import s_db.functions as functions
+from s_db.functions.config import *
+from utils.util_types import *
 
 from peewee import SqliteDatabase, Model, CharField
 import json
-from typing import Optional
 from tqdm import tqdm
 
 
-class DBManager:
+class DB:
     """
     Local sqlite database manager.
 
@@ -23,19 +23,19 @@ class DBManager:
         In the data section are also stored the shifts in starting point in the CMF (None if not specified)
     """
 
-    class DB(Model):
+    class Table(Model):
         constant = CharField(primary_key=True)
         family = CharField()
 
-    def __init__(self, path: Optional[str] = DEFAULT_PATH):
+    def __init__(self, path: Optional[str] = DEFAULT_PATH) -> None:
         """
         Initialize the connection to the database.
         :param path: Path to the database file.
         """
         self.db = SqliteDatabase(path)
-        self.db.bind([DBManager.DB])
+        self.db.bind([DB.Table])
         self.db.connect()
-        self.db.create_tables([DBManager.DB], safe=True)
+        self.db.create_tables([DB.Table], safe=True)
 
     def __del__(self) -> None:
         """
@@ -43,7 +43,7 @@ class DBManager:
         """
         self.db.close()
 
-    def get(self, constant: str) -> CMFlist:
+    def select(self, constant: str) -> CMFlist:
         """
         Retrieve the CMFs of the inspiration functions corresponding to the given constant.
         :param constant: The constant for which to retrieve the CMFs.
@@ -70,10 +70,9 @@ class DBManager:
         """
         if isinstance(funcs, Formatter):
             funcs = [funcs]
-        if DBManager.DB.select().where(DBManager.DB.constant == constant).exists() and not replace:
+        if self.Table.select().where(self.Table.constant == constant).exists() and not replace:
             raise ConstantAlreadyExists()
-
-        DBManager.DB.replace(constant=constant, family=json.dumps([func.to_json() for func in funcs])).execute()
+        self.Table.replace(constant=constant, family=json.dumps([func.to_db_json() for func in funcs])).execute()
 
     def add_inspiration_function(self, constant: str, func: Formatter) -> None:
         """
@@ -85,8 +84,8 @@ class DBManager:
         data = self.__get_as_json(constant)
         if self.__check_if_defined(func, data):
             raise FunctionAlreadyExists()
-        data.append(func.to_json())
-        DBManager.DB.replace(constant=constant, family=json.dumps(data)).execute()
+        data.append(func.to_db_json())
+        DB.Table.replace(constant=constant, family=json.dumps(data)).execute()
 
     def remove_inspiration_function(self, constant: str, func: Formatter) -> None:
         """
@@ -98,12 +97,11 @@ class DBManager:
         data = self.__get_as_json(constant)
         if not self.__check_if_defined(func, data):
             raise FunctionDoesNotExist()
-        data.remove(func.to_json())
-        DBManager.DB.replace(constant=constant, family=json.dumps(data)).execute()
+        data.remove(func.to_db_json())
+        self.Table.replace(constant=constant, family=json.dumps(data)).execute()
 
-    @staticmethod
-    def __get_as_json(constant: str) -> List[Dict]:
-        query = DBManager.DB.select().where(DBManager.DB.constant == constant)
+    def __get_as_json(self, constant: str) -> List[Dict]:
+        query = self.Table.select().where(self.Table.constant == constant)
         data = query.first()
         if not data:
             raise ConstantDoesNotExist()
@@ -115,6 +113,6 @@ class DBManager:
             return True
 
         for func_json in data:
-            if func.to_json() == func_json:
+            if func.to_db_json() == func_json:
                 return True
         return False
