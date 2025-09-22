@@ -1,6 +1,7 @@
 from configs.db_usages import DBUsages
 from module import Module
 from s_db.db_connector import DBModConnector
+import configs.database as db_config
 from utils.util_types import *
 import configs.system as sys_config
 
@@ -15,16 +16,24 @@ class System:
     * modules config - ()
     """
 
-    def __init__(self, constant: str, dbmods: List[DBModConnector]):
-        self.constant = constant
-        self.dbs = dbmods
-        if sys_config.DB_USAGE != DBUsages.RETRIEVE_DATA and len(dbmods) > 1:
+    def __init__(self,
+                 dbs: List[DBModConnector],
+                 analyzers: List[Module] = None,
+                 searchers: List[Module] = None):
+        self.dbs = dbs
+
+        if sys_config.DB_USAGE != DBUsages.RETRIEVE_DATA and len(dbs) > 1:
             raise ValueError("Multiple DBModConnector instances are not allowed when not retrieving data from DBs.")
 
-    def run(self):
-        results = []
-        for db in self.dbs:
-            results.append(db.execute())
+    def run(self, constants: List[str] | str = None):
+        """
+        Run the system given the constants to search for.
+        :param constants: if None, search for constants defined in the configuration file in 'configs.database.py'.
+        :return:
+        """
+        if isinstance(constants, str):
+            constants = [constants]
+        cmf_data = DBModConnector.aggregate(self.dbs, constants)
         """
         res = None
         for mod in self.mods:
@@ -37,3 +46,4 @@ class System:
                 mod.user_input()
         """
         pass
+

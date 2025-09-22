@@ -51,6 +51,8 @@ def main(args=None):
 
 
 if __name__ == '__main__':
+    from system import System
+    System()
     """
     we want:
     System("euler-gamma", DBMod, Analyzer, Searcher).load_and_run()

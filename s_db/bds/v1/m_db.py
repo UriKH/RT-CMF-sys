@@ -1,5 +1,7 @@
 from s_db.bds.v1.db import DB
 from s_db.db_connector import DBModConnector
+import s_db.bds.v1.config as v1_config
+import configs.database as db_config
 from utils.util_types import *
 
 
@@ -11,22 +13,26 @@ class Database(DBModConnector):
         )
         self.db = DB()
 
-    def execute(self, constant: str) -> CMFlist:
-        return self.db.select(constant)
+    def execute(self, constants: Optional[List[str] | str] = None) -> Dict[str, CMFlist] | None:
+        if not (usage := db_config.USAGE) in v1_config.ALLOWED_USAGES:
+            raise ValueError(f"Invalid usage: {usage.name} "
+                             f"usages are: {[usage.name for usage in v1_config.ALLOWED_USAGES]}")
+        if constants is None:
+            constants = db_config.CONSTANTS
 
-    def format_result(self, result, as_type=set):
-        match as_type:
-            case set():
-                return as_type(result)
+        match usage:
+            # TODO: this should be updated when adding more usages to the DB
+            case db_config.DBUsages.RETRIEVE_DATA:
+                if not v1_config.MULTIPLE_CONSTANTS and len(constants) > 1:
+                    raise ValueError("Multiple constants are not allowed when retrieving data from DB.")
+                return {constant: self.db.select(constant) for constant in constants}
+            # case db_config.DBUsages.STORE_DATA:
+            #     return {constant: self.db.update(constant) for constant in constants}
             case _:
-                raise ValueError(f"Invalid type: {as_type}, type must be XXXX")
+                raise ValueError(f"Invalid usage: {usage.name} ")
+
+    def format_result(self, result) -> Dict[str, CMFlist]:
+        return result
 
     def create_from_json(self):
         raise NotImplementedError
-
-    """
-    The DB template should allow not only the execution of get() but also updating via terminal and using functions
-     manually and external files!
-    The system will turn the DB module on and the rest will happen automatically (the only configuration for the system
-     will be to choose if interaction is using terminal / external files or function calls)
-    """

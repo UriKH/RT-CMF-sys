@@ -57,10 +57,10 @@ class DB:
             )
         return cmfs
 
-    def set(self,
-            constant: str,
-            funcs: List[Formatter] | Formatter,
-            replace=False) -> None:
+    def update(self,
+               constant: str,
+               funcs: List[Formatter] | Formatter,
+               replace=False) -> None:
         """
         Set the inspiration functions corresponding to the given constant.
         :param constant: The constant for which to retrieve the CMFs.
