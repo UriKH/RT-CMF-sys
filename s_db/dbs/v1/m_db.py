@@ -6,7 +6,7 @@ from utils.util_types import *
 
 
 class DBMod(DBModScheme):
-    def __init__(self, path: str = None):
+    def __init__(self, path: str = v1_config.DEFAULT_PATH):
         super().__init__(
             description='Database module for inspiration function management',
             version='1'

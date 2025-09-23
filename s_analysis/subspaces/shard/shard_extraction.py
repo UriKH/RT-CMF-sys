@@ -23,9 +23,10 @@ class ShardExtractor:
         self.hps, self.symbols = self.__extract_shard_hyperplanes(cmf)
 
         # This will be instantiated later on the first call to get_encoded_shards()
-        self._encoded_shards = None
-        self._feasible_points = None
-        self._shards = None
+        self._mono_shard = len(self.hps) == 0
+        self._encoded_shards = [tuple()] if self._mono_shard else None
+        self._feasible_points = [[0] * len(self.symbols)] if self._mono_shard else None
+        self._shards = [Shard(tuple(), self)] if self._mono_shard else None
 
     @staticmethod
     def __extract_shard_hyperplanes(cmf: CMF) -> Tuple[List[Plane], List[sp.Symbol]]:
@@ -111,6 +112,11 @@ class ShardExtractor:
             return res.success, res.x.tolist()
 
         if self._encoded_shards is not None:
+            return self._encoded_shards
+
+        if self._mono_shard:
+            self._encoded_shards = [tuple()]
+            self._feasible_points = [[0] * len(self.symbols)]
             return self._encoded_shards
 
         prems = product([+1, -1], repeat=len(self.hps))
