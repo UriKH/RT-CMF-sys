@@ -1,6 +1,6 @@
 from configs.db_usages import DBUsages
 from module import Module
-from s_db.db_connector import DBModConnector
+from s_db.db_scheme import DBModScheme
 import configs.database as db_config
 from utils.util_types import *
 import configs.system as sys_config
@@ -17,7 +17,7 @@ class System:
     """
 
     def __init__(self,
-                 dbs: List[DBModConnector],
+                 dbs: List[DBModScheme],
                  analyzers: List[Module] = None,
                  searchers: List[Module] = None):
         self.dbs = dbs
@@ -33,7 +33,7 @@ class System:
         """
         if isinstance(constants, str):
             constants = [constants]
-        cmf_data = DBModConnector.aggregate(self.dbs, constants)
+        cmf_data = DBModScheme.aggregate(self.dbs, constants)
         """
         res = None
         for mod in self.mods:

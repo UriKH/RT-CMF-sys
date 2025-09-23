@@ -4,7 +4,6 @@ from ramanujantools.cmf.pfq import pFq
 
 from s_db.functions.formatter import Formatter
 from utils.util_types import *
-from configs.database import *
 
 
 @dataclass
@@ -69,4 +68,6 @@ class pFq_formatter(Formatter):
 
     def __repr__(self):
         return json.dumps(self.to_json())
-    
+
+    def __hash__(self):
+        return hash((self.p, self.q, self.z, self.shifts))

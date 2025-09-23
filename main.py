@@ -25,6 +25,8 @@
 
 import argparse
 
+from s_db.dbs.v1.m_db import DBMod
+
 
 def main(args=None):
     print('Hello World!')
@@ -52,7 +54,8 @@ def main(args=None):
 
 if __name__ == '__main__':
     from system import System
-    System()
+    from s_db.dbs.v1.m_db import DBMod
+    System([DBMod()])
     """
     we want:
     System("euler-gamma", DBMod, Analyzer, Searcher).load_and_run()

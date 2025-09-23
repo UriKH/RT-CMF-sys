@@ -1,12 +1,12 @@
-from s_db.bds.v1.db import DB
-from s_db.db_connector import DBModConnector
-import s_db.bds.v1.config as v1_config
+from s_db.dbs.v1.db import DB
+from s_db.db_scheme import DBModScheme
+import s_db.dbs.v1.config as v1_config
 import configs.database as db_config
 from utils.util_types import *
 
 
-class Database(DBModConnector):
-    def __init__(self,):
+class DBMod(DBModScheme):
+    def __init__(self):
         super().__init__(
             description='Database module for inspiration function management',
             version='1'

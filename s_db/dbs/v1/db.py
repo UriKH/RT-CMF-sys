@@ -1,4 +1,5 @@
-from s_db.bds.v1.config import *
+from s_db.dbs.v1.config import *
+from s_db.db_scheme import DBScheme
 from s_db.functions.formatter import Formatter
 from s_db.errors import *
 import s_db.functions as functions
@@ -10,7 +11,7 @@ import json
 from tqdm import tqdm
 
 
-class DB:
+class DB(DBScheme):
     """
     Local sqlite database manager.
 
@@ -25,7 +26,7 @@ class DB:
 
     class Table(Model):
         constant = CharField(primary_key=True)
-        family = CharField()
+        family = CharField(null=False, default="[]")
 
     def __init__(self, path: Optional[str] = DEFAULT_PATH) -> None:
         """
@@ -60,19 +61,66 @@ class DB:
     def update(self,
                constant: str,
                funcs: List[Formatter] | Formatter,
-               replace=False) -> None:
+               override=False) -> None:
         """
-        Set the inspiration functions corresponding to the given constant.
+        Updates the inspiration functions corresponding to the given constant.
         :param constant: The constant for which to retrieve the CMFs.
         :param funcs: The collection of inspiration-functions.
-        :param replace: If true, replace the existing inspiration functions.
+        :param override: If true, replace the existing inspiration functions.
         :raises ConstantAlreadyExists: If the constant already exists and replace is false.
         """
         if isinstance(funcs, Formatter):
             funcs = [funcs]
-        if self.Table.select().where(self.Table.constant == constant).exists() and not replace:
+        if not self.Table.select().where(self.Table.constant == constant).exists():
+            raise ConstantDoesNotExist()
+        data = [func.to_db_json() for func in funcs]
+        if not override:
+            for fun in self.__get_as_json(constant):
+                if fun not in data:
+                    data.append(fun)
+        self.Table.update({self.Table.family.name: json.dumps(data)}).where(self.Table.constant == constant).execute()
+
+    def replace(self, constant: str, funcs: List[Formatter] | Formatter) -> None:
+        if not self.Table.select().where(self.Table.constant == constant).exists():
+            self.insert(constant, funcs)
+        else:
+            self.update(constant, funcs, override=True)
+
+    def insert(self, constant: str, funcs: List[Formatter] | Formatter) -> None:
+        if isinstance(funcs, Formatter):
+            funcs = [funcs]
+        if self.Table.select().where(self.Table.constant == constant).exists():
             raise ConstantAlreadyExists()
-        self.Table.replace(constant=constant, family=json.dumps([func.to_db_json() for func in funcs])).execute()
+        self.Table.insert(constant=constant, family=json.dumps([func.to_db_json() for func in funcs])).execute()
+
+    def delete(self,
+               constants: str | List[str],
+               funcs: Optional[List[Formatter] | Formatter] = None,
+               delete_const: bool = False) -> List[str] | None:
+        deleted = []
+        constants = [constants] if isinstance(constants, str) else constants
+        funcs = [funcs] if isinstance(funcs, Formatter) else funcs
+
+        for constant in constants:
+            if funcs is None:
+                if not delete_const:
+                    self.update(constant, [], override=True)
+                else:
+                    self.Table.delete().where(self.Table.constant == constant).execute()
+                    deleted.append(constant)
+                continue
+            data = self.__get_as_json(constant)
+            for func in funcs:
+                try:
+                    data.remove(func.to_db_json())
+                except ValueError:
+                    continue
+            (self.Table.update({self.Table.family.name: json.dumps(data)})
+             .where(self.Table.constant == constant).execute())
+        return deleted
+
+    def clear(self) -> None:
+        self.Table.update({self.Table.family.name: '[]'}).execute()
 
     def add_inspiration_function(self, constant: str, func: Formatter) -> None:
         """
@@ -85,7 +133,7 @@ class DB:
         if self.__check_if_defined(func, data):
             raise FunctionAlreadyExists()
         data.append(func.to_db_json())
-        DB.Table.replace(constant=constant, family=json.dumps(data)).execute()
+        DB.Table.update(constant=constant, family=json.dumps(data)).execute()
 
     def remove_inspiration_function(self, constant: str, func: Formatter) -> None:
         """
@@ -98,7 +146,8 @@ class DB:
         if not self.__check_if_defined(func, data):
             raise FunctionDoesNotExist()
         data.remove(func.to_db_json())
-        self.Table.replace(constant=constant, family=json.dumps(data)).execute()
+        (self.Table.update({self.Table.family.name: json.dumps(data)})
+         .where(self.Table.constant == constant).execute())
 
     def __get_as_json(self, constant: str) -> List[Dict]:
         query = self.Table.select().where(self.Table.constant == constant)
