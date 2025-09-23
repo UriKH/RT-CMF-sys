@@ -14,10 +14,9 @@ class Shard(Searchable):
                  shard_id: ShardVec,
                  extractor: ShardExtractor):
         """
-        :param hps: The hyperplanes found in the CMF that compose the Shards
-        :param symbols: The symbols used to define the hyperplanes
         :param shard_id: A +-1's vector. Each index corresponds to a hyperplane,
         representing if all the points in the shard are above the hyperplane or blow it (+1 = above, -1 = below).
+        :param extractor: The ShardExtractor instance that created this Shard.
         """
         super().__init__(len(extractor.symbols), extractor.cmf, extractor.symbols)
         self.hps = extractor.hps
@@ -54,7 +53,7 @@ class Shard(Searchable):
         :param point: A tuple representing a coordinate in the lattice
         :return: True if the point is within the shard, else False.
         """
-        encoded = ShardExtractor.encode_point(point, self.hps)
+        encoded, _ = ShardExtractor.encode_point(point, self.hps)
         return encoded == self.shard_id, encoded
 
     def trajectory_in_space(self, start: Position, trajectory: Position) -> bool:

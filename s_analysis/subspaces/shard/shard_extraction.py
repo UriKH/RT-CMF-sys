@@ -198,7 +198,10 @@ class ShardExtractor:
             # classify points
             for point in points:
                 point = list(np.array(point) + np.array(self.shifts))
-                point_classification[self.encode_point(Position(point, self.symbols), self.hps)].append(Position(point))
+                encoded, valid = self.encode_point(Position(point, self.symbols), self.hps)
+                if not valid:
+                    continue
+                point_classification[encoded].append(Position(point))
 
             # make sure all shards have a start point
             for shard_id in point_classification:
@@ -212,12 +215,15 @@ class ShardExtractor:
             shard.add_start_points(point_classification[shard.shard_id], filtering=False)
 
     @staticmethod
-    def encode_point(point: Position, hps: List[Plane]) -> ShardVec:
+    def encode_point(point: Position, hps: List[Plane]) -> Tuple[ShardVec, bool]:
         """
         Encodes the shard that the point is within its borders.
         :param point: The point as a tuple
         :param hps: The hyperplanes defining the shards
-        :return: The Shard encoding +-1's vector
+        :return: The Shard encoding +-1's vector, True if the point is not on a hyperplane, else False.
         """
-        # TODO: add 0 for case that the point is on the plane
-        return tuple((1 if plane.expression.subs(point) > 0 else -1) for plane in hps)
+        def sign(n):
+            if n == 0:
+                return 0
+            return 1 if n > 0 else -1
+        return encoded := tuple(sign(plane.expression.subs(point)) for plane in hps), 0 not in encoded
