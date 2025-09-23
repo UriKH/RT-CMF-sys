@@ -19,7 +19,7 @@ class DBModScheme(Module):
         # TODO: should this be in system?
         results = {}
         for db in dbs:
-            if not issubclass(db, cls):
+            if not issubclass(db.__class__, cls):
                 raise ValueError(f"Invalid DBModConnector instance: {db}")
             for const, l in db.format_result(db.execute(constants)).items():
                 results[const] = list(set(results.get(const, []) + l))
@@ -72,5 +72,13 @@ class DBScheme(ABC):
     def clear(self) -> None:
         """
         Remove all the functions from all the constants.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def from_json(self, path: str) -> None:
+        """
+        Execute commands via json.
+        :param path: Path to the json file.
         """
         raise NotImplementedError

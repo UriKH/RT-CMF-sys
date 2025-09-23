@@ -21,6 +21,7 @@ def safe(testcase, exc_type=Exception):
 class TestDB(unittest.TestCase):
     test_db = None
     path = f'./db_v1_test.db'
+    json_path = f'./db_v1_test.json'
 
     @classmethod
     def setUpClass(cls):
@@ -84,6 +85,40 @@ class TestDB(unittest.TestCase):
             TestDB.test_db.clear()
             self.assertEqual(self.test_db.select('pi'), [])
             self.assertEqual(self.test_db.select('e'), [])
+
+        # Test from_json
+        with open(self.json_path, 'w') as f:
+            f.write(
+                """
+                {
+                    "command": "update",
+                    "data": [
+                        {
+                            "constant": "pi",
+                            "data": {
+                                "type": "pFq_formatter",
+                                "data": {
+                                    "p": 2,
+                                    "q": 1,
+                                    "z": "1/3",
+                                    "shifts": [0, 0, 0]
+                                },
+                                "kwargs": {
+                                    "override": "True"
+                                }
+                            }
+                        }
+                    ]
+                }
+                """
+            )
+        with safe(self):
+            TestDB.test_db.from_json(self.json_path)
+            self.assertEqual(TestDB.test_db.select('pi'), [(
+                pfq1 := pFq(2, 1, sp.Rational(1, 3)), Position([0, 0, 0], list(pfq1.matrices.keys()))
+            )])
+        with self.assertRaises(ConstantDoesNotExist):
+            TestDB.test_db.delete('gamma')
 
 
 if __name__ == "__main__":

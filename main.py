@@ -25,7 +25,6 @@
 
 import argparse
 
-from s_db.dbs.v1.m_db import DBMod
 
 
 def main(args=None):
@@ -55,7 +54,7 @@ def main(args=None):
 if __name__ == '__main__':
     from system import System
     from s_db.dbs.v1.m_db import DBMod
-    System([DBMod()])
+    System([(DBMod, './db_yay.db')]).run()
     """
     we want:
     System("euler-gamma", DBMod, Analyzer, Searcher).load_and_run()
@@ -71,4 +70,6 @@ if __name__ == '__main__':
     * Searcher is a specific method implementation for trajectory search.
         (Here we can provide a list of search methods and execute all of them while checking cached trajectories)
     """
+    def func():
+        pass
     main()

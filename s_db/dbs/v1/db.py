@@ -1,3 +1,7 @@
+import os.path
+
+from playhouse.sqlite_ext import JSONPath
+
 from s_db.dbs.v1.config import *
 from s_db.db_scheme import DBScheme
 from s_db.functions.formatter import Formatter
@@ -53,9 +57,12 @@ class DB(DBScheme):
         data = self.__get_as_json(constant)
         cmfs = []
         for func_json in tqdm((data if data else []), desc="Loading CMFs from DB"):
-            cmfs.append(
-                getattr(functions, func_json[TYPE_ANNOTATE]).from_json(json.dumps(func_json[DATA_ANNOTATE])).to_cmf()
-            )
+            try:
+                cmfs.append(
+                    getattr(functions, func_json[TYPE_ANNOTATE]).from_json(json.dumps(func_json[DATA_ANNOTATE])).to_cmf()
+                )
+            except AttributeError:
+                raise NoSuchInspirationFunction(f"Inspiration function class not found: {func_json[TYPE_ANNOTATE]}")
         return cmfs
 
     def update(self,
@@ -153,7 +160,7 @@ class DB(DBScheme):
         query = self.Table.select().where(self.Table.constant == constant)
         data = query.first()
         if not data:
-            raise ConstantDoesNotExist()
+            raise ConstantDoesNotExist(ConstantDoesNotExist.message_prefix + constant)
         return json.loads(data.family)
 
     @staticmethod
@@ -165,3 +172,33 @@ class DB(DBScheme):
             if func.to_db_json() == func_json:
                 return True
         return False
+
+    def from_json(self, path) -> None:
+        """
+        Execute limited commands via JSON as the format shown at `JSONError.default_msg`
+        :param path: The path to the JSON file.
+        """
+        data = None
+        if not os.path.exists(path):
+            raise JSONError(f"File not found: {path}")
+
+        try:
+            with open(path, "r") as f:
+                data = json.load(f)
+            func = getattr(self, data["command"])
+            for d in data['data']:
+                if 'kwargs' in d:
+                    func(
+                        d["constant"],
+                        getattr(functions, d['data'][TYPE_ANNOTATE]).from_json(json.dumps(d['data'][DATA_ANNOTATE])),
+                        **json.loads(d['kwargs'])
+                    )
+                else:
+                    func(
+                        d["constant"],
+                        getattr(functions, d['data'][TYPE_ANNOTATE]).from_json(json.dumps(d['data'][DATA_ANNOTATE])),
+                    )
+        except TypeError as e:
+            raise e
+        except Exception:
+            raise JSONError(JSONError.default_msg)

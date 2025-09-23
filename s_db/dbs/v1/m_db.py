@@ -6,12 +6,12 @@ from utils.util_types import *
 
 
 class DBMod(DBModScheme):
-    def __init__(self):
+    def __init__(self, path: str = None):
         super().__init__(
             description='Database module for inspiration function management',
             version='1'
         )
-        self.db = DB()
+        self.db = DB(path)
 
     def execute(self, constants: Optional[List[str] | str] = None) -> Dict[str, CMFlist] | None:
         if not (usage := db_config.USAGE) in v1_config.ALLOWED_USAGES:

@@ -1,7 +1,8 @@
 """
 Global config file for system flow regarding DBs
 """
-from db_usages import DBUsages
+
+from configs.db_usages import DBUsages
 
 # PARALLEL_EXEC = False               # try to run DBs in parallel if possible
 USAGE = DBUsages.RETRIEVE_DATA      # execute DBs retrieve if retrieve is an option
