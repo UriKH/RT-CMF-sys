@@ -1,7 +1,5 @@
 import os.path
 
-from playhouse.sqlite_ext import JSONPath
-
 from s_db.dbs.v1.config import *
 from s_db.db_scheme import DBScheme
 from s_db.functions.formatter import Formatter
@@ -62,7 +60,7 @@ class DB(DBScheme):
                     getattr(functions, func_json[TYPE_ANNOTATE]).from_json(json.dumps(func_json[DATA_ANNOTATE])).to_cmf()
                 )
             except AttributeError:
-                raise NoSuchInspirationFunction(f"Inspiration function class not found: {func_json[TYPE_ANNOTATE]}")
+                raise NoSuchInspirationFunction(NoSuchInspirationFunction.default_msg + func_json[TYPE_ANNOTATE])
         return cmfs
 
     def update(self,
@@ -97,7 +95,7 @@ class DB(DBScheme):
         if isinstance(funcs, Formatter):
             funcs = [funcs]
         if self.Table.select().where(self.Table.constant == constant).exists():
-            raise ConstantAlreadyExists()
+            raise ConstantAlreadyExists(ConstantAlreadyExists.default_msg + constant)
         self.Table.insert(constant=constant, family=json.dumps([func.to_db_json() for func in funcs])).execute()
 
     def delete(self,
@@ -138,7 +136,7 @@ class DB(DBScheme):
         """
         data = self.__get_as_json(constant)
         if self.__check_if_defined(func, data):
-            raise FunctionAlreadyExists()
+            raise FunctionAlreadyExists(FunctionAlreadyExists.default_msg + str(func))
         data.append(func.to_db_json())
         DB.Table.update(constant=constant, family=json.dumps(data)).execute()
 
@@ -151,7 +149,7 @@ class DB(DBScheme):
         """
         data = self.__get_as_json(constant)
         if not self.__check_if_defined(func, data):
-            raise FunctionDoesNotExist()
+            raise FunctionDoesNotExist(FunctionDoesNotExist.default_msg + str(func) + f" in {constant}")
         data.remove(func.to_db_json())
         (self.Table.update({self.Table.family.name: json.dumps(data)})
          .where(self.Table.constant == constant).execute())
@@ -187,6 +185,9 @@ class DB(DBScheme):
                 data = json.load(f)
             func = getattr(self, data["command"])
             for d in data['data']:
+                for key in d:
+                    if key not in ["constant", "data", "kwargs"]:
+                        raise Exception
                 if 'kwargs' in d:
                     func(
                         d["constant"],
@@ -201,4 +202,4 @@ class DB(DBScheme):
         except TypeError as e:
             raise e
         except Exception:
-            raise JSONError(JSONError.default_msg)
+            raise JSONError(JSONError.bad_format_msg)

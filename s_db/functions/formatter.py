@@ -19,6 +19,10 @@ class Formatter(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def __str__(self):
+        raise NotImplementedError
+
+    @abstractmethod
     def __hash__(self):
         raise NotImplementedError
 

@@ -9,24 +9,28 @@ class ConstantDoesNotExist(DBError):
 
 
 class FunctionAlreadyExists(DBError):
+    default_msg = 'Function already exists: '
     pass
 
 
 class FunctionDoesNotExist(DBError):
+    default_msg = 'Function does not exist: '
     pass
 
 
 class ConstantAlreadyExists(DBError):
+    default_msg = 'Constant already exists: '
     pass
 
 
 class NoSuchInspirationFunction(DBError):
+    default_msg = 'No such inspiration function: '
     pass
 
 
 # --------------------------- JSON Errors ---------------------------
 class JSONError(Exception):
-    default_msg = """Invalid JSON file, please check the syntax of the file:
+    bad_format_msg = """Invalid JSON file, please check the syntax of the file:
     {
         "command": <"update" or "replace" or "insert"">,
         "data":
@@ -34,10 +38,10 @@ class JSONError(Exception):
             {
                 "constant": <constant>,
                 "data": {
-                    "<type config>": <type class>
-                    "<data config>": <data>
-                    "extras": {<kwargs>}
-                }
+                    "<type config>": <type class>,
+                    "<data config>": <data>,
+                    <<<optional>>> "kwargs": {<kwargs>}
+                },
             },
             {...}
         ]

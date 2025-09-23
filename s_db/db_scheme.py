@@ -78,7 +78,7 @@ class DBScheme(ABC):
     @abstractmethod
     def from_json(self, path: str) -> None:
         """
-        Execute commands via json.
-        :param path: Path to the json file.
+        Execute commands via JSON. View the format in the JSONError class.
+        :param path: Path to the JSON file.
         """
         raise NotImplementedError

@@ -69,5 +69,8 @@ class pFq_formatter(Formatter):
     def __repr__(self):
         return json.dumps(self.to_json())
 
+    def __str__(self):
+        return f'<{self.__class__.__name__}: {self.__repr__()}>'
+
     def __hash__(self):
         return hash((self.p, self.q, self.z, self.shifts))
