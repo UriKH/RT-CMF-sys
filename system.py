@@ -1,6 +1,6 @@
 from configs.db_usages import DBUsages
 from module import Module
-from s_db.db_scheme import DBModScheme
+from db_stage.db_scheme import DBModScheme
 from utils.util_types import *
 import configs.system as sys_config
 

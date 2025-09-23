@@ -1,5 +1,5 @@
-from s_analysis.subspaces.searchable import Searchable
-from s_analysis.subspaces.shard.shard_extraction import ShardExtractor
+from analysis_stage.subspaces.searchable import Searchable
+from analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
 from utils.util_types import *
 
 

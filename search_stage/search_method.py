@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from copy import copy
 
-from s_analysis.subspaces.searchable import Searchable
-from s_search.data_manager import DataManager
+from analysis_stage.subspaces.searchable import Searchable
+from search_stage.data_manager import DataManager
 from utils.util_types import *
 
 

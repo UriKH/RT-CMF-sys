@@ -1,5 +1,5 @@
 """
-Module configuration - specific to DB v1
+Module configuration - specific to DB db_v1
 """
 from configs.db_usages import DBUsages
 

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from utils.util_types import *
 from dataclasses import dataclass
-from s_db.functions.config import *
+from db_stage.funcs.config import *
 
 
 @dataclass

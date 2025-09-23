@@ -1,11 +1,11 @@
 import os.path
 
-from s_db.dbs.v1.config import *
-from s_db.db_scheme import DBScheme
-from s_db.functions.formatter import Formatter
-from s_db.errors import *
-import s_db.functions as functions
-from s_db.functions.config import *
+from db_stage.DBs.db_v1.config import *
+from db_stage.db_scheme import DBScheme
+from db_stage.funcs.formatter import Formatter
+from db_stage.errors import *
+import db_stage.funcs as functions
+from db_stage.funcs.config import *
 from utils.util_types import *
 
 from peewee import SqliteDatabase, Model, CharField
@@ -18,7 +18,7 @@ class DB(DBScheme):
     Local sqlite database manager.
 
     Given a constant, the manager is in charge of storing and retrieving CMFs of the corresponding
-    inspiration functions.
+    inspiration funcs.
 
     The important data of each inspiration function is stored in the database as a JSON string.
         * type: The name of the class of the inspiration function.
@@ -48,7 +48,7 @@ class DB(DBScheme):
 
     def select(self, constant: str) -> CMFlist:
         """
-        Retrieve the CMFs of the inspiration functions corresponding to the given constant.
+        Retrieve the CMFs of the inspiration funcs corresponding to the given constant.
         :param constant: The constant for which to retrieve the CMFs.
         :return: A list of tuples (CMF, shifts) for each inspiration function.
         """
@@ -57,7 +57,7 @@ class DB(DBScheme):
         for func_json in tqdm((data if data else []), desc="Loading CMFs from DB"):
             try:
                 cmfs.append(
-                    getattr(functions, func_json[TYPE_ANNOTATE]).from_json(json.dumps(func_json[DATA_ANNOTATE])).to_cmf()
+                    getattr(funcs, func_json[TYPE_ANNOTATE]).from_json(json.dumps(func_json[DATA_ANNOTATE])).to_cmf()
                 )
             except AttributeError:
                 raise NoSuchInspirationFunction(NoSuchInspirationFunction.default_msg + func_json[TYPE_ANNOTATE])
@@ -68,10 +68,10 @@ class DB(DBScheme):
                funcs: List[Formatter] | Formatter,
                override=False) -> None:
         """
-        Updates the inspiration functions corresponding to the given constant.
+        Updates the inspiration funcs corresponding to the given constant.
         :param constant: The constant for which to retrieve the CMFs.
-        :param funcs: The collection of inspiration-functions.
-        :param override: If true, replace the existing inspiration functions.
+        :param funcs: The collection of inspiration-funcs.
+        :param override: If true, replace the existing inspiration funcs.
         :raises ConstantAlreadyExists: If the constant already exists and replace is false.
         """
         if isinstance(funcs, Formatter):
@@ -130,7 +130,7 @@ class DB(DBScheme):
     def add_inspiration_function(self, constant: str, func: Formatter) -> None:
         """
         Adds an inspiration function corresponding to a given constant to the database.
-        :param constant: The constant for which to update the inspiration functions.
+        :param constant: The constant for which to update the inspiration funcs.
         :param func: The inspiration function to add.
         :raise FunctionAlreadyExists: If the inspiration function is already defined.
         """
@@ -143,7 +143,7 @@ class DB(DBScheme):
     def remove_inspiration_function(self, constant: str, func: Formatter) -> None:
         """
         Removes an inspiration function corresponding to a given constant from the database.
-        :param constant: The constant for which to update the inspiration functions.
+        :param constant: The constant for which to update the inspiration funcs.
         :param func: The inspiration function to be removed.
         :raise FunctionDoesNotExist: If the inspiration function is not defined.
         """
@@ -191,13 +191,13 @@ class DB(DBScheme):
                 if 'kwargs' in d:
                     func(
                         d["constant"],
-                        getattr(functions, d['data'][TYPE_ANNOTATE]).from_json(json.dumps(d['data'][DATA_ANNOTATE])),
+                        getattr(funcs, d['data'][TYPE_ANNOTATE]).from_json(json.dumps(d['data'][DATA_ANNOTATE])),
                         **json.loads(d['kwargs'])
                     )
                 else:
                     func(
                         d["constant"],
-                        getattr(functions, d['data'][TYPE_ANNOTATE]).from_json(json.dumps(d['data'][DATA_ANNOTATE])),
+                        getattr(funcs, d['data'][TYPE_ANNOTATE]).from_json(json.dumps(d['data'][DATA_ANNOTATE])),
                     )
         except TypeError as e:
             raise e

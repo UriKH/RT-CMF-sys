@@ -1,6 +1,6 @@
-from s_db.dbs.v1.db import DB
-from s_db.db_scheme import DBModScheme
-import s_db.dbs.v1.config as v1_config
+from db_stage.DBs.db_v1.db import DB
+from db_stage.db_scheme import DBModScheme
+import db_stage.DBs.db_v1.config as v1_config
 import configs.database as db_config
 from utils.util_types import *
 

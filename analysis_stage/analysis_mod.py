@@ -1,6 +1,6 @@
-from s_search.serial.serial_searcher import SerialSearcher
+from search_stage.serial.serial_searcher import SerialSearcher
 from module import Module
-from s_analysis.subspaces.shard.shard_extraction import ShardExtractor
+from analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
 from utils.util_types import *
 
 

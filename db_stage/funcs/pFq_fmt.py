@@ -2,7 +2,7 @@ import json
 from dataclasses import dataclass, field
 from ramanujantools.cmf.pfq import pFq
 
-from s_db.functions.formatter import Formatter
+from db_stage.funcs.formatter import Formatter
 from utils.util_types import *
 
 

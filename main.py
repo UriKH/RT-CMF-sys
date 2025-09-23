@@ -1,8 +1,8 @@
 # import os
 #
 # import configs.database
-# from s_db.database import DBManager
-# from s_db.functions.pFq_fmt import pFq_formatter
+# from db_stage.database import DBManager
+# from db_stage.funcs.pFq_fmt import pFq_formatter
 # from pprint import pprint
 # import sympy as sp
 
@@ -53,7 +53,7 @@ def main(args=None):
 
 if __name__ == '__main__':
     from system import System
-    from s_db.dbs.v1.m_db import DBMod
+    from db_stage.DBs.db_v1.db_mod import DBMod
     System([(DBMod, './db_yay.db')]).run()
     """
     we want:
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     Connectors: define interface for DBMod, Analyzer, Searcher and in it define connectors that make sure that the data
      sent to the next module is in valid format.
      
-    * DB's only job is to fetch the constant's inspiration functions. 
+    * DB's only job is to fetch the constant's inspiration funcs. 
         (We want to allow DB combining if we have 2 different DB's and we want to aggregate them)
     * Analyzer is a specific method implementation for prioritization. 
         (We want to allow different implementations of prioritization methods, in case we want user input on both options)

@@ -4,9 +4,9 @@ from contextlib import contextmanager
 import os
 from ramanujantools.cmf import pFq
 
-from s_db.errors import ConstantAlreadyExists, ConstantDoesNotExist
-from s_db.functions.pFq_fmt import pFq_formatter
-from s_db.dbs.v1.db import DB
+from db_stage.errors import ConstantAlreadyExists, ConstantDoesNotExist
+from db_stage.funcs.pFq_fmt import pFq_formatter
+from db_stage.DBs.db_v1.db import DB
 from utils.position import Position
 
 

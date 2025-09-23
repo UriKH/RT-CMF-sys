@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from module import Module
 from utils.util_types import *
-from s_db.functions.formatter import Formatter
+from db_stage.funcs.formatter import Formatter
 
 
 class DBModScheme(Module):
@@ -38,7 +38,7 @@ class DBScheme(ABC):
     @abstractmethod
     def select(self, constant: str) -> CMFlist:
         """
-        Retrieve the CMFs of the inspiration functions corresponding to the given constant.
+        Retrieve the CMFs of the inspiration funcs corresponding to the given constant.
         :param constant: The constant for which to retrieve the CMFs.
         :return: A list of tuples (CMF, shifts) for each inspiration function.
         """
@@ -47,10 +47,10 @@ class DBScheme(ABC):
     @abstractmethod
     def update(self, constant: str, funcs: List[Formatter] | Formatter, replace: bool = False) -> None:
         """
-        Set the inspiration functions corresponding to the given constant.
+        Set the inspiration funcs corresponding to the given constant.
         :param constant: The constant for which to retrieve the CMFs.
-        :param funcs: The collection of inspiration-functions.
-        :param replace: If true, replace the existing inspiration functions.
+        :param funcs: The collection of inspiration-funcs.
+        :param replace: If true, replace the existing inspiration funcs.
         :raises ConstantAlreadyExists: If the constant already exists and replace is false.
         """
         raise NotImplementedError
@@ -59,11 +59,11 @@ class DBScheme(ABC):
     def delete(self, constant: str | List[str], funcs: Optional[List[Formatter] | Formatter] = None,
                delete_const: bool = False) -> List[str] | None:
         """
-        Remove all the functions from all the constants provided.
+        Remove all the funcs from all the constants provided.
         :param constant: A constant or a list of constants to remove from.
-        :param funcs: A function or a list of functions to remove from the constants. If None, remove the constant.
+        :param funcs: A function or a list of funcs to remove from the constants. If None, remove the constant.
         :param delete_const: If True, delete the constant from the database if funcs is None.
-         Otherwise, just remove all its functions
+         Otherwise, just remove all its funcs
         :return: A list of constants that were removed.
         """
         raise NotImplementedError
@@ -71,7 +71,7 @@ class DBScheme(ABC):
     @abstractmethod
     def clear(self) -> None:
         """
-        Remove all the functions from all the constants.
+        Remove all the funcs from all the constants.
         """
         raise NotImplementedError
 

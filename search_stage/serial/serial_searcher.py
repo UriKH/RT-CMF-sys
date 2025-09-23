@@ -1,6 +1,6 @@
-from s_analysis.subspaces.searchable import Searchable
-from s_search.data_manager import DataManager
-from s_search.search_method import SearchMethod
+from analysis_stage.subspaces.searchable import Searchable
+from search_stage.data_manager import DataManager
+from search_stage.search_method import SearchMethod
 from utils.util_types import *
 from utils.point_generator import PointGenerator
 
