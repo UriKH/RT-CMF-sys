@@ -1,8 +1,12 @@
+import mpmath as mp
+
 from configs.db_usages import DBUsages
+from errors import UnknownConstant
 from module import Module
 from db_stage.db_scheme import DBModScheme
 from utils.util_types import *
 import configs.system as sys_config
+import configs.database as db_config
 
 
 class System:
@@ -29,9 +33,13 @@ class System:
         :param constants: if None, search for constants defined in the configuration file in 'configs.database.py'.
         :return:
         """
-        if isinstance(constants, str):
+        if not constants:
+            constants = sys_config.CONSTANTS
+        elif isinstance(constants, str):
             constants = [constants]
-        cmf_data = DBModScheme.aggregate(self.dbs, constants)
+
+        constants = self.get_constants(constants)
+        cmf_data = DBModScheme.aggregate(self.dbs, list(constants.keys()))
         """
         res = None
         for mod in self.mods:
@@ -45,3 +53,28 @@ class System:
         """
         pass
 
+    @staticmethod
+    def validate_constant(constant: str, throw: bool = False) -> bool:
+        try:
+            System.get_const_as_mpf(constant)
+            return True
+        except UnknownConstant as e:
+            if throw:
+                raise e
+            return False
+
+    @staticmethod
+    def get_const_as_mpf(constant: str) -> mp.mpf:
+        try:
+            if constant.startswith("zeta-"):
+                n = int(constant.split("-")[1])
+                return mp.zeta(n)
+            return getattr(mp, constant)
+        except Exception:
+            raise UnknownConstant(constant + UnknownConstant.default_msg)
+
+    @staticmethod
+    def get_constants(constants: List[str] | str):
+        if isinstance(constants, str):
+            constants = [constants]
+        return {c: System.get_const_as_mpf(c) for c in constants}

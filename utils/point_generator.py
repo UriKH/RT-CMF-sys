@@ -7,11 +7,11 @@ from itertools import product
 
 class PointGenerator:
     @classmethod
-    def generate_random_sphere(cls, n: int, radius: sp.Rational | int, dim: int):
+    def generate_random_sphere(cls, n: int, radius: int, dim: int):
         raise NotImplementedError
 
     @classmethod
-    def generate_cube(cls, edge_len: sp.Rational | int, dim: int, as_primitive=False) -> Set[Tuple[int, ...]]:
+    def generate_cube(cls, edge_len: int, dim: int, as_primitive=False) -> Set[Tuple[int, ...]]:
         points = itertools.product(range(-edge_len, edge_len + 1), repeat=dim)
         if as_primitive:
             return {cls.__to_primitive_vec(p) for p in points}
@@ -19,7 +19,7 @@ class PointGenerator:
 
     @classmethod
     def generate_via_shape(cls,
-                           length: sp.Rational | int,
+                           length: int,
                            dim: int,
                            shape: str,
                            as_primitive=False,
@@ -40,11 +40,11 @@ class PointGenerator:
                 raise ValueError(f"Invalid shape: {shape}, shape must be 'cube' / 'sphere'")
 
     @classmethod
-    def generate_random_cube(cls, n: int, edge_len: sp.Rational | int, dim: int):
+    def generate_random_cube(cls, n: int, edge_len: int, dim: int):
         raise NotImplementedError
 
     @classmethod
-    def generate_sphere(cls, radius: sp.Rational | int, dim: int, as_primitive=False):
+    def generate_sphere(cls, radius: int, dim: int, as_primitive=False):
         return cls.limit_by_norm(cls.generate_cube(radius, dim, as_primitive), radius)
 
     @classmethod

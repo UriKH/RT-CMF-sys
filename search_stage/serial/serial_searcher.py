@@ -27,7 +27,7 @@ class SerialSearcher(SearchMethod):
 
     def generate_trajectories(self,
                               method: str,
-                              length: int | sp.Rational,
+                              length: int,
                               n: Optional[int] = None,
                               clear=True):
         random = n is not None
@@ -67,11 +67,19 @@ class SerialSearcher(SearchMethod):
         if isinstance(starts, Position):
             starts = [starts]
 
+        n = sp.symbols('n')
+
         trajectories = self.trajectories
         if partial_search_factor < 1:
             trajectories = set(self.pick_fraction(self.trajectories, partial_search_factor))
         for start in starts:
             for t in trajectories:
+                traj_m = self.space.cmf.trajectory_matrix(
+                    trajectory=t,
+                    start=start
+                )
+                l = traj_m.limit({n: 1}, 2000, {n: 0})
+                l.delta()
                 # TODO: implement search and data manager
                 """
                 limit = <COMPUTE LIMIT>     (This should be dependant on type1 / type2 or something doesn't it?)

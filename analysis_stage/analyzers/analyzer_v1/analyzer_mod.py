@@ -1,10 +1,10 @@
+from analysis_stage.analysis_scheme import AnalyzerModScheme
 from search_stage.serial.serial_searcher import SerialSearcher
-from module import Module
 from analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
 from utils.util_types import *
 
 
-class Analyzer(Module):
+class AnalyzerMod(AnalyzerModScheme):
     """
     The class represents the module for CMF analysis and shard search filtering and prioritization.
     """

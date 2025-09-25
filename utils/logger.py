@@ -70,7 +70,7 @@ class Logger:
                     msg += f' in {self.calling_function_name}'
                 print(msg, end=self.end)
             case Logger.Levels.exception:  # exception - red
-                msg = f'{Logger.Colors.red}[EXCEPT] {self.msg}'
+                msg = f'{Logger.Colors.red}[ERROR] {self.msg}'
                 if in_function:
                     msg += f' in {self.calling_function_name}'
                 print(msg, end=self.end)

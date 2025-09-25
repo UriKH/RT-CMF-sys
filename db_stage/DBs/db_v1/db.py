@@ -1,4 +1,7 @@
 import os.path
+from peewee import SqliteDatabase, Model, CharField
+import json
+from tqdm import tqdm
 
 from db_stage.DBs.db_v1.config import *
 from db_stage.db_scheme import DBScheme
@@ -7,10 +10,7 @@ from db_stage.errors import *
 import db_stage.funcs as funcs
 from db_stage.funcs.config import *
 from utils.util_types import *
-
-from peewee import SqliteDatabase, Model, CharField
-import json
-from tqdm import tqdm
+from system import System
 
 
 class DB(DBScheme):
@@ -187,7 +187,10 @@ class DB(DBScheme):
             for d in data['data']:
                 for key in d:
                     if key not in ["constant", "data", "kwargs"]:
-                        raise Exception
+                        raise FormattingError(FormattingError.bad_format_msg)
+
+                System.validate_constant(d['constant'], throw=True)
+
                 if 'kwargs' in d:
                     func(
                         d["constant"],

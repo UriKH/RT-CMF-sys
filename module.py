@@ -9,8 +9,9 @@ from utils.logger import Logger
 
 
 class CatchErrorInModule:
-    def __init__(self, with_trace=True):
+    def __init__(self, with_trace: bool = True, fatal: bool = True):
         self.with_trace = with_trace
+        self.fatal = fatal
 
     def __call__(self, func):
         @functools.wraps(func)
@@ -22,10 +23,8 @@ class CatchErrorInModule:
                 if isinstance(mod, Module):
                     name = mod.name
                     version = mod.version
-                elif isclass(mod):
-                    name = mod.__name__
                 else:
-                    name = mod.__class__.__name__
+                    name = mod.__name__ if isclass(mod) else mod.__class__.__name__
 
                 Logger(
                     f'In module {name} [version: {version}] caught {e.__class__.__name__}: {e}',
@@ -33,6 +32,8 @@ class CatchErrorInModule:
                 ).log()
                 if self.with_trace:
                     traceback.print_exc()
+                if self.fatal:
+                    exit(1)
         return wrapper
 
 

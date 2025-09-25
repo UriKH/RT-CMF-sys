@@ -37,3 +37,6 @@ class Searchable(ABC):
     @abstractmethod
     def get_start_points(self) -> Set[Position]:
         raise NotImplementedError
+
+    def has_start_points(self) -> bool:
+        return len(self._start_points) > 0

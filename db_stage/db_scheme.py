@@ -22,8 +22,7 @@ class DBModScheme(Module):
         for db in dbs:
             if not issubclass(db.__class__, cls):
                 raise ValueError(f"Invalid DBModConnector instance: {db}")
-            res = db.execute(constants)
-            for const, l in db.format_result(res).items():
+            for const, l in db.format_result(db.execute(constants)).items():
                 results[const] = list(set(results.get(const, []) + l))
         return results
 

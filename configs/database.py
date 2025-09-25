@@ -8,4 +8,3 @@ from configs.db_usages import DBUsages
 USAGE = DBUsages.RETRIEVE_DATA      # execute DBs retrieve if retrieve is an option
 INPUT_FILE = None                   # the input file will be used when DBUsages.STORE_DATA
                                     #    (file will be parsed and uploaded to the DBs)
-CONSTANTS = ['pi']

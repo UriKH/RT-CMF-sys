@@ -2,6 +2,7 @@ from db_stage.DBs.db_v1.db import DB
 from db_stage.db_scheme import DBModScheme
 import db_stage.DBs.db_v1.config as v1_config
 import configs.database as db_config
+import configs.system as sys_config
 from db_stage.errors import MissingPath
 from utils.util_types import *
 from module import CatchErrorInModule
@@ -39,13 +40,17 @@ class DBMod(DBModScheme):
             raise ValueError(f"Invalid usage: {usage.name} "
                              f"usages are: {[usage.name for usage in v1_config.ALLOWED_USAGES]}")
         if constants is None:
-            constants = db_config.CONSTANTS
+            constants = sys_config.CONSTANTS
+        elif isinstance(constants, str):
+            constants = [constants]
         match usage:
             case db_config.DBUsages.STORE_THEN_RETRIEVE:
                 classify_usage(db_config.DBUsages.STORE_DATA)
                 return classify_usage(db_config.DBUsages.RETRIEVE_DATA)
-            case _:
+            case db_config.DBUsages.RETRIEVE_DATA:
                 return classify_usage(usage)
+            case _:
+                raise NotImplementedError(f"Invalid usage: {usage.name} ")
 
     def format_result(self, result) -> Dict[str, CMFlist]:
         return result

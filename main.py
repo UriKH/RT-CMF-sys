@@ -1,30 +1,4 @@
-# import os
-#
-# import configs.database
-# from db_stage.database import DBManager
-# from db_stage.funcs.pFq_fmt import pFq_formatter
-# from pprint import pprint
-# import sympy as sp
-
-# x0, x1 = sp.symbols('x0 x1')
-#
-#
-# def main():
-#     db = DBManager()
-#     try:
-#         db.set('pi', pFq_formatter(11, 1, sp.Rational(1, 2)))
-#         db.add_inspiration_function('pi', pFq_formatter(2, 2, sp.Rational(1, 2), [0, None, sp.Rational(1, 2), 0]))
-#
-#         print(db.get('pi'))
-#
-#         db.remove_inspiration_function('pi', pFq_formatter(2, 2, sp.Rational(1, 2), [0, None, sp.Rational(1, 2), 0]))
-#         print(db.get('pi'))
-#     finally:
-#         db.db.close()
-#         os.remove(configs.database.DEFAULT_PATH)
-
 import argparse
-
 
 
 def main(args=None):
@@ -54,7 +28,7 @@ def main(args=None):
 if __name__ == '__main__':
     from system import System
     from db_stage.DBs.db_v1.db_mod import DBMod
-    System([DBMod('./db_yay.db')]).run()
+    System([DBMod('./db_yay.db')]).run(constants='gamma')
     """
     we want:
     System("euler-gamma", DBMod, Analyzer, Searcher).load_and_run()
