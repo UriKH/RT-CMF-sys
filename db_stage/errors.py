@@ -30,6 +30,10 @@ class NoSuchInspirationFunction(DBError):
 
 # --------------------------- JSON Errors ---------------------------
 class JSONError(Exception):
+    pass
+
+
+class FormattingError(JSONError):
     bad_format_msg = """Invalid JSON file, please check the syntax of the file:
     {
         "command": <"update" or "replace" or "insert"">,
@@ -48,3 +52,7 @@ class JSONError(Exception):
     }
     """
     pass
+
+
+class MissingPath(JSONError):
+    default_msg = 'Missing path to JSON file'

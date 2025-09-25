@@ -4,7 +4,7 @@ from db_stage.DBs.db_v1.config import *
 from db_stage.db_scheme import DBScheme
 from db_stage.funcs.formatter import Formatter
 from db_stage.errors import *
-import db_stage.funcs as functions
+import db_stage.funcs as funcs
 from db_stage.funcs.config import *
 from utils.util_types import *
 
@@ -178,7 +178,7 @@ class DB(DBScheme):
         """
         data = None
         if not os.path.exists(path):
-            raise JSONError(f"File not found: {path}")
+            raise FormattingError(f"File not found: {path}")
 
         try:
             with open(path, "r") as f:
@@ -202,4 +202,4 @@ class DB(DBScheme):
         except TypeError as e:
             raise e
         except Exception:
-            raise JSONError(JSONError.bad_format_msg)
+            raise FormattingError(FormattingError.bad_format_msg)

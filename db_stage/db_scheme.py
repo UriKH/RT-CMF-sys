@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod
 
-from module import Module
+from module import Module, CatchErrorInModule
 from utils.util_types import *
 from db_stage.funcs.formatter import Formatter
+from configs import system
 
 
 class DBModScheme(Module):
     @classmethod
+    @CatchErrorInModule(with_trace=system.MODULE_ERROR_SHOW_TRACE)
     def aggregate(cls, dbs: List["DBModScheme"], constants: Optional[List[str] | str] = None) -> Dict[str, CMFlist]:
         """
         Aggregate results from multiple DBModConnector instances.
@@ -16,12 +18,12 @@ class DBModScheme(Module):
                             file in 'configs.database.py'.
         :return:
         """
-        # TODO: should this be in system?
         results = {}
         for db in dbs:
             if not issubclass(db.__class__, cls):
                 raise ValueError(f"Invalid DBModConnector instance: {db}")
-            for const, l in db.format_result(db.execute(constants)).items():
+            res = db.execute(constants)
+            for const, l in db.format_result(res).items():
                 results[const] = list(set(results.get(const, []) + l))
         return results
 

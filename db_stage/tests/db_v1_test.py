@@ -34,7 +34,6 @@ class TestDB(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         del TestDB.test_db
-        os.remove(TestDB.path)
 
     def test_db_main(self):
         # Test insert

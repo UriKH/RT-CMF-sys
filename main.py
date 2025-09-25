@@ -54,7 +54,7 @@ def main(args=None):
 if __name__ == '__main__':
     from system import System
     from db_stage.DBs.db_v1.db_mod import DBMod
-    System([(DBMod, './db_yay.db')]).run()
+    System([DBMod('./db_yay.db')]).run()
     """
     we want:
     System("euler-gamma", DBMod, Analyzer, Searcher).load_and_run()

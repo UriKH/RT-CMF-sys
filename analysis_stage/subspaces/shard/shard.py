@@ -74,8 +74,8 @@ class Shard(Searchable):
     #     :param trajectory:
     #     :return:
     #     """
-    #     # TODO: This function must be tested and visualized. This makes sense intuitively but I am not sure about it.
-    #     # TODO: finish documenting this
+    #     #  This function must be tested and visualized. This makes sense intuitively but I am not sure about it.
+    #     #  finish documenting this
     #     orientation = []
     #     start = Position([0] * len(trajectory))
     #     _, encoded = self.in_space(start)

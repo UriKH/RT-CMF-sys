@@ -16,15 +16,10 @@ class System:
     """
 
     def __init__(self,
-                 dbs: List[Tuple[Type[DBModScheme], str]],
+                 dbs: List[DBModScheme],
                  analyzers: List[Module] = None,
                  searchers: List[Module] = None):
-        self.dbs = []
-        for db in dbs:
-            if not issubclass(db[0], DBModScheme):
-                raise ValueError(f"Invalid DBModConnector instance: {db}")
-            self.dbs.append(db[0](db[1]))
-
+        self.dbs = dbs
         if sys_config.DB_USAGE != DBUsages.RETRIEVE_DATA and len(dbs) > 1:
             raise ValueError("Multiple DBModConnector instances are not allowed when not retrieving data from DBs.")
 
