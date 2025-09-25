@@ -1,6 +1,9 @@
 from utils.util_types import *
 from dataclasses import dataclass, field
 import mpmath as mp
+from ramanujantools import Matrix, Limit
+import pandas as pd
+from collections import UserDict
 
 
 @dataclass
@@ -14,18 +17,40 @@ class SearchVector:
 
 @dataclass
 class SearchData:
-    limit: mp.limit = None
-    delta_sequence: List = field(default=list)
-    delta: mp.mpf = None
-    eigen_values: List = field(default=list)
+    sv: SearchVector
+    limit: Limit = None
+    delta: float = None
+    eigen_values: Dict = field(default=dict)
     gcd_slope: mp.mpf = None
-    converges: bool = False
+    initial_values: Matrix = None
 
 
-class DataManager(Dict[SearchVector, Dict]):
+class DataManager(UserDict[SearchVector, SearchData]):
     def __init__(self, deep_search: bool = True):
         super().__init__()
-        self.deep_search = deep_search
+        # self.deep_search = deep_search
+
+    def is_valid(self):
+        return not self.bad_space
 
     def best_delta(self):
-        return None
+        df = self.as_df()
+        row = df.loc[df['delta'].idxmax()]
+        return row['delta'], row['sv']
+
+    def get_data(self):
+        return list(self.values())
+
+    def as_df(self):
+        rows = [
+            {
+                "sv": sv,
+                "delta": data.delta,
+                "limit": data.limit,
+                "eigen_values": data.eigen_values,
+                "gcd_slope": data.gcd_slope,
+                "initial_values": data.initial_values,
+            }
+            for sv, data in self.items()
+        ]
+        return pd.DataFrame(rows)

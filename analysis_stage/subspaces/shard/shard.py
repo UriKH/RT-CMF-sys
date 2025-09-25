@@ -1,6 +1,10 @@
+from typing import TYPE_CHECKING
+
 from analysis_stage.subspaces.searchable import Searchable
-from analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
 from utils.util_types import *
+
+if TYPE_CHECKING:
+    from analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
 
 
 class Shard(Searchable):
@@ -12,7 +16,7 @@ class Shard(Searchable):
 
     def __init__(self,
                  shard_id: ShardVec,
-                 extractor: ShardExtractor):
+                 extractor: "ShardExtractor"):
         """
         :param shard_id: A +-1's vector. Each index corresponds to a hyperplane,
         representing if all the points in the shard are above the hyperplane or blow it (+1 = above, -1 = below).
@@ -53,7 +57,7 @@ class Shard(Searchable):
         :param point: A tuple representing a coordinate in the lattice
         :return: True if the point is within the shard, else False.
         """
-        encoded, _ = ShardExtractor.encode_point(point, self.hps)
+        encoded, _ = self.extractor.encode_point(point, self.hps)
         return encoded == self.shard_id, encoded
 
     def trajectory_in_space(self, start: Position, trajectory: Position) -> bool:

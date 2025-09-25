@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from copy import copy
+import mpmath as mp
 
 from analysis_stage.subspaces.searchable import Searchable
 from search_stage.data_manager import DataManager
@@ -9,9 +10,11 @@ from utils.util_types import *
 class SearchMethod(ABC):
     def __init__(self,
                  space: Searchable,
+                 const: mp.mpf,
                  data_manager: DataManager = None,
                  share_data: bool = True):
         self.space = space
+        self.const = const
         self.best_delta = -1
         self.trajectories = set()
         self.start_points = set()

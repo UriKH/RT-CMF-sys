@@ -28,6 +28,11 @@ class ShardExtractor:
         self._feasible_points = [[0] * len(self.symbols)] if self._mono_shard else None
         self._shards = [Shard(tuple(), self)] if self._mono_shard else None
 
+    def __eq__(self, other):
+        if isinstance(other, ShardExtractor):
+            return self.cmf == other.cmf and self.shifts == other.shifts
+        raise NotImplementedError
+
     @staticmethod
     def __extract_shard_hyperplanes(cmf: CMF) -> Tuple[List[Plane], List[sp.Symbol]]:
         """
@@ -226,4 +231,4 @@ class ShardExtractor:
             if n == 0:
                 return 0
             return 1 if n > 0 else -1
-        return encoded := tuple(sign(plane.expression.subs(point)) for plane in hps), 0 not in encoded
+        return (encoded := tuple(sign(plane.expression.subs(point)) for plane in hps)), 0 not in encoded

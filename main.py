@@ -1,5 +1,7 @@
 import argparse
 
+from analysis_stage.analyzers.analyzer_v1.analyzer_mod import AnalyzerMod
+
 
 def main(args=None):
     print('Hello World!')
@@ -28,7 +30,7 @@ def main(args=None):
 if __name__ == '__main__':
     from system import System
     from db_stage.DBs.db_v1.db_mod import DBMod
-    System([DBMod('./db_yay.db')]).run(constants='gamma')
+    System([DBMod('./db_yay.db')], [AnalyzerMod]).run(constants='gamma')
     """
     we want:
     System("euler-gamma", DBMod, Analyzer, Searcher).load_and_run()

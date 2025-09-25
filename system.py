@@ -7,6 +7,7 @@ from db_stage.db_scheme import DBModScheme
 from utils.util_types import *
 import configs.system as sys_config
 import configs.database as db_config
+from analysis_stage.analysis_scheme import AnalyzerModScheme
 
 
 class System:
@@ -21,9 +22,10 @@ class System:
 
     def __init__(self,
                  dbs: List[DBModScheme],
-                 analyzers: List[Module] = None,
+                 analyzers: List[Type[AnalyzerModScheme]],
                  searchers: List[Module] = None):
         self.dbs = dbs
+        self.analyzers = analyzers  # TODO: we might want to allow multiple analyzers so check this later!
         if sys_config.DB_USAGE != DBUsages.RETRIEVE_DATA and len(dbs) > 1:
             raise ValueError("Multiple DBModConnector instances are not allowed when not retrieving data from DBs.")
 
@@ -40,6 +42,8 @@ class System:
 
         constants = self.get_constants(constants)
         cmf_data = DBModScheme.aggregate(self.dbs, list(constants.keys()))
+        for analyzer in self.analyzers:
+            analyzer(cmf_data).execute()
         """
         res = None
         for mod in self.mods:

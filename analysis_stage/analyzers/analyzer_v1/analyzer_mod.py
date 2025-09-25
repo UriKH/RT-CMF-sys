@@ -1,7 +1,8 @@
 from analysis_stage.analysis_scheme import AnalyzerModScheme
-from search_stage.serial.serial_searcher import SerialSearcher
-from analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
 from utils.util_types import *
+from system import System
+from analysis_stage.analyzers.analyzer_v1.analyzer import Analyzer
+from analysis_stage.subspaces.searchable import Searchable
 
 
 class AnalyzerMod(AnalyzerModScheme):
@@ -9,15 +10,14 @@ class AnalyzerMod(AnalyzerModScheme):
     The class represents the module for CMF analysis and shard search filtering and prioritization.
     """
 
-    def __init__(self, cmfs: CMFlist, constant: str):
+    def __init__(self, cmf_data: Dict[str, List[CMFtup]]):
         super().__init__(
             description='Module for CMF analysis and shard search filtering and prioritization',
             version='1'
         )
-        self.cmfs = cmfs
-        self.constant = constant
+        self.cmf_data = cmf_data
 
-    def execute(self):
+    def execute(self) -> Dict[str, List[Searchable]]:
         """
         The main function of the module. It performs the following steps:
         * Store all CMFs
@@ -26,31 +26,22 @@ class AnalyzerMod(AnalyzerModScheme):
         * search each shard for shallow search and get the data
         * prioritize for deep search
         """
-        priority_list = []
+        def merge_dicts(dict_list: List[Dict]) -> Dict:
+            merged = {}
+            for d in dict_list:
+                merged.update(d)
+            return merged
 
-        for cmf in self.cmfs:
-            extractor = ShardExtractor(*cmf)
-            extractor.populate_cmf_start_points(expand_anyway=True)
-            for shard in extractor.get_shards():
-                start = shard.choose_start_point()
-                searcher = SerialSearcher(shard)
-                searcher.generate_trajectories('sphere', 4, clear=False)
-                searcher.search(start, partial_search_factor=0.5)
-                data = searcher.get_data()
-                # TODO: when finishing the implementation of SerialSearcher update this too!
-                """
-                searcher = Serial(start, shard)
-                searcher.generate_trajectories()
-                    # searcher.generate_start_points() // Optional
-                searcher.search()
-                data = searcher.get_data()      <- we need to think about the data format here.
-                if data is not enough:
-                    searcher.enrich_trajectories()
-                    searcher.search()
-                if data['constant'] == self.constant:
-                    priority_list.append((shard, searcher))
-                """
-        """
-        priority_list = sorted(priority_list, key=lambda x: x[1].best_delta))
-        """
-        return priority_list
+        queues = {c: [] for c in self.cmf_data.keys()}
+        for constant, cmf_tups in self.cmf_data.items():
+            queue = []
+            for cmf, shift in cmf_tups:
+                analyzer = Analyzer(cmf, shift, System.get_const_as_mpf(constant))
+                dms = analyzer.search()
+                queue.append(analyzer.prioritize(dms))
+            merged = merge_dicts(queue)
+            queues[constant] = sorted(
+                merged.keys(),
+                key=lambda space: (-merged[space]['rank'], merged[space]['dim'])
+            )
+        return queues

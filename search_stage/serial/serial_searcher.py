@@ -1,10 +1,11 @@
 from analysis_stage.subspaces.searchable import Searchable
-from search_stage.data_manager import DataManager
+from search_stage.data_manager import *
 from search_stage.search_method import SearchMethod
 from utils.util_types import *
 from utils.point_generator import PointGenerator
 
 import sympy as sp
+import mpmath as mp
 import random
 
 
@@ -16,14 +17,16 @@ class SerialSearcher(SearchMethod):
 
     def __init__(self,
                  space: Searchable,
+                 constant: mp.mpf,
                  data_manager: DataManager = None,
                  share_data: bool = True):
         """
         Creates a searcher
         :param space: The space to search in.
         """
-        super().__init__(space, data_manager, share_data)
+        super().__init__(space, constant, data_manager, share_data)
         self.trajectories: Set[Position] = set()
+        self.data_manager = data_manager if data_manager else DataManager()
 
     def generate_trajectories(self,
                               method: str,
@@ -59,7 +62,7 @@ class SerialSearcher(SearchMethod):
 
     def search(self,
                starts: Optional[Position | List[Position]] = None,
-               partial_search_factor: float = 1):
+               partial_search_factor: float = 1) -> DataManager:
         if partial_search_factor > 1 or partial_search_factor < 0:
             raise ValueError("partial_search_factor must be between 0 and 1")
         if not starts:
@@ -72,25 +75,26 @@ class SerialSearcher(SearchMethod):
         trajectories = self.trajectories
         if partial_search_factor < 1:
             trajectories = set(self.pick_fraction(self.trajectories, partial_search_factor))
+
         for start in starts:
             for t in trajectories:
+                if SearchVector(start, t) in self.data_manager:
+                    continue
+
                 traj_m = self.space.cmf.trajectory_matrix(
                     trajectory=t,
                     start=start
                 )
-                l = traj_m.limit({n: 1}, 2000, {n: 0})
-                l.delta()
-                # TODO: implement search and data manager
-                """
-                limit = <COMPUTE LIMIT>     (This should be dependant on type1 / type2 or something doesn't it?)
-                delta = <COMPUTE DELTA>
-                eigen_values = <COMPUTE EIGEN VALUES>
-                rho = <COMPUTE RHO>
-                self.data_manager.add_data(start, trajectory, limit, delta, eigen_values, rho)
-                """
-                # t_mat = self.space.cmf.trajectory_matrix(t, start)
-                # limit = self.space.cmf.limit(t, 1000, start)
-                pass
+                lim = traj_m.limit({n: 1}, 2000, {n: 0})
+                delta = lim.delta(self.const)
+                ev = traj_m.eigenvals()
+                gcd_slope = traj_m.gcd_slope()
+                initial_values = lim.identify(self.const)
+
+                sv = SearchVector(start, t)
+                sd = SearchData(sv, lim, delta, ev, gcd_slope, initial_values)
+                self.data_manager[sv] = sd
+        return self.data_manager
 
     def get_data(self):
         """
