@@ -43,7 +43,7 @@ class System:
         constants = self.get_constants(constants)
         cmf_data = DBModScheme.aggregate(self.dbs, list(constants.keys()))
         for analyzer in self.analyzers:
-            analyzer(cmf_data).execute()
+            print(analyzer(cmf_data).execute())
         """
         res = None
         for mod in self.mods:

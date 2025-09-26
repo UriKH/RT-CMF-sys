@@ -70,7 +70,7 @@ class PointGenerator:
 
     @classmethod
     def limit_by_norm(cls, points: Set, norm: sp.Rational | int):
-        return {p for p in points if linalg.norm(np.array(p)) <= norm}
+        return {p for p in points if linalg.norm(np.array(p, dtype=float)) <= norm}
 
     @classmethod
     def __to_primitive_vec(cls, v: Tuple[int, ...]) -> Tuple[int, ...]:

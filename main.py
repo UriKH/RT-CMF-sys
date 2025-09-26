@@ -1,36 +1,15 @@
 import argparse
 
 from analysis_stage.analyzers.analyzer_v1.analyzer_mod import AnalyzerMod
+from system import System
+from db_stage.DBs.db_v1.db_mod import DBMod
 
 
-def main(args=None):
-    print('Hello World!')
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--interactive', type=int, default=1)
-    parsed_args = parser.parse_args(args)
-
-    if parsed_args.interactive:
-        """
-        * Ask user for a constant
-        * fetch
-        * ask user to choose analyzer based on configurations and allow configuration change
-        * run analysis
-        * visualize results to user and wait for action, ask confirmation to continue
-        * ask for deep search method (user can change configs)
-        * run deep search
-        """
-        pass
-    else:
-        """
-        Run the predefined system as given in the config file
-        """
-        pass
+def main():
+    System([DBMod('./db_yay.db')], [AnalyzerMod]).run(constants='pi')
 
 
 if __name__ == '__main__':
-    from system import System
-    from db_stage.DBs.db_v1.db_mod import DBMod
-    System([DBMod('./db_yay.db')], [AnalyzerMod]).run(constants='gamma')
     """
     we want:
     System("euler-gamma", DBMod, Analyzer, Searcher).load_and_run()
@@ -46,6 +25,4 @@ if __name__ == '__main__':
     * Searcher is a specific method implementation for trajectory search.
         (Here we can provide a list of search methods and execute all of them while checking cached trajectories)
     """
-    def func():
-        pass
     main()

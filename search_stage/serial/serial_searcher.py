@@ -45,9 +45,9 @@ class SerialSearcher(SearchMethod):
     @staticmethod
     def pick_fraction(lst: list | set, percentage: float) -> list:
         n = len(lst)
-        if n % int(1 / percentage) != 0:
+        if int(n / percentage) * percentage != n:
             raise ValueError("n must be divisible by k")
-        return random.sample(lst, int(n * percentage))
+        return random.sample(list(lst), int(n * percentage))
 
     def generate_start_points(self,
                               method: str,

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from tqdm import tqdm
 
 from module import Module, CatchErrorInModule
 from utils.util_types import *
@@ -19,7 +20,7 @@ class DBModScheme(Module):
         :return:
         """
         results = {}
-        for db in dbs:
+        for db in tqdm(dbs, desc=f'Extracting data from DBs ...'):
             if not issubclass(db.__class__, cls):
                 raise ValueError(f"Invalid DBModConnector instance: {db}")
             for const, l in db.format_result(db.execute(constants)).items():

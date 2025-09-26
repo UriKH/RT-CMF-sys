@@ -30,8 +30,10 @@ class DataManager(UserDict[SearchVector, SearchData]):
         super().__init__()
         # self.deep_search = deep_search
 
-    def is_valid(self):
-        return not self.bad_space
+    def is_valid(self) -> float:
+        df = self.as_df()
+        frac = 1 - df['initial_values'].isna().sum() / len(df['initial_values'])
+        return frac
 
     def best_delta(self):
         df = self.as_df()

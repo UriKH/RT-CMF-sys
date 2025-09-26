@@ -14,14 +14,33 @@ class Plane:
     def intersection_with_line_coeff(self, start: Position, direction: Position):
         if (dot := np.dot(self.normal, direction)) == 0:
             return None
-        return np.dot(self.point - start, direction) / dot
+        return np.dot(self.point - start.as_np_array(), direction) / dot
 
     @staticmethod
     def calc_normal(expr: sp.Expr, symbols: List[sp.Symbol]) -> Tuple[np.array, np.array]:
-        pt = [0] * len(symbols)
+        # pt = np.zeros(len(symbols), dtype=float)
+        # normal = np.zeros(len(symbols), dtype=float)
+        #
+        # for i, v in enumerate(symbols):
+        #     if (coeff := float(expr.coeff(v))) == 0:
+        #         continue
+        #     pt[i] = float(-expr.subs({v: 0}.update({for k, sym in enumerate(symbols) if k < i}))) / coeff
+        #     break
+        #
+        # for i, v in enumerate(symbols):
+        #     normal[i] = float(sp.diff(expr, v))
+        # return normal, pt
+        # Compute numeric normal
+        normal = np.array([float(expr.diff(v)) for v in symbols], dtype=float)
+
+        # Compute a numeric point on the plane
+        pt = np.zeros(len(symbols), dtype=float)
         for i, v in enumerate(symbols):
-            if (coeff := expr.coeff(v)) == 0:
-                continue
-            pt[i] = -expr.subs({v: 0}) / coeff
-            break
-        return np.array([sp.diff(expr, v) for v in symbols]), np.array(pt)
+            a = float(expr.coeff(v))
+            if a != 0:
+                # set all other variables to 0
+                c = float(expr.subs({sym: 0 for sym in symbols}))
+                pt[i] = -c / a
+                break
+
+        return normal, pt

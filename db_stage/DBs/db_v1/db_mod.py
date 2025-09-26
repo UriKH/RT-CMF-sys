@@ -28,7 +28,7 @@ class DBMod(DBModScheme):
                     return {constant: self.db.select(constant) for constant in constants}
                 case db_config.DBUsages.STORE_DATA:
                     try:
-                        if self.json_path:
+                        if not self.json_path:
                             raise MissingPath(MissingPath.default_msg)
                         self.db.from_json(self.json_path)
                     except Exception as e:

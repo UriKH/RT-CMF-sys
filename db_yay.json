@@ -1,5 +1,5 @@
 {
-    "command": "update",
+    "command": "insert",
     "data": [
         {
             "constant": "pi",

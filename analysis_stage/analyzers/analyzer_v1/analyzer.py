@@ -1,15 +1,14 @@
-from servicemanager import LogErrorMsg
-
 from analysis_stage.analysis_scheme import AnalyzerScheme
-from analysis_stage.errors import MissingStartPoints
 from analysis_stage.subspaces.searchable import Searchable
 from analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
 from search_stage.data_manager import DataManager, SearchVector
 from search_stage.serial.serial_searcher import SerialSearcher
 from utils.util_types import *
 from utils.logger import Logger
+import configs.analysis as config_analysis
 
 import mpmath as mp
+from tqdm import tqdm
 
 
 class Analyzer(AnalyzerScheme):
@@ -28,13 +27,14 @@ class Analyzer(AnalyzerScheme):
 
     def search(self, method: str = 'sphere', length: int = 4) -> Dict[Searchable, DataManager]:
         managers = {}
-        for shard in self.shards:
+        for shard in tqdm(self.shards, desc=f'Searching shards ...'):
             start = shard.choose_start_point()
             searcher = SerialSearcher(shard, self.constant)
             searcher.generate_trajectories(method, length, clear=False)
-            dm = searcher.search(start, partial_search_factor=0.5)   # This is not finished
-            if :
-            managers[shard] =
+            dm = searcher.search(start, partial_search_factor=0.5)
+
+            if dm.is_valid() >= config_analysis.IDENTIFY_THRESH:
+                managers[shard] = dm
         return managers
 
     def prioritize(self, managers: Dict[Searchable, DataManager], ranks=3) -> Dict[Searchable, Dict[str, int]]:

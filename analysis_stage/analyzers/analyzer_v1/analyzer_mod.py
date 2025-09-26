@@ -3,6 +3,10 @@ from utils.util_types import *
 from system import System
 from analysis_stage.analyzers.analyzer_v1.analyzer import Analyzer
 from analysis_stage.subspaces.searchable import Searchable
+from module import CatchErrorInModule
+import configs.system as sys_config
+
+from tqdm import tqdm
 
 
 class AnalyzerMod(AnalyzerModScheme):
@@ -17,6 +21,7 @@ class AnalyzerMod(AnalyzerModScheme):
         )
         self.cmf_data = cmf_data
 
+    @CatchErrorInModule(with_trace=sys_config.MODULE_ERROR_SHOW_TRACE)
     def execute(self) -> Dict[str, List[Searchable]]:
         """
         The main function of the module. It performs the following steps:
@@ -33,7 +38,7 @@ class AnalyzerMod(AnalyzerModScheme):
             return merged
 
         queues = {c: [] for c in self.cmf_data.keys()}
-        for constant, cmf_tups in self.cmf_data.items():
+        for constant, cmf_tups in tqdm(self.cmf_data.items(), desc='Analyzing constants and their CMFs'):
             queue = []
             for cmf, shift in cmf_tups:
                 analyzer = Analyzer(cmf, shift, System.get_const_as_mpf(constant))

@@ -33,7 +33,8 @@ class CatchErrorInModule:
                 if self.with_trace:
                     traceback.print_exc()
                 if self.fatal:
-                    exit(1)
+                    # exit(1)
+                    pass
         return wrapper
 
 

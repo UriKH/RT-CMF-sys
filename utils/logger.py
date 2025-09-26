@@ -1,3 +1,4 @@
+import functools
 import time
 import inspect
 from enum import Enum, auto
@@ -39,6 +40,7 @@ class Logger:
         :param func: the function to time
         :return: the wrapped function
         """
+        @functools.wraps(func)
         def wrapper(*args, **kwarg):
             start = time.time()
             result = func(*args, **kwarg)
@@ -79,3 +81,12 @@ class Logger:
                       f'-> exiting', end=self.end)
                 exit(1)
         return
+
+    @staticmethod
+    def log_exec(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            Logger(f'executing {func.__name__}', Logger.Levels.info).log()
+            return func(*args, **kwargs)
+        return wrapper
+
