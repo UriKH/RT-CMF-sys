@@ -1,11 +1,10 @@
-from time import sleep
-
 from utils.util_types import *
 from utils.plane import Plane
 from configs.analysis import *
 from ramanujantools.cmf import CMF
 from analysis_stage.subspaces.shard.shard import Shard
 from utils.point_generator import PointGenerator
+from utils.logger import Logger
 
 from itertools import product
 from functools import lru_cache
@@ -98,13 +97,8 @@ class ShardExtractor:
             :param greater_than_0: indicates the format
             :return: the row matching the expression and the constant in the scipy.linprog() format
             """
-            # coeffs = expr.as_coefficients_dict()
-            # sign = 1 if greater_than_0 else -1
-            # row = [-sign * coeffs.get(v, 0) for v in self.symbols]
-            # b = sign * coeffs.get(1, 0) - SHARD_EXTRACTOR_ERR
-            # return row, b
             coeffs = expr.as_coefficients_dict()
-            a = [coeffs.get(v, 0) for v in self.symbols]
+            a = [float(coeffs.get(v, 0)) for v in self.symbols]
             const = float(expr.as_independent(*self.symbols, as_Add=True)[0])
 
             if greater_than_0:
@@ -115,16 +109,7 @@ class ShardExtractor:
                 # a·x + c <= 0  ⇔  a·x <= -c
                 row = [coef for coef in a]
                 b = -const - SHARD_EXTRACTOR_ERR
-
             return row, b
-
-        # def is_interior_point(point, shard):
-        #     eps = SHARD_EXTRACTOR_ERR
-        #     for ineq, indicator in zip(self.hps, shard):
-        #         val = float(ineq.expression.subs({v: point[i] for i, v in enumerate(self.symbols)}))
-        #         if abs(val) < eps:
-        #             return False
-        #     return True
 
         def validate_shard(shard: ShardVec) -> Tuple[bool, List[int | float]]:
             """
@@ -136,20 +121,16 @@ class ShardExtractor:
             for ineq, indicator in zip(self.hps, shard):
                 row, rhs = expr_to_ineq(ineq.expression, indicator == 1)
                 A.append(row)
-                b.append(rhs + SHARD_EXTRACTOR_ERR)
-            res = linprog(c=list(np.zeros(len(self.symbols))), A_ub=A, b_ub=b, method="highs")
+                b.append(rhs)
+
+            bounds = [(None, None)] * len(self.symbols)
+            res = linprog(c=list(np.zeros(len(self.symbols))), bounds=bounds, A_ub=A, b_ub=b, method="highs")
 
             if res.success or res.status == 3:
                 # status == 3 means "unbounded" in HiGHS, which is fine
                 x = res.x.tolist() if res.x is not None else []
                 return True, x
-                # # verify solution actually satisfies inequalities with tolerance
-                # x = np.array(x, dtype=float)
-                # satisfied = all(np.dot(A[i], x) <= b[i] + SHARD_EXTRACTOR_ERR for i in range(len(A)))
-                # if satisfied:
-                #     return True, x.tolist()
             return False, []
-            # return res.success, res.x.tolist() if res.success else []
 
         if self._encoded_shards is not None:
             return self._encoded_shards
@@ -158,28 +139,15 @@ class ShardExtractor:
             self._encoded_shards = [tuple()]
             self._feasible_points = [[0] * len(self.symbols)]
             return self._encoded_shards
-        #
-        # prems = product([+1, -1], repeat=len(self.hps))
-        #
-        # shards_validated = [
-        #     (perm, val[1]) for perm in tqdm(prems, desc='computing shards') if (val := validate_shard(perm))[0]
-        # ]
-        # expr_to_ineq.cache_clear()
-        # self._encoded_shards = [perm for perm, point in shards_validated]
-        # self._feasible_points = [point for _, point in shards_validated]
-        # return self._encoded_shards
-        _encoded_shards = []
-        _feasible_points = []
 
-        for perm in tqdm(product([+1, -1], repeat=len(self.hps)), desc='computing shards'):
-            valid, point = validate_shard(perm)
-            if valid:
-                _encoded_shards.append(perm)
-                _feasible_points.append(point)
-
-        self._encoded_shards = _encoded_shards
-        self._feasible_points = _feasible_points
-        return _encoded_shards
+        prems = product([+1, -1], repeat=len(self.hps))
+        shards_validated = [
+            (perm, val[1]) for perm in tqdm(prems, desc='computing shards') if (val := validate_shard(perm))[0]
+        ]
+        expr_to_ineq.cache_clear()
+        self._encoded_shards = [perm for perm, point in shards_validated]
+        self._feasible_points = [point for _, point in shards_validated]
+        return self._encoded_shards
 
     def get_shards(self) -> List[Shard]:
         if self._shards is None:
@@ -253,14 +221,9 @@ class ShardExtractor:
                 if not valid:
                     continue
                 try:
-                    point_classification[encoded].append(Position(point))
-                except:
-                    # TODO: fix this!
-                    from pprint import pprint
-                    print(f'shards: {[shard_id for shard_id in self._encoded_shards]}')
-                    print(f'HPs: {[self.hps]}')
-                    print(f'failed to classify {point} encoded as: {encoded}')
-                    exit()
+                    point_classification[encoded].append(Position(point, self.symbols))
+                except KeyError:
+                    Logger('Shard was not detected! Stopping...', Logger.Levels.fatal).log()
 
             # make sure all shards have a start point
             for shard_id in point_classification:
@@ -287,53 +250,3 @@ class ShardExtractor:
             return 1 if n > 0 else -1
         point.set_axis(hps[0].symbols)
         return (encoded := tuple(sign(float(plane.expression.subs(point).evalf())) for plane in hps)), 0 not in encoded
-
-    def temp(self, bad):
-        import matplotlib.pyplot as plt
-        def plot_plane_point_normal(ax, point, normal, xlim=(-5, 5), ylim=(-5, 5), alpha=0.5, color='blue', label=None):
-            """
-            Plots a plane given a point and a normal vector in 3D
-            """
-            a, b, c = normal
-            x0, y0, z0 = point
-            # Plane equation: a*(x-x0) + b*(y-y0) + c*(z-z0) = 0
-            d = a * x0 + b * y0 + c * z0
-
-            xx, yy = np.meshgrid(np.linspace(*xlim, 10), np.linspace(*ylim, 10))
-            if c != 0:
-                zz = (d - a * xx - b * yy) / c
-            else:
-                # Vertical plane: just a flat z-plane
-                zz = np.full_like(xx, z0)
-
-            ax.plot_surface(xx, yy, zz, alpha=alpha, color=color)
-            if label:
-                ax.text2D(0.05, 0.95, label, transform=ax.transAxes)
-
-        # Example planes: a*x + b*y + c*z + d = 0
-        planes = [(np.array(p.point, dtype=float), np.array(p.normal, dtype=float)) for p in self.hps]
-
-        fig = plt.figure(figsize=(8, 6))
-        ax = fig.add_subplot(111, projection='3d')
-
-        # Plot planes
-        colors = ['red', 'green', 'blue', 'orange']
-        for i, (p, n) in enumerate(planes):
-            plot_plane_point_normal(ax, p, n, alpha=0.3, color=colors[i % 4], label=f'Plane {i + 1}')
-
-        # Plot point
-        ax.scatter(*bad, color='black', s=100, label='Test Point')
-
-        # Labels
-        ax.set_xlabel('X')
-        ax.set_ylabel('Y')
-        ax.set_zlabel('Z')
-        ax.set_xlim(-2, 4)
-        ax.set_ylim(-2, 4)
-        ax.set_zlim(-2, 4)
-        ax.legend()
-        ax.view_init(elev=20, azim=30)  # Adjust viewing angle
-        plt.show()
-
-        plt.waitforbuttonpress()
-        exit()

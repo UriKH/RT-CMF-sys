@@ -79,7 +79,11 @@ class Logger:
             case Logger.Levels.fatal:      # fatal error - red
                 print(f'{Logger.Colors.red}[ERROR] {self.msg} in {self.calling_function_name} \n\t'
                       f'-> exiting', end=self.end)
-                exit(1)
+                try:
+                    __IPYTHON__
+                    raise Exception('Stopping...')
+                except NameError:
+                    exit(1)
         return
 
     @staticmethod
