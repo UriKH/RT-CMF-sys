@@ -11,6 +11,7 @@ import db_stage.funcs as funcs
 from db_stage.funcs.config import *
 from utils.util_types import *
 from system import System
+from configs import system as sys_config
 
 
 class DB(DBScheme):
@@ -54,7 +55,7 @@ class DB(DBScheme):
         """
         data = self.__get_as_json(constant)
         cmfs = []
-        for func_json in tqdm((data if data else []), desc="Loading CMFs from DB"):
+        for func_json in tqdm((data if data else []), desc="Loading CMFs from DB", **sys_config.TQDM_CONFIG):
             try:
                 cmfs.append(
                     getattr(funcs, func_json[TYPE_ANNOTATE]).from_json(json.dumps(func_json[DATA_ANNOTATE])).to_cmf()

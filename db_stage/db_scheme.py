@@ -4,12 +4,12 @@ from tqdm import tqdm
 from module import Module, CatchErrorInModule
 from utils.util_types import *
 from db_stage.funcs.formatter import Formatter
-from configs import system
+from configs import system as sys_config
 
 
 class DBModScheme(Module):
     @classmethod
-    @CatchErrorInModule(with_trace=system.MODULE_ERROR_SHOW_TRACE)
+    @CatchErrorInModule(with_trace=sys_config.MODULE_ERROR_SHOW_TRACE)
     def aggregate(cls, dbs: List["DBModScheme"], constants: Optional[List[str] | str] = None) -> Dict[str, CMFlist]:
         """
         Aggregate results from multiple DBModConnector instances.
@@ -20,7 +20,7 @@ class DBModScheme(Module):
         :return:
         """
         results = dict()
-        for db in tqdm(dbs, desc=f'Extracting data from DBs ...'):
+        for db in tqdm(dbs, desc=f'Extracting data from DBs', **sys_config.TQDM_CONFIG):
             if not issubclass(db.__class__, cls):
                 raise ValueError(f"Invalid DBModConnector instance: {db}")
             for const, l in db.format_result(db.execute(constants)).items():

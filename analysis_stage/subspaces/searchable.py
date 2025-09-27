@@ -11,7 +11,7 @@ class Searchable(ABC):
         self.data = None
 
     @abstractmethod
-    def in_space(self, point: Position) -> bool:
+    def in_space(self, point: Position) -> Tuple[bool, Any]:
         raise NotImplementedError
 
     @abstractmethod

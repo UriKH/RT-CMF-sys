@@ -27,7 +27,7 @@ class SearchData:
 
 
 class DataManager(UserDict[SearchVector, SearchData]):
-    def __init__(self, deep_search: bool = True):
+    def __init__(self, deep_search: bool = True, empty=False):
         super().__init__()
         # self.deep_search = deep_search
 

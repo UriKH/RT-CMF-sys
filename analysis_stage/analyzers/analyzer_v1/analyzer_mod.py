@@ -38,7 +38,8 @@ class AnalyzerMod(AnalyzerModScheme):
             return merged
 
         queues = {c: [] for c in self.cmf_data.keys()}
-        for constant, cmf_tups in tqdm(self.cmf_data.items(), desc='Analyzing constants and their CMFs'):
+        for constant, cmf_tups in tqdm(self.cmf_data.items(), desc='Analyzing constants and their CMFs',
+                                       **sys_config.TQDM_CONFIG):
             queue = []
             for cmf, shift in cmf_tups:
                 analyzer = Analyzer(cmf, shift, System.get_const_as_mpf(constant))
@@ -47,6 +48,6 @@ class AnalyzerMod(AnalyzerModScheme):
             merged = merge_dicts(queue)
             queues[constant] = sorted(
                 merged.keys(),
-                key=lambda space: (-merged[space]['rank'], merged[space]['dim'])
+                key=lambda space: (-merged[space]['delta_rank'], merged[space]['dim'])
             )
         return queues

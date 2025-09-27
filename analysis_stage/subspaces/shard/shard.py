@@ -57,11 +57,11 @@ class Shard(Searchable):
         :param point: A tuple representing a coordinate in the lattice
         :return: True if the point is within the shard, else False.
         """
-        encoded, _ = self.extractor.encode_point(point, self.hps)
-        return encoded == self.shard_id, encoded
+        encoded, valid = self.extractor.encode_point(point, self.hps)
+        return encoded == self.shard_id and valid, encoded
 
     def trajectory_in_space(self, start: Position, trajectory: Position) -> bool:
-        if not self.in_space(start):
+        if not self.in_space(start)[0]:
             return False
         for plane in self.hps:
             d = plane.intersection_with_line_coeff(start, trajectory)
@@ -84,14 +84,14 @@ class Shard(Searchable):
     def clear_start_points(self) -> None:
         self._start_points.clear()
 
-    def choose_start_point(self) -> Position:
+    def choose_start_point(self) -> Position | None:
+        self.extractor.populate_cmf_start_points()
         if not self._start_points:
-            self.extractor.populate_cmf_start_points()
+            return None
         temp = self._start_points.pop()
         self._start_points.add(temp)
         return temp
 
     def get_start_points(self) -> Set[Position]:
-        if not self._start_points:
-            self.extractor.populate_cmf_start_points()
+        self.extractor.populate_cmf_start_points()
         return self._start_points

@@ -1,6 +1,10 @@
 from utils.util_types import *
 from utils.plane import Plane
 from configs.analysis import *
+from configs import (
+    system as sys_config
+)
+
 from ramanujantools.cmf import CMF
 from analysis_stage.subspaces.shard.shard import Shard
 from utils.point_generator import PointGenerator
@@ -12,6 +16,50 @@ from scipy.optimize import linprog
 import numpy as np
 from numpy import linalg
 from tqdm import tqdm
+from matplotlib import pyplot as plt
+
+
+def plot_points_3d(points, show_axis_lines=True):
+    """
+    Plot a set of 3D points with optional reference lines to the axes.
+
+    Parameters
+    ----------
+    points : array-like, shape (n, 3)
+        List of (x, y, z) points.
+    show_axis_lines : bool, optional
+        If True, draw dashed lines from each point to the axes.
+    """
+    points = np.array(points)
+    xs, ys, zs = points[:, 0], points[:, 1], points[:, 2]
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # scatter points
+    ax.scatter(xs, ys, zs, color='r', s=50)
+
+    if show_axis_lines:
+        for x, y, z in points:
+            # line to x-axis
+            ax.plot([x, x], [y, y], [0, z], 'k--', linewidth=0.8)
+            # line to y-axis
+            ax.plot([x, x], [0, y], [z, z], 'k--', linewidth=0.8)
+            # line to z-axis
+            ax.plot([0, x], [y, y], [z, z], 'k--', linewidth=0.8)
+
+    # set axis labels
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+
+    # equal aspect ratio for clarity
+    max_range = np.ptp([xs, ys, zs])
+    mid_x, mid_y, mid_z = np.mean(xs), np.mean(ys), np.mean(zs)
+    ax.set_xlim(mid_x - max_range / 2, mid_x + max_range / 2)
+    ax.set_ylim(mid_y - max_range / 2, mid_y + max_range / 2)
+    ax.set_zlim(mid_z - max_range / 2, mid_z + max_range / 2)
+    plt.show()
 
 
 class ShardExtractor:
@@ -28,6 +76,7 @@ class ShardExtractor:
         self._encoded_shards = [tuple()] if self._mono_shard else None
         self._feasible_points = [[0] * len(self.symbols)] if self._mono_shard else None
         self._shards = [Shard(tuple(), self)] if self._mono_shard else None
+        self._populated = False
 
     def __eq__(self, other):
         if isinstance(other, ShardExtractor):
@@ -170,9 +219,10 @@ class ShardExtractor:
             self._feasible_points = [[0] * len(self.symbols)]
             return self._encoded_shards
 
-        prems = product([+1, -1], repeat=len(self.hps))
+        prems = list(product([+1, -1], repeat=len(self.hps)))
         shards_validated = [
-            (perm, val[1]) for perm in tqdm(prems, desc='Computing shards') if (val := validate_shard(perm))[0]
+            (perm, val[1]) for perm in tqdm(prems, desc='Computing shards', **sys_config.TQDM_CONFIG)
+            if (val := validate_shard(perm))[0]
         ]
         expr_to_ineq.cache_clear()
         self._encoded_shards = [perm for perm, point in shards_validated]
@@ -187,11 +237,11 @@ class ShardExtractor:
     def compute_feasible_points(self) -> Tuple[Dict[ShardVec, List[Position]], List[Position]]:
         shards = self.get_shards()
         point_classification = {shard_id: [] for shard_id in self._encoded_shards}
-        shifted = [list(np.floor(np.array(p) + np.array(self.shifts.as_list()))) for p in self._feasible_points]
+        shifted = [list(np.floor(np.array(p)) + np.array(self.shifts.as_list())) for p in self._feasible_points]
         valid_shifted = []
         for shard, p in zip(shards, shifted):
             p = Position([int(coord) for coord in p], self.symbols)
-            if shard.in_space(p):
+            if shard.in_space(p)[0]:
                 point_classification[shard.shard_id].append(p)
                 valid_shifted.append(p)
         return point_classification, valid_shifted
@@ -215,6 +265,9 @@ class ShardExtractor:
         :param start_method: The method to use for generating starting points
             (cube / sphere of a specified radius computed internally)
         """
+        if self._populated:
+            return
+        self._populated = True
         shards = self.get_shards()
         point_classification = {shard_id: [] for shard_id in self._encoded_shards}
         expansion_factor = np.sqrt(len(self.symbols))
@@ -234,18 +287,24 @@ class ShardExtractor:
 
         first_iteration = True
         r = (max([linalg.norm(p.as_list()) for p in valid_shifted]) if valid_shifted else 0) + expansion_factor
-        points = PointGenerator.generate_via_shape(int(r), len(self.symbols), start_method, as_primitive=False)
+        curr_points = PointGenerator.generate_via_shape(int(r), len(self.symbols), start_method, as_primitive=False)
+        total_points = curr_points.copy()
 
         # Find possible start points within a cube
+        expanded = 1
         while expand_search:
             expand_search = False
 
             if not first_iteration:
-                points = PointGenerator.expand_set(points, signed_expansion=True, norm=r)
+                if expanded > MAX_EXPANSIONS:
+                    break
+                curr_points, total_points = PointGenerator.expand_set(curr_points, signed_expansion=True)
+                Logger(f'expanded search for start points {expanded}', Logger.Levels.info).log()
+                expanded += 1
             first_iteration = False
 
             # classify points
-            for point in points:
+            for point in curr_points:
                 point = Position(list(point), self.symbols) + self.shifts
                 encoded, valid = self.encode_point(point, self.hps)
                 if not valid:
@@ -261,6 +320,8 @@ class ShardExtractor:
                     r += expansion_factor
                     expand_search = True
                     break
+            curr_points = total_points.copy()
+
         for shard in shards:
             if clear_original:
                 shard.clear_start_points()

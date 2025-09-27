@@ -12,7 +12,7 @@ class PointGenerator:
 
     @classmethod
     def generate_cube(cls, edge_len: int, dim: int, as_primitive=False) -> Set[Tuple[int, ...]]:
-        points = itertools.product(range(-edge_len, edge_len + 1), repeat=dim)
+        points = list(itertools.product(range(-edge_len, edge_len + 1), repeat=dim))
         if as_primitive:
             return {cls.__to_primitive_vec(p) for p in points}
         return set(points)
@@ -54,19 +54,25 @@ class PointGenerator:
                    signed_expansion: bool = True,
                    norm: sp.Rational | int = None,
                    as_primitive=False):
-        new_set = points.copy()
+        new_set = set()
+
+        permutations = list(product(
+            range(-expansion_factor if signed_expansion else 0, expansion_factor + 1),
+            repeat=len(next(iter(points)))
+        ))
+
         for point in points:
-            permutations = product(
-                range(-expansion_factor if signed_expansion else 0, expansion_factor + 1),
-                repeat=len(point)
-            )
-            to_update = {tuple(list(np.array(point, dtype=int) + np.array(perm, dtype=int))) for perm in permutations}
+            to_update = set()
+            for perm in permutations:
+                p = tuple(int(c) for c in (np.array(point, dtype=int) + np.array(list(perm), dtype=int)))
+                to_update.add(p)
+
             if as_primitive:
                 to_update = {cls.__to_primitive_vec(p) for p in to_update}
             if norm is not None:
                 to_update = cls.limit_by_norm(to_update, norm)
-            new_set.update(to_update)
-        return new_set
+            new_set.update(to_update - points)
+        return new_set, new_set.union(points)
 
     @classmethod
     def limit_by_norm(cls, points: Set, norm: sp.Rational | int):

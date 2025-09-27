@@ -8,7 +8,8 @@ from utils.logger import Logger
 import sympy as sp
 import mpmath as mp
 import random
-from LIReC.db.access import db
+
+from configs import analysis as config_analysis
 
 
 class SerialSearcher(SearchMethod):
@@ -40,6 +41,12 @@ class SerialSearcher(SearchMethod):
             self.trajectories.clear()
         trajectories = PointGenerator.generate_via_shape(length, self.space.dim, method, True, random, n)
         arbitrary_start = self.space.choose_start_point()
+        if not arbitrary_start:
+            Logger(
+                f'Could not generate trajectories. Could not provide a valid start point', Logger.Levels.warning,
+                condition=config_analysis.WARN_ON_EMPTY_SHARDS
+            ).log(msg_prefix='\n')
+            return
         self.trajectories.update({
             Position(t, self.space.symbols) for t in trajectories
             if self.space.trajectory_in_space(arbitrary_start, Position(t, self.space.symbols))
@@ -61,7 +68,7 @@ class SerialSearcher(SearchMethod):
         starts = [
             Position(s, self.space.symbols) for s in
             PointGenerator.generate_via_shape(length, self.space.dim, method, False, random, n)
-            if self.space.in_space(Position(s, self.space.symbols))
+            if self.space.in_space(Position(s, self.space.symbols))[0]
         ]
         self.space.add_start_points(starts, filtering=True)
 
@@ -73,6 +80,12 @@ class SerialSearcher(SearchMethod):
             raise ValueError("partial_search_factor must be between 0 and 1")
         if not starts:
             starts = self.space.choose_start_point()
+            if starts is None:
+                Logger(
+                    f'Could not provide a valid start point automatically', Logger.Levels.warning,
+                    condition=config_analysis.WARN_ON_EMPTY_SHARDS
+                ).log()
+                return DataManager(empty=True)
         if isinstance(starts, Position):
             starts = [starts]
 
@@ -104,9 +117,9 @@ class SerialSearcher(SearchMethod):
                     Logger(
                         f'Exception {e.__class__.__name__} encountered while calculating limit '
                         f'(trajectory ignored in stats): '
-                        f'matrix {traj_m}, start: {start}, trajectory: {t}',
+                        f'\n> start: {start}\n> trajectory: {t}\n> matrix {traj_m}',
                         Logger.Levels.exception
-                    ).log()
+                    ).log(msg_prefix='\n')
                     continue
                 errors = {}
                 try:
