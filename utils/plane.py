@@ -45,3 +45,6 @@ class Plane:
                 break
 
         return normal, pt
+
+    def __hash__(self):
+        return hash((self.expression, tuple(self.symbols)))

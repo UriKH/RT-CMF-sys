@@ -96,3 +96,46 @@ def visualize(hyperplanes: List[Plane], arrows_from: Position, arrows_to: List[P
     ax.set_zlabel("Z")
     ax.set_box_aspect([1, 1, 1])
     plt.show()
+
+
+def plot_points_3d(points, show_axis_lines=True):
+    """
+    Plot a set of 3D points with optional reference lines to the axes.
+
+    Parameters
+    ----------
+    points : array-like, shape (n, 3)
+        List of (x, y, z) points.
+    show_axis_lines : bool, optional
+        If True, draw dashed lines from each point to the axes.
+    """
+    points = np.array(points)
+    xs, ys, zs = points[:, 0], points[:, 1], points[:, 2]
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # scatter points
+    ax.scatter(xs, ys, zs, color='r', s=50)
+
+    if show_axis_lines:
+        for x, y, z in points:
+            # line to x-axis
+            ax.plot([x, x], [y, y], [0, z], 'k--', linewidth=0.8)
+            # line to y-axis
+            ax.plot([x, x], [0, y], [z, z], 'k--', linewidth=0.8)
+            # line to z-axis
+            ax.plot([0, x], [y, y], [z, z], 'k--', linewidth=0.8)
+
+    # set axis labels
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+
+    # equal aspect ratio for clarity
+    max_range = np.ptp([xs, ys, zs])
+    mid_x, mid_y, mid_z = np.mean(xs), np.mean(ys), np.mean(zs)
+    ax.set_xlim(mid_x - max_range / 2, mid_x + max_range / 2)
+    ax.set_ylim(mid_y - max_range / 2, mid_y + max_range / 2)
+    ax.set_zlim(mid_z - max_range / 2, mid_z + max_range / 2)
+    plt.show()
