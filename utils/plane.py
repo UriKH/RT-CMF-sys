@@ -12,9 +12,10 @@ class Plane:
         self.normal, self.point = self.calc_normal(self.expression, self.symbols)
 
     def intersection_with_line_coeff(self, start: Position, direction: Position):
-        if (dot := np.dot(self.normal, direction)) == 0:
+        # TODO: need to normalize things here
+        if abs(dot := np.dot(self.normal, direction.as_np_array())) <= 1e-10:
             return None
-        return np.dot(self.point - start.as_np_array(), direction) / dot
+        return np.dot(self.point - start.as_np_array(), self.normal) / dot
 
     @staticmethod
     def calc_normal(expr: sp.Expr, symbols: List[sp.Symbol]) -> Tuple[np.array, np.array]:

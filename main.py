@@ -6,7 +6,7 @@ from db_stage.DBs.db_v1.db_mod import DBMod
 
 
 def main():
-    System([DBMod('./db_yay.db')], [AnalyzerMod]).run(constants='pi')
+    System([DBMod('./db_yay.db', './db_yay.json')], [AnalyzerMod]).run(constants='pi')
 
 
 if __name__ == '__main__':

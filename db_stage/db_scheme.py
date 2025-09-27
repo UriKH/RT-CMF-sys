@@ -19,7 +19,7 @@ class DBModScheme(Module):
                             file in 'configs.database.py'.
         :return:
         """
-        results = {}
+        results = dict()
         for db in tqdm(dbs, desc=f'Extracting data from DBs ...'):
             if not issubclass(db.__class__, cls):
                 raise ValueError(f"Invalid DBModConnector instance: {db}")

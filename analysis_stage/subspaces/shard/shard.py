@@ -65,29 +65,9 @@ class Shard(Searchable):
             return False
         for plane in self.hps:
             d = plane.intersection_with_line_coeff(start, trajectory)
-            if d is not None and d >= 0:
+            if d is not None and d >= -1e-4:    # keep safe distance
                 return False
         return True
-
-    # def get_trajectory_orientation(self, trajectory: Position) -> ShardVec:
-    #     """
-    #     Encode the validity of the trajectory with respect to the shard hyperplanes.
-    #     If the trajectory points to a valid direction given that the start point will be inside the Shard
-    #     the encoding of the Shard will be returned.
-    #     Otherwise, the encoding of the correct shard matching the trajectory will be returned.
-    #     :param trajectory:
-    #     :return:
-    #     """
-    #     #  This function must be tested and visualized. This makes sense intuitively but I am not sure about it.
-    #     #  finish documenting this
-    #     orientation = []
-    #     start = Position([0] * len(trajectory))
-    #     _, encoded = self.in_space(start)
-    #     for i, hp in enumerate(self.hps):
-    #         d = hp.intersection_with_line_coeff(start.as_sp_matrix(), trajectory.as_sp_matrix())
-    #         sign = -1 if d is None or d < 0 else 1
-    #         orientation.append(sign * self.shard_id[i])
-    #     return tuple(orientation)
 
     def add_start_points(self, start_points: List[Position] | Position, filtering=True) -> None:
         if isinstance(start_points, Position):

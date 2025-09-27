@@ -23,6 +23,7 @@ class SearchData:
     eigen_values: Dict = field(default=dict)
     gcd_slope: mp.mpf = None
     initial_values: Matrix = None
+    errors: Dict[str, Exception] = None
 
 
 class DataManager(UserDict[SearchVector, SearchData]):
@@ -32,6 +33,8 @@ class DataManager(UserDict[SearchVector, SearchData]):
 
     def is_valid(self) -> float:
         df = self.as_df()
+        if df is None:
+            return 1
         frac = 1 - df['initial_values'].isna().sum() / len(df['initial_values'])
         return frac
 
@@ -52,6 +55,7 @@ class DataManager(UserDict[SearchVector, SearchData]):
                 "eigen_values": data.eigen_values,
                 "gcd_slope": data.gcd_slope,
                 "initial_values": data.initial_values,
+                "errors": data.errors,
             }
             for sv, data in self.items()
         ]

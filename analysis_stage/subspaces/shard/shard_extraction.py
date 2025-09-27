@@ -35,6 +35,19 @@ class ShardExtractor:
         raise NotImplementedError
 
     @staticmethod
+    def __proportional(expr1: sp.Expr, expr2: sp.Expr, symbols: List[sp.Symbol]) -> bool:
+        # Build full coefficient vectors including the constant term
+        coeffs1 = [expr1.coeff(s) for s in symbols] + [expr1.as_independent(*symbols, as_Add=True)[0]]
+        coeffs2 = [expr2.coeff(s) for s in symbols] + [expr2.as_independent(*symbols, as_Add=True)[0]]
+
+        v1, v2 = sp.Matrix(coeffs1), sp.Matrix(coeffs2)
+
+        # Handle zero vector corner cases
+        if v1.is_zero or v2.is_zero:
+            return v1.is_zero and v2.is_zero
+        return sp.Matrix.hstack(v1, v2).rank() == 1
+
+    @staticmethod
     def __extract_shard_hyperplanes(cmf: CMF) -> Tuple[List[Plane], List[sp.Symbol]]:
         """
         Extract the CMF's hyperplanes that form the shards
@@ -80,7 +93,24 @@ class ShardExtractor:
             data = data.union(z_det.union(undef))
         data = unfreeze(data)
         symbols = list(cmf.matrices.keys())
-        return [Plane(exp1 - exp2, symbols) for exp1, exp2 in data], symbols
+
+        Logger('symbols for this CMF: {} '.format(symbols), Logger.Levels.info).log()
+
+        planes = [Plane(exp1 - exp2, symbols) for exp1, exp2 in data]
+        filtered = [planes[-1]]
+
+        # make sure planes are uniuqe
+        i = len(planes) - 2
+        while i >= 0:
+            append = True
+            for plane in filtered:
+                if ShardExtractor.__proportional(planes[i].expression, plane.expression, plane.symbols):
+                    append = False
+                    break
+            if append:
+                filtered.append(planes[i])
+            i -= 1
+        return filtered, symbols
 
     def get_encoded_shards(self) -> List[ShardVec]:
         """
@@ -142,7 +172,7 @@ class ShardExtractor:
 
         prems = product([+1, -1], repeat=len(self.hps))
         shards_validated = [
-            (perm, val[1]) for perm in tqdm(prems, desc='computing shards') if (val := validate_shard(perm))[0]
+            (perm, val[1]) for perm in tqdm(prems, desc='Computing shards') if (val := validate_shard(perm))[0]
         ]
         expr_to_ineq.cache_clear()
         self._encoded_shards = [perm for perm, point in shards_validated]
@@ -160,7 +190,7 @@ class ShardExtractor:
         shifted = [list(np.floor(np.array(p) + np.array(self.shifts.as_list()))) for p in self._feasible_points]
         valid_shifted = []
         for shard, p in zip(shards, shifted):
-            p = Position(p, self.symbols)
+            p = Position([int(coord) for coord in p], self.symbols)
             if shard.in_space(p):
                 point_classification[shard.shard_id].append(p)
                 valid_shifted.append(p)
@@ -216,14 +246,14 @@ class ShardExtractor:
 
             # classify points
             for point in points:
-                point = list(np.array(point) + np.array(self.shifts.as_list()))
-                encoded, valid = self.encode_point(Position(point, self.symbols), self.hps)
+                point = Position(list(point), self.symbols) + self.shifts
+                encoded, valid = self.encode_point(point, self.hps)
                 if not valid:
                     continue
                 try:
-                    point_classification[encoded].append(Position(point, self.symbols))
+                    point_classification[encoded].append(point)
                 except KeyError:
-                    Logger('Shard was not detected! Stopping...', Logger.Levels.fatal).log()
+                    Logger('Shard was not detected! Stopping... :(', Logger.Levels.fatal).log()
 
             # make sure all shards have a start point
             for shard_id in point_classification:
@@ -248,5 +278,6 @@ class ShardExtractor:
             if abs(n) <= 1e-4:
                 return 0
             return 1 if n > 0 else -1
+
         point.set_axis(hps[0].symbols)
         return (encoded := tuple(sign(float(plane.expression.subs(point).evalf())) for plane in hps)), 0 not in encoded

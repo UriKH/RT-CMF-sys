@@ -60,7 +60,7 @@ class PointGenerator:
                 range(-expansion_factor if signed_expansion else 0, expansion_factor + 1),
                 repeat=len(point)
             )
-            to_update = {tuple(list(np.array(point) + np.array(perm))) for perm in permutations}
+            to_update = {tuple(list(np.array(point, dtype=int) + np.array(perm, dtype=int))) for perm in permutations}
             if as_primitive:
                 to_update = {cls.__to_primitive_vec(p) for p in to_update}
             if norm is not None:
@@ -77,7 +77,7 @@ class PointGenerator:
         g = sp.gcd(v)
         if g == 0:
             return v
-        return tuple(x // g for x in v)
+        return tuple(int(x // g) for x in v)
 
     @classmethod
     def generate_hyperplane(cls, n: int, dim: int, hp: sp.Expr):

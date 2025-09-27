@@ -23,8 +23,29 @@ class Position(rt_pos.Position):
             used in conjunction with their positions from the `pos` parameter.
             Symbols need to align with the positions provided for accurate mapping.
         """
-        mapping = self.__build_mapping(pos, symbols)
+        mapping, symbols = self.__build_mapping(pos, symbols)
         super().__init__(mapping)
+        self.ordered = [(c, sym) for c, sym in zip(pos, symbols)]
+        for c, sym in self.ordered:
+            if not isinstance(c, int | sp.Rational):
+                raise ValueError('FuCKKKKKKK')
+
+    def copy(self):
+        return Position(list(self.values()), list(self.keys()))
+
+    def __add__(self, other):
+        if not isinstance(other, Position):
+            raise NotImplementedError
+        new = self.copy()
+        new += other
+        return new
+
+    def __iadd__(self, other: dict):
+        if not isinstance(other, Position):
+            raise NotImplementedError
+        for key in other:
+            self[key] = self.get(key, 0) + other[key]
+        return self
 
     @staticmethod
     def __build_mapping(pos: List[sp.Expr | None], symbols: List[sp.Symbol] | None):
@@ -36,14 +57,14 @@ class Position(rt_pos.Position):
         for i, pos_elem in enumerate(pos):
             if pos_elem is None:
                 pos[i] = -1
-        return dict(zip(symbols, pos))
+        return dict(zip(symbols, pos)), symbols
 
     def set_axis(self, symbols: List[sp.Symbol]) -> None:
         """
         Sets the symbols for the position (match each coordinate to its symbol).
         :param symbols: List of symbols to match the position to.
         """
-        mapping = self.__build_mapping(list(self.values()), symbols)
+        mapping, _ = self.__build_mapping(list(self.values()), symbols)
         self.clear()
         self.update(mapping)
 
@@ -51,7 +72,8 @@ class Position(rt_pos.Position):
         """
         :return: The position as a list of sympy expressions.
         """
-        return list(self.values())
+        return [c for c, _ in self.ordered]
+        # return list(self.values())
 
     def as_sp_matrix(self):
         return sp.Matrix(self.as_list())

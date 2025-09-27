@@ -1,3 +1,5 @@
+from time import sleep
+
 from analysis_stage.analysis_scheme import AnalyzerScheme
 from analysis_stage.subspaces.searchable import Searchable
 from analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
@@ -33,8 +35,12 @@ class Analyzer(AnalyzerScheme):
             searcher.generate_trajectories(method, length, clear=False)
             dm = searcher.search(start, partial_search_factor=0.5)
 
-            if dm.is_valid() >= config_analysis.IDENTIFY_THRESH:
+            identified = dm.is_valid()
+            Logger(f'Identified {identified * 100}% of trajectories, best delta: {dm.best_delta()[0]}',
+                   Logger.Levels.info).log()
+            if identified >= config_analysis.IDENTIFY_THRESH:
                 managers[shard] = dm
+            sleep(0.1)
         return managers
 
     def prioritize(self, managers: Dict[Searchable, DataManager], ranks=3) -> Dict[Searchable, Dict[str, int]]:
