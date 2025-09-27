@@ -60,7 +60,7 @@ class Shard(Searchable):
         encoded, valid = self.extractor.encode_point(point, self.hps)
         return encoded == self.shard_id and valid, encoded
 
-    def trajectory_in_space(self, start: Position, trajectory: Position) -> bool:
+    def trajectory_in_space(self, trajectory: Position, start: Position) -> bool:
         if not self.in_space(start)[0]:
             return False
         for plane in self.hps:

@@ -13,7 +13,8 @@ class SearchMethod(ABC):
                  const: mp.mpf,
                  use_LIReC: bool,
                  data_manager: DataManager = None,
-                 share_data: bool = True):
+                 share_data: bool = True,
+                 deep_search: bool = True):
         self.space = space
         self.const = const
         self.use_LIReC = use_LIReC
@@ -21,6 +22,7 @@ class SearchMethod(ABC):
         self.trajectories = set()
         self.start_points = set()
         self.data_manager = data_manager if not share_data else copy(data_manager)
+        self.deep_search = deep_search
 
     @abstractmethod
     def generate_trajectories(self, method: str, length: int | sp.Rational, n: Optional[int] = None):

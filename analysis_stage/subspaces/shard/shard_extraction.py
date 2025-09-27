@@ -1,4 +1,3 @@
-from CMFvisual.analysis import visualize
 from utils.util_types import *
 from utils.plane import Plane
 from configs.analysis import *
@@ -8,6 +7,7 @@ from configs import (
 
 from ramanujantools.cmf import CMF
 from analysis_stage.subspaces.shard.shard import Shard
+from analysis_stage.subspaces.shard.config import *
 from utils.point_generator import PointGenerator
 from utils.logger import Logger
 
@@ -17,7 +17,7 @@ from scipy.optimize import linprog
 import numpy as np
 from numpy import linalg
 from tqdm import tqdm
-import multiprocessing as mproc
+from concurrent.futures import ProcessPoolExecutor
 
 
 class ShardExtractor:
@@ -28,6 +28,7 @@ class ShardExtractor:
         self.const_name = const_name
         self.cmf: CMF = cmf
         self.shifts: Position = shifts
+        self.pool = ProcessPoolExecutor() if PARALLEL_SHARD_ANALYSIS else None
         self.hps, self.symbols = self.__extract_shard_hyperplanes(cmf)
         Logger(
             f'\n* symbols for this CMF: {self.symbols}\n* Shifts: {self.shifts}', Logger.Levels.info
@@ -134,8 +135,8 @@ class ShardExtractor:
             return True, x
         return False, []
 
-    @staticmethod
-    def __extract_shard_hyperplanes(cmf: CMF) -> Tuple[List[Plane], List[sp.Symbol]]:
+    @Logger('').time_it
+    def __extract_shard_hyperplanes(self, cmf: CMF) -> Tuple[List[Plane], List[sp.Symbol]]:
         """
         Extract the CMF's hyperplanes that form the shards
         :param cmf: The CMF to analyze
@@ -152,9 +153,12 @@ class ShardExtractor:
             new_lst = set(tuple(tup) for tup in clean)
             return list(new_lst)  # type checker shouts, but this is correct!
 
-        if PARALLEL:
-            with mproc.Pool() as pool:
-                results = pool.map(ShardExtractor._clac_hyperplanes_worker, cmf.matrices.values())
+        if PARALLEL_SHARD_ANALYSIS:
+            results = self.pool.map(
+                ShardExtractor._clac_hyperplanes_worker,
+                cmf.matrices.values(),
+                chunksize=HP_CALC_CHUNK
+            )
             data = set().union(*results)
         else:
             data = set()
@@ -179,6 +183,7 @@ class ShardExtractor:
             i -= 1
         return filtered, symbols
 
+    @Logger('').time_it
     def get_encoded_shards(self) -> List[ShardVec]:
         """
         Compute the Shards as Shard vector identifiers
@@ -194,12 +199,12 @@ class ShardExtractor:
 
         perms = list(product([+1, -1], repeat=len(self.hps)))
 
-        if PARALLEL:
-            with mproc.Pool() as pool:
-                vals = pool.map(
-                    partial(ShardExtractor._validate_shard_worker, hps=self.hps, symbols=self.symbols),
-                    perms
-                )
+        if PARALLEL_SHARD_ANALYSIS:
+            vals = self.pool.map(
+                partial(ShardExtractor._validate_shard_worker, hps=self.hps, symbols=self.symbols),
+                perms,
+                chunksize=SHARD_VALIDATION_CHUNK
+            )
             shards_validated = [(perm, val[1]) for perm, val in zip(perms, vals) if val[0]]
         else:
             shards_validated = [

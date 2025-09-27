@@ -53,7 +53,7 @@ class Analyzer(AnalyzerScheme):
                     condition=config_analysis.WARN_ON_EMPTY_SHARDS
                 ).log(msg_prefix='\n')
                 continue
-            searcher = SerialSearcher(shard, self.constant, use_LIReC=config_analysis.USE_LIReC)
+            searcher = SerialSearcher(shard, self.constant, use_LIReC=config_analysis.USE_LIReC, deep_search=False)
             searcher.generate_trajectories(method, length, clear=False)
             dm = searcher.search(start, partial_search_factor=0.5)
 

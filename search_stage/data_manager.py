@@ -21,7 +21,7 @@ class SearchData:
     limit: Limit = None
     delta: float = None
     eigen_values: Dict = field(default=dict)
-    gcd_slope: mp.mpf = None
+    gcd_slope: mp.mpf | float = None
     initial_values: Matrix = None
     LIReC_identify: bool = False
     errors: Dict[str, Exception] = None

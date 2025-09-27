@@ -43,11 +43,15 @@ class Logger:
         @functools.wraps(func)
         def wrapper(*args, **kwarg):
             start = time.time()
+            # Logger(f'executing {func.__name__}', self.level).log(msg_prefix='\n')
             result = func(*args, **kwarg)
             end = time.time()
 
             if round(end - start, 3) != 0:
-                Logger(self.msg + f' - in {(end - start):.3f} seconds', self.level).log()
+                Logger(
+                    self.msg + f'Call to "{func.__name__}" finished in {(end - start):.3f} seconds',
+                    self.level
+                ).log(msg_prefix='\n')
             return result
         return wrapper
 

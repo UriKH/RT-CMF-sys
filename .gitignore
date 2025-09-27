@@ -7,4 +7,9 @@ __pycache__/
 # Virtual environments
 .venv/
 venv/
+
+# Other
 local_dev/
+*.db
+*.json
+*.cache
