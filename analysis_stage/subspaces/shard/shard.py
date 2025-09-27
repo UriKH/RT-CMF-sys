@@ -22,7 +22,7 @@ class Shard(Searchable):
         representing if all the points in the shard are above the hyperplane or blow it (+1 = above, -1 = below).
         :param extractor: The ShardExtractor instance that created this Shard.
         """
-        super().__init__(len(extractor.symbols), extractor.cmf, extractor.symbols)
+        super().__init__(extractor.const_name, len(extractor.symbols), extractor.cmf, extractor.symbols)
         self.hps = extractor.hps
         self.shard_id = shard_id
         self.extractor = extractor

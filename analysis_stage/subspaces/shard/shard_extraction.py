@@ -66,10 +66,14 @@ class ShardExtractor:
     """
     A functional class in charge of the Shards extraction for later use
     """
-    def __init__(self, cmf: CMF, shifts: Position):
+    def __init__(self, const_name: str, cmf: CMF, shifts: Position):
+        self.const_name = const_name
         self.cmf: CMF = cmf
         self.shifts: Position = shifts
         self.hps, self.symbols = self.__extract_shard_hyperplanes(cmf)
+        Logger(
+            f'\n* symbols for this CMF: {self.symbols}\n* Shifts: {self.shifts}', Logger.Levels.info
+        ).log(msg_prefix='\n')
 
         # This will be instantiated later on the first call to get_encoded_shards()
         self._mono_shard = len(self.hps) == 0
@@ -142,8 +146,6 @@ class ShardExtractor:
             data = data.union(z_det.union(undef))
         data = unfreeze(data)
         symbols = list(cmf.matrices.keys())
-
-        Logger('symbols for this CMF: {} '.format(symbols), Logger.Levels.info).log()
 
         planes = [Plane(exp1 - exp2, symbols) for exp1, exp2 in data]
         filtered = [planes[-1]]
@@ -237,10 +239,11 @@ class ShardExtractor:
     def compute_feasible_points(self) -> Tuple[Dict[ShardVec, List[Position]], List[Position]]:
         shards = self.get_shards()
         point_classification = {shard_id: [] for shard_id in self._encoded_shards}
-        shifted = [list(np.floor(np.array(p)) + np.array(self.shifts.as_list())) for p in self._feasible_points]
+        shifted = [
+            Position([int(c) for c in np.floor(np.array(p))], self.symbols) + self.shifts for p in self._feasible_points
+        ]
         valid_shifted = []
         for shard, p in zip(shards, shifted):
-            p = Position([int(coord) for coord in p], self.symbols)
             if shard.in_space(p)[0]:
                 point_classification[shard.shard_id].append(p)
                 valid_shifted.append(p)

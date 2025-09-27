@@ -23,19 +23,23 @@ class SearchData:
     eigen_values: Dict = field(default=dict)
     gcd_slope: mp.mpf = None
     initial_values: Matrix = None
+    LIReC_identify: bool = False
     errors: Dict[str, Exception] = None
 
 
 class DataManager(UserDict[SearchVector, SearchData]):
-    def __init__(self, deep_search: bool = True, empty=False):
+    def __init__(self, use_LIReC: bool, empty=False):
         super().__init__()
-        # self.deep_search = deep_search
+        self.use_LIReC = use_LIReC
 
     def is_valid(self) -> float:
         df = self.as_df()
         if df is None:
             return 1
-        frac = 1 - df['initial_values'].isna().sum() / len(df['initial_values'])
+        if self.use_LIReC:
+            frac = df['LIReC_identify'].sum() / len(df['LIReC_identify'])
+        else:
+            frac = 1 - df['initial_values'].isna().sum() / len(df['initial_values'])
         return frac
 
     def best_delta(self):
@@ -55,6 +59,7 @@ class DataManager(UserDict[SearchVector, SearchData]):
                 "eigen_values": data.eigen_values,
                 "gcd_slope": data.gcd_slope,
                 "initial_values": data.initial_values,
+                "LIReC_identify": data.LIReC_identify,
                 "errors": data.errors,
             }
             for sv, data in self.items()

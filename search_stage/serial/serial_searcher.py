@@ -8,6 +8,7 @@ from utils.logger import Logger
 import sympy as sp
 import mpmath as mp
 import random
+from LIReC.db.access import db
 
 from configs import analysis as config_analysis
 
@@ -22,14 +23,16 @@ class SerialSearcher(SearchMethod):
                  space: Searchable,
                  constant: mp.mpf,
                  data_manager: DataManager = None,
-                 share_data: bool = True):
+                 share_data: bool = True,
+                 use_LIReC: bool = True):
         """
         Creates a searcher
         :param space: The space to search in.
         """
-        super().__init__(space, constant, data_manager, share_data)
+        super().__init__(space, constant, use_LIReC, data_manager, share_data)
         self.trajectories: Set[Position] = set()
-        self.data_manager = data_manager if data_manager else DataManager()
+        self.data_manager = data_manager if data_manager else DataManager(use_LIReC)
+        self.const_name = space.const_name
 
     def generate_trajectories(self,
                               method: str,
@@ -85,7 +88,7 @@ class SerialSearcher(SearchMethod):
                     f'Could not provide a valid start point automatically', Logger.Levels.warning,
                     condition=config_analysis.WARN_ON_EMPTY_SHARDS
                 ).log()
-                return DataManager(empty=True)
+                return DataManager(self.use_LIReC, empty=True)
         if isinstance(starts, Position):
             starts = [starts]
 
@@ -146,8 +149,16 @@ class SerialSearcher(SearchMethod):
                     initial_values = None
                     errors['initial_values'] = e
 
+                mp.mp.dps = 400
+                LIReC_identify = False
+                try:
+                    if self.use_LIReC:
+                        LIReC_identify = len(db.identify([lim.as_float(), self.const_name])) > 0
+                except Exception as e:
+                    errors['LIReC_identify'] = e
+
                 sv = SearchVector(start, t)
-                sd = SearchData(sv, lim, delta, ev, gcd_slope, initial_values, errors)
+                sd = SearchData(sv, lim, delta, ev, gcd_slope, initial_values, LIReC_identify, errors)
                 self.data_manager[sv] = sd
         return self.data_manager
 

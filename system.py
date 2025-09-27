@@ -26,7 +26,7 @@ class System:
                  searchers: List[Module] = None):
         self.dbs = dbs
         self.analyzers = analyzers  # TODO: we might want to allow multiple analyzers so check this later!
-        if sys_config.DB_USAGE != DBUsages.RETRIEVE_DATA and len(dbs) > 1:
+        if db_config.USAGE != DBUsages.RETRIEVE_DATA and len(dbs) > 1:
             raise ValueError("Multiple DBModConnector instances are not allowed when not retrieving data from DBs.")
 
     def run(self, constants: List[str] | str = None):

@@ -19,16 +19,16 @@ from time import sleep
 
 
 class Analyzer(AnalyzerScheme):
-    def __init__(self, cmf: CMF, shift: Position, constant: mp.mpf):
+    def __init__(self, const_name: str, cmf: CMF, shift: Position, constant: mp.mpf):
         self.cmf = cmf
         self.shift = shift
         self.constant = constant
-        self.extractor = self.__prepare_extractor(self.cmf, self.shift)
+        self.extractor = self.__prepare_extractor(const_name, self.cmf, self.shift)
         self.shards = self.extractor.get_shards()
 
     @staticmethod
-    def __prepare_extractor(cmf, shift):
-        extractor = ShardExtractor(cmf, shift)
+    def __prepare_extractor(const_name, cmf, shift):
+        extractor = ShardExtractor(const_name, cmf, shift)
         extractor.populate_cmf_start_points(expand_anyway=True)
         return extractor
 
@@ -53,16 +53,20 @@ class Analyzer(AnalyzerScheme):
                     condition=config_analysis.WARN_ON_EMPTY_SHARDS
                 ).log(msg_prefix='\n')
                 continue
-            searcher = SerialSearcher(shard, self.constant)
+            searcher = SerialSearcher(shard, self.constant, use_LIReC=config_analysis.USE_LIReC)
             searcher.generate_trajectories(method, length, clear=False)
             dm = searcher.search(start, partial_search_factor=0.5)
 
             identified = dm.is_valid()
             Logger(f'Identified {identified * 100}% of trajectories, best delta: {dm.best_delta()[0]}',
                    Logger.Levels.info).log(msg_prefix='\n')
-            if identified >= config_analysis.IDENTIFY_THRESH:
+            if identified > config_analysis.IDENTIFY_THRESH:
                 managers[shard] = dm
-            sleep(0.1)
+            else:
+                Logger(
+                    f'Ignoring shard - identified <= {config_analysis.IDENTIFY_THRESH}% of tested trajectories.',
+                    Logger.Levels.info
+                ).log()
         return managers
 
     def prioritize(self, managers: Dict[Searchable, DataManager], ranks=3) -> Dict[Searchable, Dict[str, int]]:

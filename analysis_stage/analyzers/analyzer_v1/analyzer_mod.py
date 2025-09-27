@@ -42,7 +42,7 @@ class AnalyzerMod(AnalyzerModScheme):
                                        **sys_config.TQDM_CONFIG):
             queue = []
             for cmf, shift in cmf_tups:
-                analyzer = Analyzer(cmf, shift, System.get_const_as_mpf(constant))
+                analyzer = Analyzer(constant, cmf, shift, System.get_const_as_mpf(constant))
                 dms = analyzer.search()
                 queue.append(analyzer.prioritize(dms))
             merged = merge_dicts(queue)

@@ -11,10 +11,12 @@ class SearchMethod(ABC):
     def __init__(self,
                  space: Searchable,
                  const: mp.mpf,
+                 use_LIReC: bool,
                  data_manager: DataManager = None,
                  share_data: bool = True):
         self.space = space
         self.const = const
+        self.use_LIReC = use_LIReC
         self.best_delta = -1
         self.trajectories = set()
         self.start_points = set()

@@ -3,12 +3,13 @@ from utils.util_types import *
 
 
 class Searchable(ABC):
-    def __init__(self, dim: int, cmf: CMF, symbols: List[sp.Symbol]):
+    def __init__(self, name: str, dim: int, cmf: CMF, symbols: List[sp.Symbol]):
         self.dim = dim
         self.cmf = cmf
         self.symbols = symbols
         self._start_points: Set[Position] = set()
         self.data = None
+        self.const_name = name
 
     @abstractmethod
     def in_space(self, point: Position) -> Tuple[bool, Any]:

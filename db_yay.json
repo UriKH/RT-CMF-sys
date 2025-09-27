@@ -1,5 +1,5 @@
 {
-    "command": "insert",
+    "command": "replace",
     "data": [
         {
             "constant": "pi",
@@ -9,7 +9,7 @@
                     "p": 2,
                     "q": 1,
                     "z": "1/2",
-                    "shifts": [0, 0, 0]
+                    "shifts": [0, 0, "1/2"]
                 },
                 "kwargs": {
                     "override": "True"
