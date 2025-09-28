@@ -31,4 +31,4 @@ The configurations are ordered in three layers from most general to per module c
 2. Per Stage config - e.g. in `configs`: `analysis.py`/`database.py`/`search.py`. These define the stage behavior. Notice not to use **stage** configurations that don't match the **modules** you are using.
 3. System settings - `configs/system.py`. This file defines things like the visuals of the system and interaction.
 
-For Concreate usage see the `Example` folder containing a JSON file and a `.db` file for loading data to the system. For code usage see the `main.py` file.
+**For Concreate usage see the `Example` folder containing a JSON file and a `.db` file for loading data to the system. For code usage see the `main.py` file.**
