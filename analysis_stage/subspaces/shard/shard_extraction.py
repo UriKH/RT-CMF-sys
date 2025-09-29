@@ -135,7 +135,6 @@ class ShardExtractor:
             return True, x
         return False, []
 
-    @Logger('').time_it
     def __extract_shard_hyperplanes(self, cmf: CMF) -> Tuple[List[Plane], List[sp.Symbol]]:
         """
         Extract the CMF's hyperplanes that form the shards
@@ -183,7 +182,6 @@ class ShardExtractor:
             i -= 1
         return filtered, symbols
 
-    @Logger('').time_it
     def get_encoded_shards(self) -> List[ShardVec]:
         """
         Compute the Shards as Shard vector identifiers

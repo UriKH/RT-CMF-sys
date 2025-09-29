@@ -17,6 +17,7 @@ import random
 from LIReC.db.access import db
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
+from ramanujantools import matrix as rtm
 
 
 class SerialSearcher(SearchMethod):
@@ -44,7 +45,6 @@ class SerialSearcher(SearchMethod):
                          or search_config.PARALLEL_SEARCH)
         self.pool = ProcessPoolExecutor() if self.parallel else None
 
-    @Logger('').time_it
     def generate_trajectories(self,
                               method: str,
                               length: int,
@@ -97,62 +97,85 @@ class SerialSearcher(SearchMethod):
         if SearchVector(start, t) in data_manager:
             return None
 
+        sv = SearchVector(start, t)
+        sd = SearchData(sv)
+
         traj_m = cmf.trajectory_matrix(
             trajectory=t,
             start=start
         )
         try:
-            lim = traj_m.limit({n: 1}, 2000, {n: 0})
+            limit = traj_m.limit({n: 1}, 2000, {n: 0})
+            sd.limit = float(limit.as_float())
         except Exception as e:
             # TODO: add trace logging to some log file
             Logger(
-                f'Exception {e.__class__.__name__} encountered while calculating limit '
+                f'Exception {e.__class__.__name__}: "{e}" encountered while calculating limit '
                 f'(trajectory ignored in stats): '
                 f'\n> start: {start}\n> trajectory: {t}\n> matrix {traj_m}',
                 Logger.Levels.exception
             ).log(msg_prefix='\n')
             return None
-        errors = {}
-        try:
-            delta = lim.delta(System.get_const_as_mpf(constant))
-            if delta in (mp.mpf("inf"), mp.mpf("-inf")) and parallel:
-                delta = str(delta)
-        except Exception as e:
-            delta = -1
-            errors['delta'] = e
 
-        try:
-            ev = traj_m.eigenvals()
-        except Exception as e:
-            errors['eigen_values'] = e
-            ev = dict()
-
-        try:
-            gcd_slope = traj_m.gcd_slope()
-            gcd_slope = float(gcd_slope) if parallel else gcd_slope
-        except Exception as e:
-            errors['gcd_slope'] = e
-            gcd_slope = None
-
-        try:
-            initial_values = lim.identify(System.get_const_as_mpf(constant))
-        except Exception as e:
-            initial_values = None
-            errors['initial_values'] = e
-
-        mp.mp.dps = 400
-        LIReC_identify = False
         try:
             if use_LIReC:
-                LIReC_identify = len(db.identify([lim.as_float(), constant])) > 0
-        except Exception as e:
-            errors['LIReC_identify'] = e
+                walked = traj_m.walk({n: 1}, 500, {n: 0})
+                walked = walked.inv().T
+                t1_col = (walked / walked[0, 0]).col(0)
+                values = [v.evalf(300) for v in t1_col[1:]]
 
-        sv = SearchVector(start, t)
-        sd = SearchData(sv, lim, delta, ev, gcd_slope, initial_values, LIReC_identify, errors)
+                res = db.identify([mp.pi()] + values)
+                if res:
+                    res = res[0]
+                    sd.LIReC_identify = True
+                    res.include_isolated = 0
+                    res = str(res)
+                    res = '('.join(res.split('(')[:-1])
+                    simplified = sp.sympify(res)
+
+                    symbols = sp.symbols(f'c:{len(values) + 1}')[1:]
+                    estimated = simplified.subs({sym: val for sym, val in zip(symbols, values)})
+                    error = sp.Abs(float(estimated) - float(System.get_const_as_mpf(constant)))
+                    denom = sp.denom(estimated)
+                    delta = -1 - sp.log(error) / sp.log(denom)
+                    sd.delta = float(SerialSearcher.sympy_to_mpmath(delta))
+
+                    a, b = SerialSearcher.fraction_to_vectors(sp.fraction(simplified), symbols)
+                    sd.initial_values = rtm.Matrix([a, b])
+                else:
+                    sd.LIReC_identify = False
+            else:
+                sd.delta = limit.delta(System.get_const_as_mpf(constant))
+                sd.initial_values = limit.identify(System.get_const_as_mpf(constant))
+            if sd.delta in (mp.mpf("inf"), mp.mpf("-inf")) and parallel:
+                sd.delta = str(sd.delta)
+        except Exception as e:
+            sd.initial_values = None if not sd.initial_values else sd.initial_values
+            sd.errors['delta'] = e
+            if not sd.initial_values:
+                sd.errors['initial_values'] = e
+
+        try:
+            sd.ev = traj_m.eigenvals()
+        except Exception as e:
+            sd.errors['eigen_values'] = e
+            sd.ev = dict()
+
+        try:
+            sd.gcd_slope = traj_m.gcd_slope()
+            sd.gcd_slope = float(sd.gcd_slope) if parallel else sd.gcd_slope
+        except Exception as e:
+            sd.errors['gcd_slope'] = e
+            sd.gcd_slope = None
+
+        mp.mp.dps = 400
+        try:
+            if use_LIReC and not sd.LIReC_identify:
+                sd.LIReC_identify = len(db.identify([sd.limit, constant])) > 0
+        except Exception as e:
+            sd.errors['LIReC_identify'] = e
         return sd
 
-    @Logger('').time_it
     def search(self,
                starts: Optional[Position | List[Position]] = None,
                partial_search_factor: float = 1) -> DataManager:
@@ -169,8 +192,6 @@ class SerialSearcher(SearchMethod):
                 return DataManager(self.use_LIReC, empty=True)
         if isinstance(starts, Position):
             starts = [starts]
-
-        n = sp.symbols('n')
 
         trajectories = self.trajectories
         if partial_search_factor < 1:
@@ -197,6 +218,7 @@ class SerialSearcher(SearchMethod):
                     res.gcd_slope = mp.mpf(res.gcd_slope) if res.gcd_slope else None
                     res.delta = mp.mpf(res.delta) if isinstance(res.delta, str) else res.delta
                     self.data_manager[res.sv] = res
+
         else:
             for start in starts:
                 for t in trajectories:
@@ -215,3 +237,41 @@ class SerialSearcher(SearchMethod):
 
     def enrich_trajectories(self):
         raise NotImplementedError
+
+    @staticmethod
+    def sympy_to_mpmath(x):
+        if x is sp.zoo:
+            return mp.mpf('inf')
+        elif x.is_infinite:
+            if x == sp.oo:
+                return mp.mpf('inf')
+            elif x == -sp.oo:
+                return mp.mpf('-inf')
+            else:
+                return mp.mpf('-inf')  # zoo or directional infinity
+        else:
+            return mp.mpf(str(x.evalf()))
+
+    @staticmethod
+    def fraction_to_vectors(frac, symbols):
+        """
+        Convert a tuple (num, den) of sympy expressions into coefficient vectors.
+
+        Args:
+            frac: tuple (numerator_expr, denominator_expr)
+            symbols: list of sympy symbols [c1, c2, ...]
+
+        Returns:
+            (num_vec, den_vec): two lists of coefficients
+                Index 0 = constant term
+                Index i = coefficient of symbols[i-1]
+        """
+        num_expr, den_expr = frac
+
+        def expr_to_vector(expr, symbols):
+            coeffs = [expr.as_coeff_add(*symbols)[0]]  # constant term
+            for s in symbols:
+                coeffs.append(expr.coeff(s))
+            return [sp.sympify(c) for c in coeffs]
+
+        return expr_to_vector(num_expr, symbols), expr_to_vector(den_expr, symbols)

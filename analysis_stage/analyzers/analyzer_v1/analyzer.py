@@ -90,8 +90,11 @@ class Analyzer(AnalyzerScheme):
 
         ranked = {}
         for shard, dm in managers.items():
+            best_delta = dm.best_delta()[0]
+            if best_delta is None:
+                continue
             ranked[shard] = {
-                'delta_rank': match_rank(ranks, dm.best_delta()[0]),
+                'delta_rank': match_rank(ranks, best_delta),
                 'dim': self.cmf.dim()
             }
         return ranked

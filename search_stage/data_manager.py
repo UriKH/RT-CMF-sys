@@ -18,13 +18,13 @@ class SearchVector:
 @dataclass
 class SearchData:
     sv: SearchVector
-    limit: Limit = None
-    delta: float = None
-    eigen_values: Dict = field(default=dict)
-    gcd_slope: mp.mpf | float = None
+    limit: float = None
+    delta: float | str = None
+    eigen_values: Dict = field(default_factory=dict)
+    gcd_slope: float | None = None
     initial_values: Matrix = None
     LIReC_identify: bool = False
-    errors: Dict[str, Exception] = None
+    errors: Dict[str, Exception] = field(default_factory=dict)
 
 
 class DataManager(UserDict[SearchVector, SearchData]):
@@ -44,7 +44,14 @@ class DataManager(UserDict[SearchVector, SearchData]):
 
     def best_delta(self):
         df = self.as_df()
-        row = df.loc[df['delta'].idxmax()]
+        if df.empty:
+            return None, None
+
+        deltas = df['delta'].dropna()
+        if deltas.empty:
+            return None, None
+
+        row = df.loc[deltas.idxmax()]
         return row['delta'], row['sv']
 
     def get_data(self):
