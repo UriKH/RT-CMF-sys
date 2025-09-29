@@ -1,4 +1,5 @@
 from analysis_stage.analysis_scheme import AnalyzerModScheme
+from utils.point_generator import PointGenerator
 from utils.util_types import *
 from system import System
 from analysis_stage.analyzers.analyzer_v1.analyzer import Analyzer
@@ -40,12 +41,14 @@ class AnalyzerMod(AnalyzerModScheme):
         queues = {c: [] for c in self.cmf_data.keys()}
         for constant, cmf_tups in tqdm(self.cmf_data.items(), desc='Analyzing constants and their CMFs',
                                        **sys_config.TQDM_CONFIG):
-            queue = []
+            queue: List[Dict[Searchable, Dict[str, int]]] = []
             for cmf, shift in cmf_tups:
                 analyzer = Analyzer(constant, cmf, shift, System.get_const_as_mpf(constant))
-                dms = analyzer.search()
+                dim = cmf.dim()
+                dms = analyzer.search(length=PointGenerator.calc_sphere_radius(10 ** dim, dim)) # TODO: convert 10 ** d to config
                 queue.append(analyzer.prioritize(dms))
-            merged = merge_dicts(queue)
+                # TODO: Now we want to take the DataManagers and convert whose to databases per CMF - I don't know if we really want this or not...
+            merged: Dict[Searchable, Dict[str, int]] = merge_dicts(queue)
             queues[constant] = sorted(
                 merged.keys(),
                 key=lambda space: (-merged[space]['delta_rank'], merged[space]['dim'])

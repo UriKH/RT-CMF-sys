@@ -1,6 +1,6 @@
 from analysis_stage.subspaces.searchable import Searchable
 from search_stage.data_manager import *
-from search_stage.search_method import SearchMethod
+from search_stage.searcher_scheme import SearchMethod
 from utils.util_types import *
 from utils.point_generator import PointGenerator
 from utils.logger import Logger
@@ -32,7 +32,7 @@ class SerialSearcher(SearchMethod):
                  data_manager: DataManager = None,
                  share_data: bool = True,
                  use_LIReC: bool = True,
-                 deep_search: bool = True):
+                 deep_search: bool = True):     # TODO: we don't use deep_search and share_data, for latewr usage...
         """
         Creates a searcher
         :param space: The space to search in.
@@ -91,6 +91,50 @@ class SerialSearcher(SearchMethod):
 
     @staticmethod
     def _search_worker(sv, data_manager: DataManager, cmf: CMF, constant: str, use_LIReC: bool, parallel: bool = False):
+        def h_calc_walk_values(traj_m):
+            values = None
+            success = False
+            try:
+                walked = traj_m.walk({n: 1}, 100, {n: 0})
+                walked = walked.inv().T
+                t1_col = (walked / walked[0, 0]).col(0)
+                values = [v for v in t1_col[1:]]
+                success = True
+            except Exception as e:
+                Logger(f'Exception while calculating walked vector [{e}]', Logger.Levels.warning).log(msg_prefix='\n')
+            finally:
+                return values, success
+
+        def h_identify(values):
+            identified = False
+            simpified = None
+            try:
+                res = db.identify(values)
+                if res:
+                    identified = True
+                    res = res[0]
+                    sd.LIReC_identify = True  # ignore this :)
+                    res.include_isolated = 0
+                    res = '('.join(str(res).split('(')[:-1])
+                    simpified = sp.sympify(res)
+            except Exception as e:
+                Logger(f'Error while trying to identify {e.__class__.__name__}: {e}', Logger.Levels.warning).log(msg_prefix='\n')
+            finally:
+                return simpified, identified
+
+        def h_calc_delta(estimated, constant: str):
+            delta = None
+            success = False
+            try:
+                error = sp.Abs(estimated - System.get_const_as_sp(constant).evalf(30000))
+                denom = sp.denom(estimated)
+                delta = -1 - sp.log(error) / sp.log(denom)
+                success = True
+            except Exception as e:
+                Logger(f'Error while calculating delta {e.__class__.__name__}: {e}', Logger.Levels.warning).log(msg_prefix='\n')
+            finally:
+                return delta, success
+
         n = sp.symbols('n')
         start, t = sv
 
@@ -119,41 +163,66 @@ class SerialSearcher(SearchMethod):
 
         try:
             if use_LIReC:
-                walked = traj_m.walk({n: 1}, 500, {n: 0})
-                walked = walked.inv().T
-                t1_col = (walked / walked[0, 0]).col(0)
-                values = [v.evalf(300) for v in t1_col[1:]]
+                values, success = h_calc_walk_values(traj_m)
+                if success:
+                    simpified, identified = h_identify([System.get_const_as_sp(constant).evalf(300)] + values)
+                    if identified:
+                        try:
+                            sd.LIReC_identify = identified
+                            symbols = sp.symbols(f'c:{len(values) + 1}')[1:]
+                            estimated = simpified.subs({sym: val for sym, val in zip(symbols, values)})
+                            delta, success = h_calc_delta(estimated, constant)
+                            if success:
+                                sd.delta = float(SerialSearcher.sympy_to_mpmath(delta))
+                                if sd.delta is None:
+                                    print('holy crap')
+                            else:
+                                print('what the eff')
 
-                res = db.identify([mp.pi()] + values)
-                if res:
-                    res = res[0]
-                    sd.LIReC_identify = True
-                    res.include_isolated = 0
-                    res = str(res)
-                    res = '('.join(res.split('(')[:-1])
-                    simplified = sp.sympify(res)
+                            a, b = SerialSearcher.fraction_to_vectors(sp.fraction(simpified), symbols)
+                            sd.initial_values = rtm.Matrix([a, b])
+                        except Exception as e:
+                            Logger(f'Error {e}').log(msg_prefix='\n')
 
-                    symbols = sp.symbols(f'c:{len(values) + 1}')[1:]
-                    estimated = simplified.subs({sym: val for sym, val in zip(symbols, values)})
-                    error = sp.Abs(float(estimated) - float(System.get_const_as_mpf(constant)))
-                    denom = sp.denom(estimated)
-                    delta = -1 - sp.log(error) / sp.log(denom)
-                    sd.delta = float(SerialSearcher.sympy_to_mpmath(delta))
+                        if sd.delta is None:
+                            print('weird 1')
 
-                    a, b = SerialSearcher.fraction_to_vectors(sp.fraction(simplified), symbols)
-                    sd.initial_values = rtm.Matrix([a, b])
-                else:
-                    sd.LIReC_identify = False
+                # print('try log: ', end='')
+                # if res:
+                #     # Convert to sympy expression
+                #     res = res[0]
+                #     sd.LIReC_identify = True  # ignore this :)
+                #     res.include_isolated = 0
+                #     res = '('.join(str(res).split('(')[:-1])
+                #     simpified = sp.sympify(res)
+
+                    # Calculate delta
+
+                    # error = sp.Abs(estimated - System.get_const_as_sp(constant).evalf(30000))
+                    # denom = sp.denom(estimated)
+                    # delta = -1 - sp.log(error) / sp.log(denom)
+                    #
+                    # sd.delta = float(SerialSearcher.sympy_to_mpmath(delta))
+                    # print('logged delta')
+                    #
+                    # # find the initial values
+                    # a, b = SerialSearcher.fraction_to_vectors(sp.fraction(simpified), symbols)
+                    # sd.initial_values = rtm.Matrix([a, b])
+                # else:
+                #     print('not logged')
+                #     sd.LIReC_identify = False
             else:
                 sd.delta = limit.delta(System.get_const_as_mpf(constant))
                 sd.initial_values = limit.identify(System.get_const_as_mpf(constant))
-            if sd.delta in (mp.mpf("inf"), mp.mpf("-inf")) and parallel:
+            if sd.delta in (mp.mpf("inf"), mp.mpf("-inf")) and parallel: # TODO: delta is a float!
                 sd.delta = str(sd.delta)
         except Exception as e:
             sd.initial_values = None if not sd.initial_values else sd.initial_values
             sd.errors['delta'] = e
             if not sd.initial_values:
                 sd.errors['initial_values'] = e
+            if sd.delta is None:
+                print(f'not logged - due to error {e.__class__.__name__}: {e}')
 
         try:
             sd.ev = traj_m.eigenvals()
@@ -250,7 +319,7 @@ class SerialSearcher(SearchMethod):
             else:
                 return mp.mpf('-inf')  # zoo or directional infinity
         else:
-            return mp.mpf(str(x.evalf()))
+            return mp.mpf(str(x.evalf(500)))
 
     @staticmethod
     def fraction_to_vectors(frac, symbols):

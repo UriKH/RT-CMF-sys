@@ -5,6 +5,7 @@ import mpmath as mp
 from analysis_stage.subspaces.searchable import Searchable
 from search_stage.data_manager import DataManager
 from utils.util_types import *
+from module import Module
 
 
 class SearchMethod(ABC):
@@ -42,4 +43,10 @@ class SearchMethod(ABC):
 
     @abstractmethod
     def enrich_trajectories(self):
+        raise NotImplementedError
+
+
+class SearcherModScheme(Module):
+    @staticmethod
+    def execute(self):
         raise NotImplementedError

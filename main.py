@@ -1,12 +1,13 @@
 import argparse
 
 from analysis_stage.analyzers.analyzer_v1.analyzer_mod import AnalyzerMod
+from search_stage.searchers.searcher_v1.searcher_mod import SearcherMod
 from system import System
 from db_stage.DBs.db_v1.db_mod import DBMod
 
 
 def main():
-    System([DBMod('./example/db_yay.db', './example/db_yay.json')], [AnalyzerMod]).run(constants='pi')
+    System([DBMod('./example/db_yay.db', './example/db_yay.json')], [AnalyzerMod], SearcherMod).run(constants='pi')
 
 
 if __name__ == '__main__':

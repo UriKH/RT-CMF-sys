@@ -2,8 +2,8 @@ from analysis_stage.analysis_scheme import AnalyzerScheme
 from analysis_stage.subspaces.searchable import Searchable
 from analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
 
-from search_stage.data_manager import DataManager, SearchVector
-from search_stage.serial.serial_searcher import SerialSearcher
+from search_stage.data_manager import DataManager
+from search_stage.methods.serial.serial_searcher import SerialSearcher
 
 from utils.util_types import *
 from utils.logger import Logger
@@ -15,7 +15,6 @@ from configs import (
 
 import mpmath as mp
 from tqdm import tqdm
-from time import sleep
 
 
 class Analyzer(AnalyzerScheme):
@@ -55,7 +54,7 @@ class Analyzer(AnalyzerScheme):
                 continue
             searcher = SerialSearcher(shard, self.constant, use_LIReC=config_analysis.USE_LIReC, deep_search=False)
             searcher.generate_trajectories(method, length, clear=False)
-            dm = searcher.search(start, partial_search_factor=0.5)
+            dm = searcher.search(start, partial_search_factor=0.5)  # TODO: convert to config
 
             identified = dm.is_valid()
             Logger(f'Identified {identified * 100}% of trajectories, best delta: {dm.best_delta()[0]}',

@@ -1,4 +1,8 @@
+import math
+
 from utils.util_types import *
+
+import mpmath as mp
 import itertools
 import numpy as np
 from numpy import linalg
@@ -88,3 +92,11 @@ class PointGenerator:
     @classmethod
     def generate_hyperplane(cls, n: int, dim: int, hp: sp.Expr):
         raise NotImplementedError
+
+    @staticmethod
+    def calc_sphere_radius(N: int, d: int):
+        return math.ceil(float((N * mp.gamma(d / 2 + 1) * mp.zeta(d)) ** (1 / d) / mp.sqrt(mp.pi())))
+
+    @staticmethod
+    def clac_number_of_primitive_points_in_sphere(R: int, d: int):
+        return math.ceil(float(((mp.pi() ** (d / 2)) * (R ** d)) / (mp.zeta(d) * mp.gamma(d / 2 + 1))))

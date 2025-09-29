@@ -1,9 +1,14 @@
 import mpmath as mp
+from collections import defaultdict
+import networkx as nx
+from itertools import combinations
 
+from analysis_stage.subspaces.searchable import Searchable
 from configs.db_usages import DBUsages
 from errors import UnknownConstant
 from module import Module
 from db_stage.db_scheme import DBModScheme
+from search_stage.searcher_scheme import SearcherModScheme
 from utils.util_types import *
 import configs.system as sys_config
 import configs.database as db_config
@@ -23,9 +28,10 @@ class System:
     def __init__(self,
                  dbs: List[DBModScheme],
                  analyzers: List[Type[AnalyzerModScheme]],
-                 searchers: List[Module] = None):
+                 searcher: Type[SearcherModScheme]):
         self.dbs = dbs
         self.analyzers = analyzers  # TODO: we might want to allow multiple analyzers so check this later!
+        self.searcher = searcher
         if db_config.USAGE != DBUsages.RETRIEVE_DATA and len(dbs) > 1:
             raise ValueError("Multiple DBModConnector instances are not allowed when not retrieving data from DBs.")
 
@@ -42,20 +48,13 @@ class System:
 
         constants = self.get_constants(constants)
         cmf_data = DBModScheme.aggregate(self.dbs, list(constants.keys()))
-        for analyzer in self.analyzers:
-            print(analyzer(cmf_data).execute())
-        """
-        res = None
-        for mod in self.mods:
-            if mod.config['import']:
-                mod.import(.....)
-            res = mod.execute(res)
-            if mod.config['export']:
-                mod.export(res)
-            if mod.config['user_input']:
-                mod.user_input()
-        """
-        pass
+        analyzers_results = [analyzer(cmf_data).execute() for analyzer in self.analyzers]
+        priorities = self.__aggregate_analyzers(analyzers_results)
+        results = []
+        for const in priorities.keys():
+            s = self.searcher(priorities[const], True)
+            results.append(s.execute())
+        print(results)
 
     @staticmethod
     def validate_constant(constant: str, throw: bool = False) -> bool:
@@ -69,16 +68,74 @@ class System:
 
     @staticmethod
     def get_const_as_mpf(constant: str) -> mp.mpf:
+        def wrap():
+            try:
+                if constant.startswith("zeta-"):
+                    n = int(constant.split("-")[1])
+                    return mp.zeta(n)
+                return getattr(mp, constant)
+            except Exception:
+                raise UnknownConstant(constant + UnknownConstant.default_msg)
+
+        mp.mp.dps = 1000
+        try:
+            res = wrap()
+        finally:
+            mp.mp.dps = 400
+        return res
+
+    @staticmethod
+    def get_const_as_sp(constant: str):
         try:
             if constant.startswith("zeta-"):
                 n = int(constant.split("-")[1])
-                return mp.zeta(n)
-            return getattr(mp, constant)
+                return sp.zeta(n)
+            return getattr(sp, constant)
         except Exception:
             raise UnknownConstant(constant + UnknownConstant.default_msg)
+
+
 
     @staticmethod
     def get_constants(constants: List[str] | str):
         if isinstance(constants, str):
             constants = [constants]
         return {c: System.get_const_as_mpf(c) for c in constants}
+
+    @staticmethod
+    def __aggregate_analyzers(dicts: List[Dict[str, List[Searchable]]]) -> Dict[str, List[Searchable]]:
+        all_keys = set().union(*dicts)
+        result = {}
+
+        for key in all_keys:
+            lists = [d[key] for d in dicts if key in d]
+            prefs = defaultdict(int)
+            searchables = set().union(*lists)
+
+            # Count preferences
+            for lst in lists:
+                for i, a in enumerate(lst[:-1]):
+                    for j, b in enumerate(lst[i + 1:]):
+                        prefs[(a, b)] += 1  #(j - i) * 1. / len(lst)
+
+            G = nx.DiGraph()
+            G.add_nodes_from(searchables)
+            for a, b in combinations(searchables, 2):
+                if prefs[(a, b)] > prefs[(b, a)]:
+                    G.add_edge(a, b)
+                elif prefs[(a, b)] < prefs[(b, a)]:
+                    G.add_edge(b, a)
+                else:
+                    if hash(a) > hash(b):
+                        G.add_edge(a, b)
+                    else:
+                        G.add_edge(b, a)
+
+            try:
+                consensus = list(nx.topological_sort(G))
+            except nx.NetworkXUnfeasible:
+                raise Exception('This was not supposed to happen')
+                # Cycles = ties, break them by degree or fallback
+                # consensus = sorted(searchables, key=lambda x: -sum(prefs[(x, y)] for y in searchables if x != y))
+            result[key] = consensus
+        return result

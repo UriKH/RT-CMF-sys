@@ -28,7 +28,7 @@ class SearchData:
 
 
 class DataManager(UserDict[SearchVector, SearchData]):
-    def __init__(self, use_LIReC: bool, empty=False):
+    def __init__(self, use_LIReC: bool):
         super().__init__()
         self.use_LIReC = use_LIReC
 

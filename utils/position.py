@@ -26,9 +26,6 @@ class Position(rt_pos.Position):
         mapping, symbols = self.__build_mapping(pos, symbols)
         super().__init__(mapping)
         self.ordered = [(c, sym) for c, sym in zip(pos, symbols)]
-        for c, sym in self.ordered:
-            if not isinstance(c, int | sp.Rational):
-                raise ValueError('FuCKKKKKKK')
 
     def copy(self):
         return Position(list(self.values()), list(self.keys()))
