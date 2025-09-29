@@ -41,3 +41,6 @@ class Searchable(ABC):
 
     def has_start_points(self) -> bool:
         return len(self._start_points) > 0
+
+    def __repr__(self):
+        return self.cmf.__repr__()

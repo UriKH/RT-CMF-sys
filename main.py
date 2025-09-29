@@ -1,5 +1,3 @@
-import argparse
-
 from analysis_stage.analyzers.analyzer_v1.analyzer_mod import AnalyzerMod
 from search_stage.searchers.searcher_v1.searcher_mod import SearcherMod
 from system import System

@@ -24,7 +24,7 @@ class SearchData:
     gcd_slope: float | None = None
     initial_values: Matrix = None
     LIReC_identify: bool = False
-    errors: Dict[str, Exception] = field(default_factory=dict)
+    errors: Dict[str, Exception | None] = field(default_factory=dict)
 
 
 class DataManager(UserDict[SearchVector, SearchData]):

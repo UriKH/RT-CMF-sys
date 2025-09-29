@@ -4,15 +4,18 @@ import networkx as nx
 from itertools import combinations
 
 from analysis_stage.subspaces.searchable import Searchable
+from analysis_stage.analysis_scheme import AnalyzerModScheme
 from configs.db_usages import DBUsages
 from errors import UnknownConstant
-from module import Module
 from db_stage.db_scheme import DBModScheme
 from search_stage.searcher_scheme import SearcherModScheme
 from utils.util_types import *
-import configs.system as sys_config
-import configs.database as db_config
-from analysis_stage.analysis_scheme import AnalyzerModScheme
+from utils.logger import Logger
+from configs import (
+    system as sys_config,
+    database as db_config
+)
+
 
 
 class System:
@@ -50,11 +53,24 @@ class System:
         cmf_data = DBModScheme.aggregate(self.dbs, list(constants.keys()))
         analyzers_results = [analyzer(cmf_data).execute() for analyzer in self.analyzers]
         priorities = self.__aggregate_analyzers(analyzers_results)
-        results = []
+        results = dict()
         for const in priorities.keys():
             s = self.searcher(priorities[const], True)
-            results.append(s.execute())
+            results[const] = s.execute()
         print(results)
+        for const in priorities.keys():
+            best_delta = -sp.oo
+            best_sv = None
+            best_space = None
+            for space, dms in results[const].items():
+                delta, sv = dms.best_delta()
+                if best_delta < delta:
+                    best_delta, best_sv = delta, sv
+                    best_space = space
+            Logger(
+                f'Best delta for "{const}": {best_delta} in trajectory: {best_sv} in searchable: {best_space}',
+                Logger.Levels.info
+            ).log()
 
     @staticmethod
     def validate_constant(constant: str, throw: bool = False) -> bool:

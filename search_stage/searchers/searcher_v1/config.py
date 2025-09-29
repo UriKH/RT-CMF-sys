@@ -1,0 +1,3 @@
+FIND_EIGEN_VALUES = False
+FIND_GCD_SLOPE = False
+FIND_LIMIT = False

@@ -49,7 +49,7 @@ class Shard(Searchable):
         Shard representation is the unique +-1 tuple representing it
         :return: The string representation of the tuple
         """
-        return str(self.shard_id)
+        return f'<{self.__class__.__name__}: (shard_id = {self.shard_id}, cmf = {super().__repr__()})>'
 
     def in_space(self, point: Position) -> Tuple[bool, ShardVec]:
         """

@@ -54,7 +54,10 @@ class Analyzer(AnalyzerScheme):
                 continue
             searcher = SerialSearcher(shard, self.constant, use_LIReC=config_analysis.USE_LIReC, deep_search=False)
             searcher.generate_trajectories(method, length, clear=False)
-            dm = searcher.search(start, partial_search_factor=0.5)  # TODO: convert to config
+            dm = searcher.search(
+                start, partial_search_factor=0.5,
+                find_limit=False, find_gcd_slope=False, find_eigen_values=False
+            )  # TODO: convert to config maybe??
 
             identified = dm.is_valid()
             Logger(f'Identified {identified * 100}% of trajectories, best delta: {dm.best_delta()[0]}',
