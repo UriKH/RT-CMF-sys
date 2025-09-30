@@ -1,5 +1,6 @@
 from analysis_stage.analysis_scheme import AnalyzerModScheme
 from utils.geometry.point_generator import PointGenerator
+from utils.logger import Logger
 from utils.types import *
 from system.system import System
 from analysis_stage.analyzers.analyzer_v1.analyzer import Analyzer
@@ -43,8 +44,15 @@ class AnalyzerModV1(AnalyzerModScheme):
         for constant, cmf_tups in tqdm(self.cmf_data.items(), desc='Analyzing constants and their CMFs',
                                        **sys_config.TQDM_CONFIG):
             queue: List[Dict[Searchable, Dict[str, int]]] = []
+
+            Logger(
+                Logger.buffer_print(sys_config.LOGGING_BUFFER, f'Analyzing for {constant}', '=')
+            ).log(msg_prefix='\n')
             for cmf, shift in cmf_tups:
-                analyzer = Analyzer(constant, cmf, shift, System.get_const_as_mpf(constant))
+                Logger(
+                    Logger.buffer_print(sys_config.LOGGING_BUFFER, f'Current CMF: {cmf} with shift {shift}', '=')
+                ).log(msg_prefix='\n')
+                analyzer = Analyzer(constant, cmf, shift, System.get_const_as_sp(constant))
                 dim = cmf.dim()
                 dms = analyzer.search(length=PointGenerator.calc_sphere_radius(NUM_OF_TRAJ_FROM_DIM(dim), dim))
                 queue.append(analyzer.prioritize(dms))

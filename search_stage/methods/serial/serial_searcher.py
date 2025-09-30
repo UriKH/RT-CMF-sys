@@ -9,7 +9,7 @@ from configs import (
     search as search_config
 )
 from system.system import System
-
+from search_stage.erros import *
 
 import sympy as sp
 import mpmath as mp
@@ -28,7 +28,7 @@ class SerialSearcher(SearchMethod):
 
     def __init__(self,
                  space: Searchable,
-                 constant: mp.mpf,
+                 constant, # sympy constant or mp.mpf
                  data_manager: DataManager = None,
                  share_data: bool = True,
                  use_LIReC: bool = True,
@@ -136,6 +136,8 @@ class SerialSearcher(SearchMethod):
                 denom = sp.denom(estimated)
                 if denom == 1:
                     raise ZeroDivisionError('Denominator 1 caused zero division in delta calculation')
+                if denom < 100:
+                    raise ResultIgnored(ResultIgnored.default_msg + ResultIgnored.cause_small_denom)
                 delta = -1 - sp.log(error_v) / sp.log(denom)
             except Exception as e:
                 error = e
@@ -186,7 +188,7 @@ class SerialSearcher(SearchMethod):
 
         if not use_LIReC:
             try:
-                sd.delta = limit.delta(System.get_const_as_mpf(constant))
+                sd.delta = limit.delta(System.get_const_as_sp(constant))
                 if sd.delta in (mp.mpf("inf"), mp.mpf("-inf")) and parallel:  # TODO: delta is a float!
                     sd.delta = str(sd.delta)
             except Exception as e:
@@ -204,6 +206,13 @@ class SerialSearcher(SearchMethod):
             sd.errors['initial_values'] = error
             return sd
 
+        try:
+            const = System.get_const_as_sp(constant)
+            evalf = getattr(const, 'evalf')
+        except Exception as e:
+            sd.errors['delta'] = error
+            sd.errors['initial_values'] = error
+            return sd
         simpified, error = h_identify([System.get_const_as_sp(constant).evalf(300)] + values)
         if error is not None:
             sd.errors['delta'] = error

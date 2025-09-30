@@ -86,7 +86,7 @@ class System:
     @staticmethod
     def validate_constant(constant: str, throw: bool = False) -> bool:
         try:
-            System.get_const_as_mpf(constant)
+            System.get_const_as_sp(constant)
             return True
         except UnknownConstant as e:
             if throw:
@@ -95,29 +95,36 @@ class System:
 
     @staticmethod
     def get_const_as_mpf(constant: str) -> mp.mpf:
-        def wrap():
+        try:
+            constant = sys_config.SYMPY_TO_MPMATH[constant]
+        except Exception:
+            raise UnknownConstant(constant + UnknownConstant.default_msg)
+
+        pieces = constant.split("-")
+        if len(pieces) == 1:
             try:
-                if constant.startswith("zeta-"):
-                    n = int(constant.split("-")[1])
-                    return mp.zeta(n)
-                return getattr(mp, constant)
+                return getattr(sp, constant)
             except Exception:
                 raise UnknownConstant(constant + UnknownConstant.default_msg)
 
-        mp.mp.dps = 1000
+        n = int(pieces[1])
         try:
-            res = wrap()
-        finally:
-            mp.mp.dps = 400
-        return res
+            return getattr(sp, constant)(n)
+        except Exception:
+            raise UnknownConstant(constant + UnknownConstant.default_msg)
 
     @staticmethod
     def get_const_as_sp(constant: str):
+        pieces = constant.split("-")
+        if len(pieces) == 1:
+            try:
+                return getattr(sp, constant)
+            except Exception:
+                raise UnknownConstant(constant + UnknownConstant.default_msg)
+
+        n = int(pieces[1])
         try:
-            if constant.startswith("zeta-"):
-                n = int(constant.split("-")[1])
-                return sp.zeta(n)
-            return getattr(sp, constant)
+            return getattr(sp, constant)(n)
         except Exception:
             raise UnknownConstant(constant + UnknownConstant.default_msg)
 
@@ -125,7 +132,7 @@ class System:
     def get_constants(constants: List[str] | str):
         if isinstance(constants, str):
             constants = [constants]
-        return {c: System.get_const_as_mpf(c) for c in constants}
+        return {c: System.get_const_as_sp(c) for c in constants}
 
     @staticmethod
     def __aggregate_analyzers(dicts: List[Dict[str, List[Searchable]]]) -> Dict[str, List[Searchable]]:

@@ -39,11 +39,11 @@ class Analyzer(AnalyzerScheme):
                 bad_shards += 1
         if bad_shards > 0:
             Logger(
-                f'Could not find valid start points for {bad_shards}/{len(self.shards)}.'
+                f'Could not find valid start points for {bad_shards}/{len(self.shards)} of the shards.'
                 f'\nTry increasing MAX_EXPANSIONS or changing the shift values.', Logger.Levels.warning
             ).log(msg_prefix='\n')
 
-        for shard in tqdm(self.shards, desc=f'Searching shards', **sys_config.TQDM_CONFIG):
+        for shard in tqdm(self.shards, desc=f'Analyzing shards', **sys_config.TQDM_CONFIG):
             start = shard.choose_start_point()
             if start is None:
                 Logger(
@@ -61,12 +61,13 @@ class Analyzer(AnalyzerScheme):
 
             identified = dm.is_valid()
             best_delta = dm.best_delta()[0]
-            if best_delta is None:
-                Logger(f'Identified {identified * 100:.2f}% of trajectories, best delta: {best_delta}',
-                       Logger.Levels.info).log(msg_prefix='\n')
-            else:
-                Logger(f'Identified {identified * 100:.2f}% of trajectories, best delta: {best_delta:.4f}',
-                       Logger.Levels.info).log(msg_prefix='\n')
+            if config_analysis.PRINT_FOR_EVERY_SEARCHABLE:
+                if best_delta is None:
+                    Logger(f'Identified {identified * 100:.2f}% of trajectories, best delta: {best_delta}',
+                           Logger.Levels.info).log(msg_prefix='\n')
+                else:
+                    Logger(f'Identified {identified * 100:.2f}% of trajectories, best delta: {best_delta:.4f}',
+                           Logger.Levels.info).log(msg_prefix='\n')
             if identified > config_analysis.IDENTIFY_THRESH:
                 managers[shard] = dm
             else:

@@ -11,7 +11,7 @@ def main():
             AnalyzerModV1
         ],
         SearcherModV1
-    ).run(constants='pi')
+    ).run(constants=['pi', 'EulerGamma'])
 
 
 if __name__ == '__main__':

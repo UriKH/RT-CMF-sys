@@ -25,7 +25,7 @@ class SearcherModV1(SearcherModScheme):
     def execute(self):
         dms: Dict[Searchable, DataManager] = dict()
         for space in tqdm(self.searcahbles, desc='Searching the searchable spaces: ', **sys_config.TQDM_CONFIG):
-            searcher = SerialSearcher(space, System.get_const_as_mpf(space.const_name), use_LIReC=self.use_LIReC)
+            searcher = SerialSearcher(space, System.get_const_as_sp(space.const_name), use_LIReC=self.use_LIReC)
             searcher.generate_trajectories(
                 'sphere',
                 PointGenerator.calc_sphere_radius(search_config.NUM_OF_TRAJ_FROM_DIM(space.dim), space.dim)
