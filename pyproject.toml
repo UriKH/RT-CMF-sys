@@ -22,5 +22,6 @@ dependencies = [
     "tqdm",
     "requests",
     "pandas",
+    "scipy",
     "LIReC @ git+https://github.com/RamanujanMachine/LIReC.git@main"
 ]
