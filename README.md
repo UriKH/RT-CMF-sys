@@ -16,9 +16,10 @@ results = System(
   dbs = [ DBModV1(path='./my_database.db', json_path='./my_data.json') ],
   analyzers = [ AnalyzerModV1 ],
   searcher = SearcherModV1
-).run(constants=['pi', 'gamma'])
+).run(constants=['pi', 'EulerGamma', 'Catalan'])
 ```
 **Note:** 
+- The names of the constants should be writen as `sympy` calls them (`sp.pi`, `sp.E`, etc.).
 - Although the example shows way to search multiple constants simultaniously this option is not supported currently.
 - If you don't want to load or execute commadns using a JSON file, `json_path` could be ommited from the arguments.
 
