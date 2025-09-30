@@ -1,7 +1,8 @@
 # RT-CMF-sys
 
 ## Installation
-Run: `pip install git+https://github.com/UriKH/RT-CMF-sys.git`
+- For usage with default configurations run: `pip install git+https://github.com/UriKH/RT-CMF-sys.git`
+- At this point of development, for better usage please fork or clone this repo (WIP) :)
 
 ## Usage
 Interaction with the system is via the System class (`from access import System`) and using the config files.
