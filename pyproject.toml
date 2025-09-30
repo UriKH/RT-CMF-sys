@@ -21,5 +21,6 @@ dependencies = [
     "networkx",
     "tqdm",
     "requests",
+    "pandas",
     "LIReC @ git+https://github.com/RamanujanMachine/LIReC.git@main"
 ]
