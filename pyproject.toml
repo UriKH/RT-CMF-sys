@@ -27,5 +27,5 @@ dependencies = [
     "networkx",
     "tqdm",
     "requests",
-    "git+https://github.com/RamanujanMachine/LIReC.git@main"
+    "LIReC @ git+https://github.com/RamanujanMachine/LIReC.git@main"
 ]
