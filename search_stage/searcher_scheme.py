@@ -4,8 +4,8 @@ import mpmath as mp
 
 from analysis_stage.subspaces.searchable import Searchable
 from search_stage.data_manager import DataManager
-from utils.util_types import *
-from module import Module
+from utils.types import *
+from system.module import Module
 
 
 class SearchMethod(ABC):

@@ -6,10 +6,10 @@ from itertools import combinations
 from analysis_stage.subspaces.searchable import Searchable
 from analysis_stage.analysis_scheme import AnalyzerModScheme
 from configs.db_usages import DBUsages
-from errors import UnknownConstant
+from system.errors import UnknownConstant
 from db_stage.db_scheme import DBModScheme
 from search_stage.searcher_scheme import SearcherModScheme
-from utils.util_types import *
+from utils.types import *
 from utils.logger import Logger
 from configs import (
     system as sys_config,
@@ -49,11 +49,16 @@ class System:
             constants = [constants]
 
         constants = self.get_constants(constants)
-        cmf_data = DBModScheme.aggregate(self.dbs, list(constants.keys()))
-        # TODO: close DBs when finished that part
-        # for db in self.dbs:
-        #     del db
-        print(cmf_data)
+        cmf_data = DBModScheme.aggregate(self.dbs, list(constants.keys()), True)
+
+        for constant, funcs in cmf_data.items():
+            functions = '\n'
+            for i, func in enumerate(funcs):
+                functions += f'{i+1}. {func}\n'
+            Logger(
+                f'Searching for {constant} using inspiration functions: {functions}', Logger.Levels.info
+            ).log(msg_prefix='\n')
+
         analyzers_results = [analyzer(cmf_data).execute() for analyzer in self.analyzers]
         priorities = self.__aggregate_analyzers(analyzers_results)
         results = dict()
@@ -115,8 +120,6 @@ class System:
             return getattr(sp, constant)
         except Exception:
             raise UnknownConstant(constant + UnknownConstant.default_msg)
-
-
 
     @staticmethod
     def get_constants(constants: List[str] | str):

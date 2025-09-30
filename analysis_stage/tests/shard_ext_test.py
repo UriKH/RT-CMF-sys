@@ -1,18 +1,13 @@
 import unittest
-import sympy as sp
 from contextlib import contextmanager
-import os
-from ramanujantools.cmf import pFq
 
 from itertools import product
 from functools import lru_cache
 from scipy.optimize import linprog
 import numpy as np
-from numpy import linalg
-from tqdm import tqdm
 
-from utils.plane import Plane
-from utils.util_types import *
+from utils.geometry.plane import Plane
+from utils.types import *
 from configs.analysis import *
 
 x0, x1, y0 = sp.symbols('x0 x1 y0')

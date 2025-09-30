@@ -5,7 +5,7 @@ from analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
 from search_stage.data_manager import DataManager
 from search_stage.methods.serial.serial_searcher import SerialSearcher
 
-from utils.util_types import *
+from utils.types import *
 from utils.logger import Logger
 
 from configs import (
@@ -60,8 +60,13 @@ class Analyzer(AnalyzerScheme):
             )  # TODO: convert to config maybe??
 
             identified = dm.is_valid()
-            Logger(f'Identified {identified * 100}% of trajectories, best delta: {dm.best_delta()[0]}',
-                   Logger.Levels.info).log(msg_prefix='\n')
+            best_delta = dm.best_delta()[0]
+            if best_delta is None:
+                Logger(f'Identified {identified * 100:.2f}% of trajectories, best delta: {best_delta}',
+                       Logger.Levels.info).log(msg_prefix='\n')
+            else:
+                Logger(f'Identified {identified * 100:.2f}% of trajectories, best delta: {best_delta:.4f}',
+                       Logger.Levels.info).log(msg_prefix='\n')
             if identified > config_analysis.IDENTIFY_THRESH:
                 managers[shard] = dm
             else:

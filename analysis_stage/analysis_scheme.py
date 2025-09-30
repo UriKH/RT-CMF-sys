@@ -1,7 +1,7 @@
 from analysis_stage.subspaces.searchable import Searchable
 from search_stage.data_manager import DataManager
-from module import Module
-from utils.util_types import *
+from system.module import Module
+from utils.types import *
 
 from abc import abstractmethod, ABC
 

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from utils.util_types import *
+from utils.types import *
 
 
 class Searchable(ABC):

@@ -9,8 +9,8 @@ from db_stage.funcs.formatter import Formatter
 from db_stage.errors import *
 import db_stage.funcs as funcs
 from db_stage.funcs.config import *
-from utils.util_types import *
-from system import System
+from utils.types import *
+from system.system import System
 from configs import system as sys_config
 
 

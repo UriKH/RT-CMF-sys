@@ -1,17 +1,14 @@
-from idna import valid_string_length
-from sympy.polys.subresultants_qq_zz import find_degree
-
 from analysis_stage.subspaces.searchable import Searchable
 from search_stage.data_manager import *
 from search_stage.searcher_scheme import SearchMethod
-from utils.util_types import *
-from utils.point_generator import PointGenerator
+from utils.types import *
+from utils.geometry.point_generator import PointGenerator
 from utils.logger import Logger
 from configs import (
     analysis as analysis_config,
     search as search_config
 )
-from system import System
+from system.system import System
 
 
 import sympy as sp
@@ -220,6 +217,9 @@ class SerialSearcher(SearchMethod):
         if error is not None:
             sd.errors['delta'] = error
         else:
+            d = SerialSearcher.sympy_to_mpmath(delta)
+            if d == mp.mpf("inf"):
+                print(f'delta: {d} in trajectory: {sv}')
             sd.delta = float(SerialSearcher.sympy_to_mpmath(delta))
 
         a, b = SerialSearcher.fraction_to_vectors(sp.fraction(simpified), symbols)

@@ -4,12 +4,12 @@ import db_stage.DBs.db_v1.config as v1_config
 import configs.database as db_config
 import configs.system as sys_config
 from db_stage.errors import MissingPath
-from utils.util_types import *
-from module import CatchErrorInModule
+from utils.types import *
+from system.module import CatchErrorInModule
 from configs import system
 
 
-class DBMod(DBModScheme):
+class DBModV1(DBModScheme):
     def __init__(self, path: Optional[str] = v1_config.DEFAULT_PATH, json_path: Optional[str] = None):
         super().__init__(
             description='Database module for inspiration function management',
@@ -18,13 +18,13 @@ class DBMod(DBModScheme):
         self.db = DB(path)
         self.json_path = json_path
 
-    @CatchErrorInModule(with_trace=system.MODULE_ERROR_SHOW_TRACE)
+    @CatchErrorInModule(with_trace=system.MODULE_ERROR_SHOW_TRACE, fatal=True)
     def execute(self, constants: Optional[List[str] | str] = None) -> Dict[str, CMFlist] | None:
         def classify_usage(usage: db_config.DBUsages) -> Optional[dict]:
             match usage:
                 case db_config.DBUsages.RETRIEVE_DATA:
-                    if not v1_config.MULTIPLE_CONSTANTS and len(constants) > 1:
-                        raise ValueError("Multiple constants are not allowed when retrieving data from DB.")
+                    # if not v1_config.MULTIPLE_CONSTANTS and len(constants) > 1:
+                    #     raise ValueError("Multiple constants are not allowed when retrieving data from DB.")
                     return {constant: self.db.select(constant) for constant in constants}
                 case db_config.DBUsages.STORE_DATA:
                     try:

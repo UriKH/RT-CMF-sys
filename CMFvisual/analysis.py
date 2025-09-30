@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
-from utils.util_types import *
-from utils.plane import Plane
+from utils.types import *
+from utils.geometry.plane import Plane
 
 
 def get_cmap(n, name='hsv'):

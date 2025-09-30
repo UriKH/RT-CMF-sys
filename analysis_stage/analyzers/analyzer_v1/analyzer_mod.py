@@ -1,16 +1,17 @@
 from analysis_stage.analysis_scheme import AnalyzerModScheme
-from utils.point_generator import PointGenerator
-from utils.util_types import *
-from system import System
+from utils.geometry.point_generator import PointGenerator
+from utils.types import *
+from system.system import System
 from analysis_stage.analyzers.analyzer_v1.analyzer import Analyzer
+from analysis_stage.analyzers.analyzer_v1.config import *
 from analysis_stage.subspaces.searchable import Searchable
-from module import CatchErrorInModule
+from system.module import CatchErrorInModule
 import configs.system as sys_config
 
 from tqdm import tqdm
 
 
-class AnalyzerMod(AnalyzerModScheme):
+class AnalyzerModV1(AnalyzerModScheme):
     """
     The class represents the module for CMF analysis and shard search filtering and prioritization.
     """
@@ -22,7 +23,7 @@ class AnalyzerMod(AnalyzerModScheme):
         )
         self.cmf_data = cmf_data
 
-    @CatchErrorInModule(with_trace=sys_config.MODULE_ERROR_SHOW_TRACE)
+    @CatchErrorInModule(with_trace=sys_config.MODULE_ERROR_SHOW_TRACE, fatal=True)
     def execute(self) -> Dict[str, List[Searchable]]:
         """
         The main function of the module. It performs the following steps:
@@ -45,7 +46,7 @@ class AnalyzerMod(AnalyzerModScheme):
             for cmf, shift in cmf_tups:
                 analyzer = Analyzer(constant, cmf, shift, System.get_const_as_mpf(constant))
                 dim = cmf.dim()
-                dms = analyzer.search(length=PointGenerator.calc_sphere_radius(10 ** dim, dim)) # TODO: convert 10 ** d to config
+                dms = analyzer.search(length=PointGenerator.calc_sphere_radius(NUM_OF_TRAJ_FROM_DIM(dim), dim))
                 queue.append(analyzer.prioritize(dms))
                 # TODO: Now we want to take the DataManagers and convert whose to databases per CMF - I don't know if we really want this or not...
             merged: Dict[Searchable, Dict[str, int]] = merge_dicts(queue)

@@ -1,6 +1,6 @@
 import math
 
-from utils.util_types import *
+from utils.types import *
 
 import mpmath as mp
 import itertools

@@ -1,23 +1,26 @@
 from abc import ABC, abstractmethod
 from tqdm import tqdm
 
-from module import Module, CatchErrorInModule
-from utils.util_types import *
+from system.module import Module, CatchErrorInModule
+from utils.types import *
 from db_stage.funcs.formatter import Formatter
 from configs import system as sys_config
 
 
 class DBModScheme(Module):
     @classmethod
-    @CatchErrorInModule(with_trace=sys_config.MODULE_ERROR_SHOW_TRACE)
-    def aggregate(cls, dbs: List["DBModScheme"], constants: Optional[List[str] | str] = None) -> Dict[str, CMFlist]:
+    @CatchErrorInModule(with_trace=sys_config.MODULE_ERROR_SHOW_TRACE, fatal=True)
+    def aggregate(cls, dbs: List["DBModScheme"],
+                  constants: Optional[List[str] | str] = None,
+                  close_after_exec: bool = False) -> Dict[str, CMFlist]:
         """
         Aggregate results from multiple DBModConnector instances.
         i.e., combine data from multiple databases
         :param dbs: A list of database instances given by System
         :param constants: A list of constants to search for. If None, search for constants defined in the configuration
                             file in 'configs.database.py'.
-        :return:
+        :param close_after_exec: Close the database after execution
+        :return: A dictionary mapping each constant to a list of CMFs and their respective shifts
         """
         results = dict()
         for db in tqdm(dbs, desc=f'Extracting data from DBs', **sys_config.TQDM_CONFIG):
@@ -25,6 +28,8 @@ class DBModScheme(Module):
                 raise ValueError(f"Invalid DBModConnector instance: {db}")
             for const, l in db.format_result(db.execute(constants)).items():
                 results[const] = list(set(results.get(const, []) + l))
+            if close_after_exec:
+                del db
         return results
 
     @abstractmethod

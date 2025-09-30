@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from ramanujantools.cmf.pfq import pFq
 
 from db_stage.funcs.formatter import Formatter
-from utils.util_types import *
+from utils.types import *
 
 
 @dataclass

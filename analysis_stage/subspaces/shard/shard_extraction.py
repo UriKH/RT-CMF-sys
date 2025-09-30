@@ -1,5 +1,5 @@
-from utils.util_types import *
-from utils.plane import Plane
+from utils.types import *
+from utils.geometry.plane import Plane
 from configs.analysis import *
 from configs import (
     system as sys_config
@@ -8,7 +8,7 @@ from configs import (
 from ramanujantools.cmf import CMF
 from analysis_stage.subspaces.shard.shard import Shard
 from analysis_stage.subspaces.shard.config import *
-from utils.point_generator import PointGenerator
+from utils.geometry.point_generator import PointGenerator
 from utils.logger import Logger
 
 from itertools import product

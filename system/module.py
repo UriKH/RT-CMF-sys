@@ -9,7 +9,7 @@ from utils.logger import Logger
 
 
 class CatchErrorInModule:
-    def __init__(self, with_trace: bool = True, fatal: bool = True):
+    def __init__(self, with_trace: bool = True, fatal: bool = False):
         self.with_trace = with_trace
         self.fatal = fatal
 
@@ -33,8 +33,11 @@ class CatchErrorInModule:
                 if self.with_trace:
                     traceback.print_exc()
                 if self.fatal:
-                    # exit(1)
-                    pass
+                    try:
+                        __IPYTHON__
+                        raise Exception('Stopping...')
+                    except NameError:
+                        exit(1)
         return wrapper
 
 

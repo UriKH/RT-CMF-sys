@@ -1,3 +1,4 @@
 FIND_EIGEN_VALUES = False
 FIND_GCD_SLOPE = False
 FIND_LIMIT = False
+NUM_OF_TRAJ_FROM_DIM = (lambda d: 10 ** d)

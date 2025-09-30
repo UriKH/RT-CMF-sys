@@ -1,4 +1,4 @@
-from utils.util_types import *
+from utils.types import *
 
 import ramanujantools.position as rt_pos
 import sympy as sp

@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from analysis_stage.subspaces.searchable import Searchable
-from utils.util_types import *
+from utils.types import *
 
 if TYPE_CHECKING:
     from analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
