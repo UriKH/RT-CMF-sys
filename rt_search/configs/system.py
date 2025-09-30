@@ -13,7 +13,7 @@ class SystemConfig(Configurable):
     # ============================== Printing and errors ==============================
     MODULE_ERROR_SHOW_TRACE: bool = True                            # show error trace if occurs
     TQDM_CONFIG: Dict[str, Any] = field(default_factory=dict)
-    LOGGING_BUFFER: int = 150  # when logging a buffer use width of terminal as 150 characters
+    LOGGING_BUFFER_SIZE: int = 150  # when logging a buffer use width of terminal as 150 characters
 
     # ============================== constant mapping ==============================
     SYMPY_TO_MPMATH: Dict[str, mp] = field(default_factory=dict)

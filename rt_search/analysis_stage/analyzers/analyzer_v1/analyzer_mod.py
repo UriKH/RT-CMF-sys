@@ -49,11 +49,11 @@ class AnalyzerModV1(AnalyzerModScheme):
             queue: List[Dict[Searchable, Dict[str, int]]] = []
 
             Logger(
-                Logger.buffer_print(sys_config.LOGGING_BUFFER, f'Analyzing for {constant}', '=')
+                Logger.buffer_print(sys_config.LOGGING_BUFFER_SIZE, f'Analyzing for {constant}', '=')
             ).log(msg_prefix='\n')
             for cmf, shift in cmf_tups:
                 Logger(
-                    Logger.buffer_print(sys_config.LOGGING_BUFFER, f'Current CMF: {cmf} with shift {shift}', '=')
+                    Logger.buffer_print(sys_config.LOGGING_BUFFER_SIZE, f'Current CMF: {cmf} with shift {shift}', '=')
                 ).log(msg_prefix='\n')
                 analyzer = Analyzer(constant, cmf, shift, System.get_const_as_sp(constant))
                 dim = cmf.dim()

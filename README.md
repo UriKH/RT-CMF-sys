@@ -1,8 +1,8 @@
 # RT-CMF-sys
 
 ## Installation
-- For usage with default configurations run: `pip install git+https://github.com/UriKH/RT-CMF-sys.git`
-- At this point of development, for better usage please fork or clone this repo (WIP) :)
+For installation as a package run: `pip install git+https://github.com/UriKH/RT-CMF-sys.git`  
+
 
 ## Usage
 Interaction with the system is via the System class (`from access import System`) and using the config files.
@@ -11,17 +11,24 @@ For easy usage preform accessing to configs, errors and functionality via `acces
 ### Usage examples:
 ##### main.py
 ```
-from rt_search.access import System, DBModV1, AnalyzerModV1, SearcherModV1
+from rt_search import *
 
-results = System(
-  dbs = [ DBModV1(path='./my_database.db', json_path='./my_data.json') ],
-  analyzers = [ AnalyzerModV1 ],
-  searcher = SearcherModV1
-).run(constants=['pi', 'EulerGamma', 'Catalan'])
+if __name__ =='__main__':
+    config.configure(system={'LOGGING_BUFFER': 160}, analysis={'IDENTIFY_THRESHOLD': 0.1})
+    analysis_config.PRINT_FOR_EVERY_SEARCHABLE = False
+
+    results = System(
+        dbs=[DBModV1(path='./my_database.db', json_path='./my_data.json')],
+        analyzers=[AnalyzerModV1],
+        searcher=SearcherModV1
+    ).run(constants=['pi'])
 ```
 **Note:** 
 - The names of the constants should be writen as `sympy` calls them (`sp.pi`, `sp.E`, etc.).
 - If you don't want to load or execute commadns using a JSON file, `json_path` could be ommited from the arguments.
+- Changing configurations could be done in two ways:
+  1. Using `config.configure(<config_section> = {<configuration-name> : <new value>})` - that way new configurations could be added to newly developed modules.
+  2. Using each section's private configuration e.g. `db_config.USAGE = DBUsage.RETRIEVE_DATA`.
 
 ##### data.json
 When reading this file, the system will execute the `append` command and will try to add the inspiration function ${}_2F_1(0.5)$ to set of inpiration funcitons for $\pi$ with the shift in start point as $x=0,~y=0,~z=\text{sp.Rational(1,2)}$.
@@ -48,10 +55,17 @@ The system is composed of 3 stages:
 3. Search - deep and full search within the searchable spaces. This stage (will) contain further logic and particularly ascend logic.
 
 #### Configuration
-The configurations are ordered in three layers from most general to per module configs:
-1. Per Module config - each module contains a config file describing useful configuration and defining functionality (See the file for description). For example see: `db_stage/DBs/db_v1/config.py`
-2. Per Stage config - e.g. in `configs`: `analysis.py`/`database.py`/`search.py`. These define the stage behavior. Notice not to use **stage** configurations that don't match the **modules** you are using.
-3. System settings - `configs/system.py`. This file defines things like the visuals of the system and interaction.
+Configuration management is done using distinct configuration files for each stage (or section - like `system`):
+- `database` - `db_config`
+- `analysis` - `analysis_config`
+- `search` - `search_config`
+- `system` - `sys_config`
+
+Each `<X>_config` contains the configurations for this section. You can access those directly in order to view the current values.  
+In order to change them you can use: `<X>_config.<property> = <new-value>`  
+Or, by using the global configuration manager: `config.configure(<X> = {<property> : <new-value> })`  
+The latter allows the **addition of new configurations**.
+
 
 Globally the system looks as follows:
 ```
@@ -107,10 +121,9 @@ analysis_stage
 │             config.py  
 │  
 └─── subspaces  
-     │   searchable.py  
-     ├─── ev_border  
+     │   searchable.py
+     │  
      └─── shard  
-              config.py  
               shard.py  
               shard_extraction.py
  ```
@@ -126,10 +139,10 @@ analysis_stage
 search_stage
 │   data_manager.py
 │   searcher_scheme.py
+│   errors.py
 │
 ├─── methods
 │    └─── serial
-│             config.py
 │             serial_searcher.py
 │       
 └─── searchers
@@ -146,7 +159,6 @@ system
     errors.py
     system.py
     module.py
-
 utils
 │   logger.py
 │   types.py
