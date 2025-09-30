@@ -10,7 +10,7 @@ For easy usage preform accessing to configs, errors and functionality via `acces
 ### Usage examples:
 ##### main.py
 ```
-from access import System, DBModV1, AnalyzerModV1, SearcherModV1
+from rt_search.access import System, DBModV1, AnalyzerModV1, SearcherModV1
 
 results = System(
   dbs = [ DBModV1(path='./my_database.db', json_path='./my_data.json') ],
