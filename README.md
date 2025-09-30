@@ -20,7 +20,7 @@ results = System(
 ```
 **Note:** 
 - Although the example shows way to search multiple constants simultaniously this option is not supported currently.
-- If we don't want to load or execute commadns using a JSON file, `json_path` could be ommited from the arguments.
+- If you don't want to load or execute commadns using a JSON file, `json_path` could be ommited from the arguments.
 
 ##### data.json
 When reading this file, the system will execute the `append` command and will try to add the inspiration function ${}_2F_1(0.5)$ to set of inpiration funcitons for $\pi$ with the shift in start point as $x=0,~y=0,~z=\text{sp.Rational(1,2)}$.
