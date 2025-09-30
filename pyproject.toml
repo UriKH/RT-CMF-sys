@@ -2,15 +2,9 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-packages = [
-    "configs",
-    "db_stage",
-    "analysis_stage",
-    "search_stage",
-    "system",
-    "utils"
-]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["rt_search*"]
 
 [project]
 name = "rt_cmf_sys"
