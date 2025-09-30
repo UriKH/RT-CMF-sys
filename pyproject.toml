@@ -3,10 +3,17 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["configs", "db_stage", "analysis_stage", "search_stage"]
+packages = [
+    "configs",
+    "db_stage",
+    "analysis_stage",
+    "search_stage",
+    "system",
+    "utils"
+]
 
 [project]
-name = "RT-CMF-sys"
+name = "rt_cmf_sys"
 version = "0.1.0"
 description = "Irationality searching for a constant"
 authors = [{ name="Uri K.H." }]
@@ -18,5 +25,7 @@ dependencies = [
     "numpy",
     "mpmath",
     "networkx",
-    "tqdm"
+    "tqdm",
+    "requests",
+    "git+https://github.com/RamanujanMachine/LIReC.git@main"
 ]
