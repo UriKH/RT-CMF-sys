@@ -1,16 +1,15 @@
 from rt_search.utils.types import *
 from rt_search.utils.geometry.plane import Plane
-from rt_search.configs.analysis import *
 from rt_search.configs import (
-    system as sys_config
+    sys_config,
+    analysis_config
 )
 
-from ramanujantools.cmf import CMF
-from rt_search.analysis_stage.subspaces.shard.shard import Shard
-from rt_search.analysis_stage.subspaces.shard.config import *
+from .shard import Shard
 from rt_search.utils.geometry.point_generator import PointGenerator
 from rt_search.utils.logger import Logger
 
+from ramanujantools.cmf import CMF
 from itertools import product
 from functools import lru_cache, partial
 from scipy.optimize import linprog
@@ -28,7 +27,7 @@ class ShardExtractor:
         self.const_name = const_name
         self.cmf: CMF = cmf
         self.shifts: Position = shifts
-        self.pool = ProcessPoolExecutor() if PARALLEL_SHARD_ANALYSIS else None
+        self.pool = ProcessPoolExecutor() if analysis_config.PARALLEL_SHARD_ANALYSIS else None
         self.hps, self.symbols = self.__extract_shard_hyperplanes(cmf)
         Logger(
             f'\n* symbols for this CMF: {self.symbols}\n* Shifts: {self.shifts}', Logger.Levels.info
@@ -88,7 +87,7 @@ class ShardExtractor:
         return undef.union(z_det)
 
     @staticmethod
-    @lru_cache(maxsize=128 if SHARD_EXTRACTOR_CACHE else 0)
+    @lru_cache(maxsize=128 if analysis_config.USE_CACHING else 0)
     def __expr_to_ineq(expr, symbols, greater_than_0: bool = True):
         """
         Prepare a linear expression of the form: ax + b > 0 \n
@@ -106,11 +105,11 @@ class ShardExtractor:
         if greater_than_0:
             # a·x + c >= 0  ⇔  -a·x <= c
             row = [-coef for coef in a]
-            b = const - SHARD_EXTRACTOR_ERR
+            b = const - analysis_config.SHARD_EXTRACTOR_ERR
         else:
             # a·x + c <= 0  ⇔  a·x <= -c
             row = [coef for coef in a]
-            b = -const - SHARD_EXTRACTOR_ERR
+            b = -const - analysis_config.SHARD_EXTRACTOR_ERR
         return row, b
 
     @staticmethod
@@ -152,11 +151,11 @@ class ShardExtractor:
             new_lst = set(tuple(tup) for tup in clean)
             return list(new_lst)  # type checker shouts, but this is correct!
 
-        if PARALLEL_SHARD_ANALYSIS:
+        if analysis_config.PARALLEL_SHARD_ANALYSIS:
             results = self.pool.map(
                 ShardExtractor._clac_hyperplanes_worker,
                 cmf.matrices.values(),
-                chunksize=HP_CALC_CHUNK
+                chunksize=analysis_config.HP_CALC_CHUNK
             )
             data = set().union(*results)
         else:
@@ -197,11 +196,11 @@ class ShardExtractor:
 
         perms = list(product([+1, -1], repeat=len(self.hps)))
 
-        if PARALLEL_SHARD_ANALYSIS:
+        if analysis_config.PARALLEL_SHARD_ANALYSIS:
             vals = self.pool.map(
                 partial(ShardExtractor._validate_shard_worker, hps=self.hps, symbols=self.symbols),
                 perms,
-                chunksize=SHARD_VALIDATION_CHUNK
+                chunksize=analysis_config.SHARD_VALIDATION_CHUNK
             )
             shards_validated = [(perm, val[1]) for perm, val in zip(perms, vals) if val[0]]
         else:
@@ -283,7 +282,7 @@ class ShardExtractor:
             expand_search = False
 
             if not first_iteration:
-                if expanded > MAX_EXPANSIONS:
+                if expanded > analysis_config.MAX_EXPANSIONS:
                     break
                 curr_points, total_points = PointGenerator.expand_set(curr_points, signed_expansion=True)
                 Logger(f'expanded search for start points {expanded}', Logger.Levels.info).log()

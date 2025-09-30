@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from rt_search.utils.types import *
-from rt_search.db_stage.funcs.config import *
+from .config import *
 
 
 @dataclass

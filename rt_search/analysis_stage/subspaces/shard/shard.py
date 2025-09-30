@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 
-from rt_search.analysis_stage.subspaces.searchable import Searchable
+from ..searchable import Searchable
 from rt_search.utils.types import *
 
 if TYPE_CHECKING:
-    from rt_search.analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
+    from .shard_extraction import ShardExtractor
 
 
 class Shard(Searchable):

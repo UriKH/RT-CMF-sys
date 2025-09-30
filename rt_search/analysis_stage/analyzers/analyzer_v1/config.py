@@ -1,1 +1,1 @@
-NUM_OF_TRAJ_FROM_DIM = (lambda d: 10 ** d)
+PRIORITIZATION_RANKS = 4

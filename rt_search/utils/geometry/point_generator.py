@@ -1,4 +1,4 @@
-from rt_search.utils.types import *
+from ..types import *
 
 import math
 import mpmath as mp

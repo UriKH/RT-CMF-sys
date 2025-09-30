@@ -1,4 +1,4 @@
-from rt_search.utils.types import *
+from ..types import *
 from dataclasses import dataclass
 import numpy as np
 

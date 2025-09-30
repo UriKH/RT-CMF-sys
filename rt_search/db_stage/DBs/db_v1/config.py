@@ -1,7 +1,7 @@
 """
 Module configuration - specific to DB db_v1
 """
-from rt_search.configs.db_usages import DBUsages
+from rt_search.configs.database import DBUsages
 
 DEFAULT_PATH = './families_v1.db'
 ALLOWED_USAGES = [                  # allowed usages of the DB

@@ -1,17 +1,14 @@
-from rt_search.analysis_stage.analysis_scheme import AnalyzerScheme
-from rt_search.analysis_stage.subspaces.searchable import Searchable
-from rt_search.analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
-
+from ...analysis_scheme import AnalyzerScheme
+from ...subspaces.searchable import Searchable
+from ...subspaces.shard.shard_extraction import ShardExtractor
 from rt_search.search_stage.data_manager import DataManager
 from rt_search.search_stage.methods.serial.serial_searcher import SerialSearcher
-
 from rt_search.utils.types import *
 from rt_search.utils.logger import Logger
-
 from rt_search.configs import (
-    system as sys_config
+    sys_config,
+    analysis_config
 )
-from rt_search.configs import analysis as config_analysis
 
 import mpmath as mp
 from tqdm import tqdm
@@ -49,30 +46,33 @@ class Analyzer(AnalyzerScheme):
                 Logger(
                     f'Could not find valid start point search in shard (probably due to shift).'
                     f' Try increasing MAX_EXPANSIONS.', Logger.Levels.warning,
-                    condition=config_analysis.WARN_ON_EMPTY_SHARDS
+                    condition=analysis_config.WARN_ON_EMPTY_SHARDS
                 ).log(msg_prefix='\n')
                 continue
-            searcher = SerialSearcher(shard, self.constant, use_LIReC=config_analysis.USE_LIReC, deep_search=False)
+            searcher = SerialSearcher(shard, self.constant, use_LIReC=analysis_config.USE_LIReC, deep_search=False)
             searcher.generate_trajectories(method, length, clear=False)
             dm = searcher.search(
-                start, partial_search_factor=0.5,
-                find_limit=False, find_gcd_slope=False, find_eigen_values=False
-            )  # TODO: convert to config maybe??
+                start,
+                partial_search_factor=analysis_config.PARTIAL_SEARCH_FACTOR,
+                find_limit=analysis_config.ANALYZE_LIMIT,
+                find_gcd_slope=analysis_config.ANALYZE_GCD_SLOPE,
+                find_eigen_values=analysis_config.ANALYZE_EIGEN_VALUES
+            )
 
             identified = dm.is_valid()
             best_delta = dm.best_delta()[0]
-            if config_analysis.PRINT_FOR_EVERY_SEARCHABLE:
+            if analysis_config.PRINT_FOR_EVERY_SEARCHABLE:
                 if best_delta is None:
                     Logger(f'Identified {identified * 100:.2f}% of trajectories, best delta: {best_delta}',
                            Logger.Levels.info).log(msg_prefix='\n')
                 else:
                     Logger(f'Identified {identified * 100:.2f}% of trajectories, best delta: {best_delta:.4f}',
                            Logger.Levels.info).log(msg_prefix='\n')
-            if identified > config_analysis.IDENTIFY_THRESH:
+            if identified > analysis_config.IDENTIFY_THRESHOLD:
                 managers[shard] = dm
             else:
                 Logger(
-                    f'Ignoring shard - identified <= {config_analysis.IDENTIFY_THRESH}% of tested trajectories.',
+                    f'Ignoring shard - identified <= {analysis_config.IDENTIFY_THRESHOLD}% of tested trajectories.',
                     Logger.Levels.info
                 ).log()
         return managers

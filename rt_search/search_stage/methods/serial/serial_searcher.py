@@ -1,12 +1,12 @@
 from rt_search.analysis_stage.subspaces.searchable import Searchable
-from rt_search.search_stage.data_manager import *
-from rt_search.search_stage.searcher_scheme import SearchMethod
+from ...data_manager import *
+from ...searcher_scheme import SearchMethod
+from ...erros import *
 from rt_search.utils.types import *
 from rt_search.utils.geometry.point_generator import PointGenerator
 from rt_search.utils.logger import Logger
-from rt_search.configs import search as search_config, analysis as analysis_config
+from rt_search.configs import search_config
 from rt_search.system.system import System
-from rt_search.search_stage.erros import *
 
 import sympy as sp
 import mpmath as mp
@@ -38,7 +38,7 @@ class SerialSearcher(SearchMethod):
         self.trajectories: Set[Position] = set()
         self.data_manager = data_manager if data_manager else DataManager(use_LIReC)
         self.const_name = space.const_name
-        self.parallel = ((not self.deep_search and analysis_config.PARALLEL_TRAJECTORY_MATCHING)
+        self.parallel = ((not self.deep_search and search_config.PARALLEL_TRAJECTORY_MATCHING)
                          or search_config.PARALLEL_SEARCH)
         self.pool = ProcessPoolExecutor() if self.parallel else None
 
@@ -55,12 +55,12 @@ class SerialSearcher(SearchMethod):
         if not arbitrary_start:
             Logger(
                 f'Could not generate trajectories. Could not provide a valid start point', Logger.Levels.warning,
-                condition=analysis_config.WARN_ON_EMPTY_SHARDS
+                condition=search_config.WARN_ON_EMPTY_SHARDS
             ).log(msg_prefix='\n')
             return
 
         trajectories = {Position(t, self.space.symbols) for t in trajectories}
-        if not self.deep_search and analysis_config.PARALLEL_TRAJECTORY_MATCHING:
+        if not self.deep_search and search_config.PARALLEL_TRAJECTORY_MATCHING:
             res = self.pool.map(partial(self.space.trajectory_in_space, start=arbitrary_start), trajectories, chunksize=200)
             self.trajectories.update({t for valid, t in zip(res, trajectories) if valid})
         else:
@@ -245,7 +245,7 @@ class SerialSearcher(SearchMethod):
             if starts is None:
                 Logger(
                     f'Could not provide a valid start point automatically', Logger.Levels.warning,
-                    condition=analysis_config.WARN_ON_EMPTY_SHARDS
+                    condition=search_config.WARN_ON_EMPTY_SHARDS
                 ).log()
                 return DataManager(self.use_LIReC)
         if isinstance(starts, Position):
