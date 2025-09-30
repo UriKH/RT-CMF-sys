@@ -17,7 +17,6 @@ from configs import (
 )
 
 
-
 class System:
     """
     configurations:
@@ -51,19 +50,26 @@ class System:
 
         constants = self.get_constants(constants)
         cmf_data = DBModScheme.aggregate(self.dbs, list(constants.keys()))
+        # TODO: close DBs when finished that part
+        # for db in self.dbs:
+        #     del db
+        print(cmf_data)
         analyzers_results = [analyzer(cmf_data).execute() for analyzer in self.analyzers]
         priorities = self.__aggregate_analyzers(analyzers_results)
         results = dict()
         for const in priorities.keys():
             s = self.searcher(priorities[const], True)
             results[const] = s.execute()
-        print(results)
+
+        print(results)  # TODO: remove this
         for const in priorities.keys():
             best_delta = -sp.oo
             best_sv = None
             best_space = None
             for space, dms in results[const].items():
                 delta, sv = dms.best_delta()
+                if delta is None:
+                    continue
                 if best_delta < delta:
                     best_delta, best_sv = delta, sv
                     best_space = space

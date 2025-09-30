@@ -137,6 +137,8 @@ class SerialSearcher(SearchMethod):
             try:
                 error_v = sp.Abs(estimated - System.get_const_as_sp(constant).evalf(30000))
                 denom = sp.denom(estimated)
+                if denom == 1:
+                    raise ZeroDivisionError('Denominator 1 caused zero division in delta calculation')
                 delta = -1 - sp.log(error_v) / sp.log(denom)
             except Exception as e:
                 error = e

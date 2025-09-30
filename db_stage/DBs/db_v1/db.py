@@ -92,6 +92,12 @@ class DB(DBScheme):
         else:
             self.update(constant, funcs, override=True)
 
+    def append(self, constant: str, funcs: List[Formatter] | Formatter) -> None:
+        if not self.Table.select().where(self.Table.constant == constant).exists():
+            self.insert(constant, funcs)
+        else:
+            self.update(constant, funcs, override=False)
+
     def insert(self, constant: str, funcs: List[Formatter] | Formatter) -> None:
         if isinstance(funcs, Formatter):
             funcs = [funcs]
@@ -192,7 +198,7 @@ class DB(DBScheme):
 
                 System.validate_constant(d['constant'], throw=True)
 
-                if 'kwargs' in d:
+                if 'kwargs' in d.keys():
                     func(
                         d["constant"],
                         getattr(funcs, d['data'][TYPE_ANNOTATE]).from_json(json.dumps(d['data'][DATA_ANNOTATE])),
