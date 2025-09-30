@@ -1,7 +1,6 @@
-import math
-
 from rt_search.utils.types import *
 
+import math
 import mpmath as mp
 import itertools
 import numpy as np

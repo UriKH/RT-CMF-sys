@@ -1,9 +1,9 @@
 from rt_search.analysis_stage.subspaces.searchable import Searchable
-from search_stage.data_manager import *
-from search_stage.searcher_scheme import SearchMethod
+from rt_search.search_stage.data_manager import *
+from rt_search.search_stage.searcher_scheme import SearchMethod
 from rt_search.utils.types import *
-from utils.geometry.point_generator import PointGenerator
-from utils.logger import Logger
+from rt_search.utils.geometry.point_generator import PointGenerator
+from rt_search.utils.logger import Logger
 from rt_search.configs import search as search_config, analysis as analysis_config
 from rt_search.system.system import System
 from rt_search.search_stage.erros import *

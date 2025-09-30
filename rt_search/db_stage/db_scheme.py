@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from tqdm import tqdm
 
-from system.module import Module, CatchErrorInModule
+from rt_search.system.module import Module, CatchErrorInModule
 from rt_search.utils.types import *
-from rt_search.db_stage.funcs.formatter import Formatter
-from configs import system as sys_config
+from .funcs.formatter import Formatter
+from rt_search.configs import system as sys_config
 
 
 class DBModScheme(Module):

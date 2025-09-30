@@ -1,13 +1,13 @@
 from rt_search.analysis_stage.subspaces.searchable import Searchable
-from search_stage.data_manager import DataManager
-from search_stage.searcher_scheme import SearcherModScheme
+from rt_search.search_stage.data_manager import DataManager
+from rt_search.search_stage.searcher_scheme import SearcherModScheme
 from rt_search.search_stage.methods.serial.serial_searcher import SerialSearcher
-from rt_search.search_stage.searchers.searcher_v1 import config as search_config
+from . import config as search_config
 from rt_search.utils.types import *
-from utils.geometry.point_generator import PointGenerator
+from rt_search.utils.geometry.point_generator import PointGenerator
 from rt_search.system.system import System
-from system.module import CatchErrorInModule
-from configs import system as sys_config
+from rt_search.system.module import CatchErrorInModule
+from rt_search.configs import system as sys_config
 
 from tqdm import tqdm
 

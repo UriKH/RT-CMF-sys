@@ -3,15 +3,15 @@ from peewee import SqliteDatabase, Model, CharField
 import json
 from tqdm import tqdm
 
-from db_stage.DBs.db_v1.config import *
-from db_stage.db_scheme import DBScheme
+from .config import *
+from rt_search.db_stage.db_scheme import DBScheme
 from rt_search.db_stage.funcs.formatter import Formatter
-from db_stage.errors import *
-import db_stage.funcs as funcs
-from db_stage.funcs.config import *
+from rt_search.db_stage.errors import *
+import rt_search.db_stage.funcs as funcs
+from rt_search.db_stage.funcs.config import *
 from rt_search.utils.types import *
 from rt_search.system.system import System
-from configs import system as sys_config
+from rt_search.configs import system as sys_config
 
 
 class DB(DBScheme):

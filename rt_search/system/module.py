@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
 from inspect import isclass
 from typing import Optional
-
 import functools
 import traceback
 
-from utils.logger import Logger
+from rt_search.utils.logger import Logger
 
 
 class CatchErrorInModule:

@@ -1,15 +1,15 @@
 from rt_search.utils.types import *
 from rt_search.utils.geometry.plane import Plane
 from rt_search.configs.analysis import *
-from configs import (
+from rt_search.configs import (
     system as sys_config
 )
 
 from ramanujantools.cmf import CMF
-from analysis_stage.subspaces.shard.shard import Shard
+from rt_search.analysis_stage.subspaces.shard.shard import Shard
 from rt_search.analysis_stage.subspaces.shard.config import *
-from utils.geometry.point_generator import PointGenerator
-from utils.logger import Logger
+from rt_search.utils.geometry.point_generator import PointGenerator
+from rt_search.utils.logger import Logger
 
 from itertools import product
 from functools import lru_cache, partial

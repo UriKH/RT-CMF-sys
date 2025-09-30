@@ -1,12 +1,12 @@
-from rt_search.db_stage.DBs.db_v1.db import DB
-from db_stage.db_scheme import DBModScheme
-import db_stage.DBs.db_v1.config as v1_config
+from .db import DB
+from rt_search.db_stage.db_scheme import DBModScheme
+from . import config as v1_config
 import rt_search.configs.database as db_config
-import configs.system as sys_config
-from db_stage.errors import MissingPath
+import rt_search.configs.system as sys_config
+from rt_search.db_stage.errors import MissingPath
 from rt_search.utils.types import *
-from system.module import CatchErrorInModule
-from configs import system
+from rt_search.system.module import CatchErrorInModule
+from rt_search.configs import system
 
 
 class DBModV1(DBModScheme):

@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from rt_search.utils.types import *
 from dataclasses import dataclass
-from db_stage.funcs.config import *
+
+from rt_search.utils.types import *
+from rt_search.db_stage.funcs.config import *
 
 
 @dataclass

@@ -1,6 +1,6 @@
 from rt_search.analysis_stage.subspaces.searchable import Searchable
-from search_stage.data_manager import DataManager
-from system.module import Module
+from rt_search.search_stage.data_manager import DataManager
+from rt_search.system.module import Module
 from rt_search.utils.types import *
 
 from abc import abstractmethod, ABC
