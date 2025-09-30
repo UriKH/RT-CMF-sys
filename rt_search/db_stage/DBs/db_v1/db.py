@@ -4,10 +4,10 @@ import json
 from tqdm import tqdm
 
 from .config import *
-from rt_search.db_stage.db_scheme import DBScheme
-from rt_search.db_stage.funcs.formatter import Formatter
-from rt_search.db_stage.errors import *
-import rt_search.db_stage.funcs as funcs
+from ...db_scheme import DBScheme
+from ...funcs.formatter import Formatter
+from ...errors import *
+from rt_search.db_stage import funcs
 from rt_search.db_stage.funcs.config import *
 from rt_search.utils.types import *
 from rt_search.system.system import System

@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 from copy import copy
 import mpmath as mp
 
-from rt_search.analysis_stage.subspaces.searchable import Searchable
+from ..analysis_stage.subspaces.searchable import Searchable
 from .data_manager import DataManager
-from rt_search.utils.types import *
-from rt_search.system.module import Module
+from ..utils.types import *
+from ..system.module import Module
 
 
 class SearchMethod(ABC):

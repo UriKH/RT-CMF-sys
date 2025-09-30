@@ -1,17 +1,14 @@
-from rt_search.analysis_stage.analysis_scheme import AnalyzerScheme
-from rt_search.analysis_stage.subspaces.searchable import Searchable
-from rt_search.analysis_stage.subspaces.shard.shard_extraction import ShardExtractor
-
+from ...analysis_scheme import AnalyzerScheme
+from ...subspaces.searchable import Searchable
+from ...subspaces.shard.shard_extraction import ShardExtractor
 from rt_search.search_stage.data_manager import DataManager
 from rt_search.search_stage.methods.serial.serial_searcher import SerialSearcher
-
 from rt_search.utils.types import *
 from rt_search.utils.logger import Logger
-
 from rt_search.configs import (
-    system as sys_config
+    system as sys_config,
+    analysis as config_analysis
 )
-from rt_search.configs import analysis as config_analysis
 
 import mpmath as mp
 from tqdm import tqdm

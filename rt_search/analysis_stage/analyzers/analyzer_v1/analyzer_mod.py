@@ -1,11 +1,11 @@
-from rt_search.analysis_stage.analysis_scheme import AnalyzerModScheme
+from ...analysis_scheme import AnalyzerModScheme
+from .analyzer import Analyzer
+from .config import *
+from ...subspaces.searchable import Searchable
 from rt_search.utils.geometry.point_generator import PointGenerator
 from rt_search.utils.logger import Logger
 from rt_search.utils.types import *
 from rt_search.system.system import System
-from rt_search.analysis_stage.analyzers.analyzer_v1.analyzer import Analyzer
-from rt_search.analysis_stage.analyzers.analyzer_v1.config import *
-from rt_search.analysis_stage.subspaces.searchable import Searchable
 from rt_search.system.module import CatchErrorInModule
 import rt_search.configs.system as sys_config
 

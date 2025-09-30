@@ -3,15 +3,15 @@ from collections import defaultdict
 import networkx as nx
 from itertools import combinations
 
-from rt_search.analysis_stage.subspaces.searchable import Searchable
-from rt_search.analysis_stage.analysis_scheme import AnalyzerModScheme
-from rt_search.configs.db_usages import DBUsages
+from ..analysis_stage.subspaces.searchable import Searchable
+from ..analysis_stage.analysis_scheme import AnalyzerModScheme
+from ..configs.db_usages import DBUsages
 from .errors import UnknownConstant
-from rt_search.db_stage.db_scheme import DBModScheme
-from rt_search.search_stage.searcher_scheme import SearcherModScheme
-from rt_search.utils.types import *
-from rt_search.utils.logger import Logger
-from rt_search.configs import (
+from ..db_stage.db_scheme import DBModScheme
+from ..search_stage.searcher_scheme import SearcherModScheme
+from ..utils.types import *
+from ..utils.logger import Logger
+from ..configs import (
     system as sys_config
 )
 from rt_search.configs import database as db_config

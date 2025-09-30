@@ -5,12 +5,12 @@ from rt_search.configs import (
     system as sys_config
 )
 
-from ramanujantools.cmf import CMF
-from rt_search.analysis_stage.subspaces.shard.shard import Shard
-from rt_search.analysis_stage.subspaces.shard.config import *
+from .shard import Shard
+from .config import *
 from rt_search.utils.geometry.point_generator import PointGenerator
 from rt_search.utils.logger import Logger
 
+from ramanujantools.cmf import CMF
 from itertools import product
 from functools import lru_cache, partial
 from scipy.optimize import linprog

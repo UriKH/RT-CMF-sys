@@ -1,4 +1,4 @@
-from rt_search.utils.types import *
+from ..types import *
 
 import ramanujantools.position as rt_pos
 import sympy as sp

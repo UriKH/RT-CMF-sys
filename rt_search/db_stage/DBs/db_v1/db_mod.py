@@ -1,12 +1,12 @@
 from .db import DB
-from rt_search.db_stage.db_scheme import DBModScheme
+from ...db_scheme import DBModScheme
+from ...errors import MissingPath
 from . import config as v1_config
+
 import rt_search.configs.database as db_config
 import rt_search.configs.system as sys_config
-from rt_search.db_stage.errors import MissingPath
 from rt_search.utils.types import *
 from rt_search.system.module import CatchErrorInModule
-from rt_search.configs import system
 
 
 class DBModV1(DBModScheme):
@@ -18,7 +18,7 @@ class DBModV1(DBModScheme):
         self.db = DB(path)
         self.json_path = json_path
 
-    @CatchErrorInModule(with_trace=system.MODULE_ERROR_SHOW_TRACE, fatal=True)
+    @CatchErrorInModule(with_trace=sys_config.MODULE_ERROR_SHOW_TRACE, fatal=True)
     def execute(self, constants: Optional[List[str] | str] = None) -> Dict[str, CMFlist] | None:
         def classify_usage(usage: db_config.DBUsages) -> Optional[dict]:
             match usage:

@@ -4,7 +4,7 @@ from typing import Optional
 import functools
 import traceback
 
-from rt_search.utils.logger import Logger
+from ..utils.logger import Logger
 
 
 class CatchErrorInModule:
