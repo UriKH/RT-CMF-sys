@@ -5,16 +5,16 @@ from itertools import combinations
 
 from ..analysis_stage.subspaces.searchable import Searchable
 from ..analysis_stage.analysis_scheme import AnalyzerModScheme
-from ..configs.db_usages import DBUsages
+from ..configs.database import DBUsages
 from .errors import UnknownConstant
 from ..db_stage.db_scheme import DBModScheme
 from ..search_stage.searcher_scheme import SearcherModScheme
 from ..utils.types import *
 from ..utils.logger import Logger
 from ..configs import (
-    system as sys_config
+    sys_config,
+    db_config
 )
-from rt_search.configs import database as db_config
 
 
 class System:

@@ -4,7 +4,7 @@ from tqdm import tqdm
 from rt_search.system.module import Module, CatchErrorInModule
 from rt_search.utils.types import *
 from .funcs.formatter import Formatter
-from ..configs import system as sys_config
+from ..configs import sys_config
 
 
 class DBModScheme(Module):

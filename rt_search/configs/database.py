@@ -1,10 +1,21 @@
 """
 Global config file for system flow regarding DBs
 """
-from rt_search.configs.db_usages import DBUsages
+from dataclasses import dataclass
+from enum import Enum, auto
 
-# PARALLEL_EXEC = False               # try to run DBs in parallel if possible
-USAGE = DBUsages.STORE_THEN_RETRIEVE      # execute DBs retrieve if retrieve is an option
-INPUT_FILE = None                   # the input file will be used when DBUsages.STORE_DATA
-                                    #    (file will be parsed and uploaded to the DBs)
+from .configurable import Configurable
 
+
+class DBUsages(Enum):
+    RETRIEVE_DATA = auto()
+    STORE_DATA = auto()
+    STORE_THEN_RETRIEVE = auto()
+
+
+@dataclass
+class DBConfig(Configurable):
+    USAGE: DBUsages = DBUsages.STORE_THEN_RETRIEVE      # execute DBs retrieve if retrieve is an option
+
+
+db_config: DBConfig = DBConfig()

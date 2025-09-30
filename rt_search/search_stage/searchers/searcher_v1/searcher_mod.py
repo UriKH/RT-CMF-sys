@@ -7,7 +7,7 @@ from rt_search.utils.types import *
 from rt_search.utils.geometry.point_generator import PointGenerator
 from rt_search.system.system import System
 from rt_search.system.module import CatchErrorInModule
-from rt_search.configs import system as sys_config
+from rt_search.configs import sys_config
 
 from tqdm import tqdm
 

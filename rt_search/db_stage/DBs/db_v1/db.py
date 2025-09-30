@@ -11,7 +11,7 @@ from rt_search.db_stage import funcs
 from rt_search.db_stage.funcs.config import *
 from rt_search.utils.types import *
 from rt_search.system.system import System
-from rt_search.configs import system as sys_config
+from rt_search.configs import sys_config
 
 
 class DB(DBScheme):

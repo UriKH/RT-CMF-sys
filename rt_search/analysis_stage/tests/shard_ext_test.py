@@ -78,7 +78,7 @@ def get_encoded_shards(hps, symbols) -> List[ShardVec]:
     Compute the Shards as Shard vector identifiers
     :return: A list of the vector identifiers
     """
-    @lru_cache(maxsize=128 if SHARD_EXTRACTOR_CACHE else 0)
+    @lru_cache(maxsize=128 if AnalysisConfig.USE_CACHING else 0)
     def expr_to_ineq(expr, greater_than_0: bool = True):
         """
         Prepare a linear expression of the form: ax + b > 0 \n

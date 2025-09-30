@@ -13,9 +13,9 @@ from .system import errors as system_errors
 
 # configs
 from .configs import (
-    database as db_config,
-    analysis as analysis_config,
-    search as search_config,
-    system as system_config,
-    db_usages
+    config,
+    sys_config,
+    db_config,
+    analysis_config,
+    search_config
 )
