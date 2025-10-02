@@ -1,3 +1,5 @@
+import copy
+
 from rt_search.analysis_stage.subspaces.searchable import Searchable
 from ...data_manager import *
 from ...searcher_scheme import SearchMethod
@@ -42,6 +44,7 @@ class SerialSearcher(SearchMethod):
                          or search_config.PARALLEL_SEARCH)
         self.pool = ProcessPoolExecutor() if self.parallel else None
 
+    # @Logger('').time_it
     def generate_trajectories(self,
                               method: str,
                               length: int,
@@ -60,6 +63,7 @@ class SerialSearcher(SearchMethod):
             return
 
         trajectories = {Position(t, self.space.symbols) for t in trajectories}
+
         if not self.deep_search and search_config.PARALLEL_TRAJECTORY_MATCHING:
             res = self.pool.map(partial(self.space.trajectory_in_space, start=arbitrary_start), trajectories, chunksize=200)
             self.trajectories.update({t for valid, t in zip(res, trajectories) if valid})
@@ -69,10 +73,9 @@ class SerialSearcher(SearchMethod):
     @staticmethod
     def pick_fraction(lst: list | set, percentage: float) -> list:
         n = len(lst)
-        if int(n / percentage) * percentage != n:
-            raise ValueError("n must be divisible by k")
-        random.seed(42)     # TODO: remove seed
-        return random.sample(list(lst), int(n * percentage))
+        k = round(n * percentage)   # nearest integer
+        k = min(max(k, 1), n)       # ensure at least 1 and at most n
+        return random.sample(list(lst), k)
 
     def generate_start_points(self,
                               method: str,
@@ -87,7 +90,7 @@ class SerialSearcher(SearchMethod):
         self.space.add_start_points(starts, filtering=True)
 
     @staticmethod
-    def _search_worker(sv, data_manager: DataManager,
+    def _search_worker(sv,
                        cmf: CMF, constant: str,
                        use_LIReC: bool,
                        parallel: bool = False,
@@ -143,9 +146,6 @@ class SerialSearcher(SearchMethod):
 
         n = sp.symbols('n')
         start, t = sv
-
-        if SearchVector(start, t) in data_manager:
-            return None
 
         sv = SearchVector(start, t)
         sd = SearchData(sv)
@@ -261,11 +261,12 @@ class SerialSearcher(SearchMethod):
                 ).log()
                 trajectories = self.trajectories
 
+        pairs = [(start, t) for start in starts for t in trajectories if
+                 SearchVector(start, t) not in self.data_manager]
+
         if self.parallel:
-            pairs = [(start, t) for start in starts for t in trajectories]
             results = self.pool.map(
                 partial(self._search_worker,
-                        data_manager=self.data_manager,
                         cmf=self.space.cmf,
                         constant=self.const_name,
                         use_LIReC=self.use_LIReC,
@@ -281,15 +282,14 @@ class SerialSearcher(SearchMethod):
                     res.delta = mp.mpf(res.delta) if isinstance(res.delta, str) else res.delta
                     self.data_manager[res.sv] = res
         else:
-            for start in starts:
-                for t in trajectories:
-                    sd = self._search_worker(
-                        (start, t), self.data_manager, self.space.cmf, self.const_name, self.use_LIReC,
-                        find_limit=find_limit,
-                        find_eigen_values=find_eigen_values,
-                        find_gcd_slope=find_gcd_slope
-                    )
-                    self.data_manager[sd.sv] = sd
+            for start, t in pairs:
+                sd = self._search_worker(
+                    (start, t), self.space.cmf, self.const_name, self.use_LIReC,
+                    find_limit=find_limit,
+                    find_eigen_values=find_eigen_values,
+                    find_gcd_slope=find_gcd_slope
+                )
+                self.data_manager[sd.sv] = sd
         return self.data_manager
 
     def get_data(self):

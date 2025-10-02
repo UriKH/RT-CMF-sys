@@ -9,7 +9,7 @@ include = ["rt_search*"]
 [project]
 name = "rt_cmf_sys"
 version = "0.1.0"
-description = "Irationality searching for a constant"
+description = "System for modular automated search inside CMFs for irrationality of constants"
 authors = [{ name="Uri K.H." }]
 dependencies = [
     "peewee",

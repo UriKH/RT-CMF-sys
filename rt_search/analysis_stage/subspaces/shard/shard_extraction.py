@@ -59,7 +59,15 @@ class ShardExtractor:
         return sp.Matrix.hstack(v1, v2).rank() == 1
 
     @staticmethod
-    def _clac_hyperplanes_worker(mat):
+    def _clac_hyperplanes_worker(mat, shift: Position):
+        def check_linear_solutions(lhs, rhs) -> bool:
+            expr = lhs - rhs
+            expr = expr.subs({sym: sym + shift[sym] for sym in expr.free_symbols})
+            coeffs = [float(expr.diff(v)) for v in expr.free_symbols]
+            free = expr.subs({sym: 0 for sym in expr.free_symbols})
+            gcd = sp.gcd(coeffs)
+            return sp.Abs(free) % sp.Abs(gcd) == 0 or free == 0
+
         def __solve_shards(mat: sp.Matrix) -> Tuple[Set[EqTup], Set[EqTup]]:
             """
             Find the expressions for which the matrix is undefined or its determinant is 0
@@ -84,7 +92,8 @@ class ShardExtractor:
             return __transform(l), __transform(sp.solve(mat.det()))
 
         undef, z_det = __solve_shards(mat)
-        return undef.union(z_det)
+        combined = undef.union(z_det)
+        return  {s for s in combined if check_linear_solutions(*s)}
 
     @staticmethod
     @lru_cache(maxsize=128 if analysis_config.USE_CACHING else 0)
@@ -153,7 +162,7 @@ class ShardExtractor:
 
         if analysis_config.PARALLEL_SHARD_ANALYSIS:
             results = self.pool.map(
-                ShardExtractor._clac_hyperplanes_worker,
+                partial(ShardExtractor._clac_hyperplanes_worker, shift=self.shifts),
                 cmf.matrices.values(),
                 chunksize=analysis_config.HP_CALC_CHUNK
             )
@@ -161,7 +170,7 @@ class ShardExtractor:
         else:
             data = set()
             for mat in cmf.matrices.values():
-                data = data.union(ShardExtractor._clac_hyperplanes_worker(mat))
+                data = data.union(ShardExtractor._clac_hyperplanes_worker(mat, self.shifts))
 
         data = remove_duplicates(data)
         symbols = list(cmf.matrices.keys())
@@ -179,6 +188,12 @@ class ShardExtractor:
             if append:
                 filtered.append(planes[i])
             i -= 1
+
+        if analysis_config.PRINT_SHARDS:
+            hps = ''
+            for hp in filtered:
+                hps += f'* {hp}\n'
+            Logger(f'Shard hyperplanes for this CMF (with the respect to the shift) are:\n{hps}').log(msg_prefix='\n')
         return filtered, symbols
 
     def get_encoded_shards(self) -> List[ShardVec]:

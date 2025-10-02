@@ -8,6 +8,9 @@ from collections import UserDict
 
 @dataclass
 class SearchVector:
+    """
+    A class representing a search vector in a specific space
+    """
     start: Position
     trajectory: Position
 
@@ -17,6 +20,10 @@ class SearchVector:
 
 @dataclass
 class SearchData:
+    """
+    A class representing a search data alongside a specific search vector
+    """
+
     sv: SearchVector
     limit: float = None
     delta: float | str = None
@@ -28,11 +35,20 @@ class SearchData:
 
 
 class DataManager(UserDict[SearchVector, SearchData]):
+    """
+    DataManager represents a set of results found in a specific search in a CMF
+    """
+
     def __init__(self, use_LIReC: bool):
         super().__init__()
         self.use_LIReC = use_LIReC
 
-    def is_valid(self) -> float:
+    @property
+    def identified_percentage(self) -> float:
+        """
+        Computes the percentage identified by the search vector, if no data collected mark as 1 (i.e. 100%)
+        :return: The percentage identified by the search vector as a number in [0, 1]
+        """
         df = self.as_df()
         if df is None:
             return 1
@@ -42,7 +58,12 @@ class DataManager(UserDict[SearchVector, SearchData]):
             frac = 1 - df['initial_values'].isna().sum() / len(df['initial_values'])
         return frac
 
-    def best_delta(self):
+    @property
+    def best_delta(self) -> Tuple[Optional[float], Optional[SearchVector]]:
+        """
+        The best delta found
+        :return: A tuple of the delta value and the search vector it was found in.
+        """
         df = self.as_df()
         if df.empty:
             return None, None
@@ -54,10 +75,18 @@ class DataManager(UserDict[SearchVector, SearchData]):
         row = df.loc[deltas.idxmax()]
         return row['delta'], row['sv']
 
-    def get_data(self):
+    def get_data(self) -> List[SearchData]:
+        """
+        Gather all search data in the manager into a list
+        :return: The data collected as a list
+        """
         return list(self.values())
 
-    def as_df(self):
+    def as_df(self) -> pd.DataFrame:
+        """
+        Convert the data into a dataframe
+        :return: The pandas dataframe.
+        """
         rows = [
             {
                 "sv": sv,

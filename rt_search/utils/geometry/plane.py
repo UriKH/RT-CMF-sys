@@ -5,33 +5,35 @@ import numpy as np
 
 @dataclass
 class Plane:
+    """
+    A class representing a plane given as a sympy expression using also a normal and a point on the plane.
+    """
     expression: sp.Expr
     symbols: List[sp.Symbol]
 
     def __post_init__(self):
-        self.normal, self.point = self.calc_normal(self.expression, self.symbols)
+        self.normal, self.point = self.__calc_normal(self.expression, self.symbols)
 
     def intersection_with_line_coeff(self, start: Position, direction: Position):
-        # TODO: need to normalize things here
+        """
+        Calculate the intersection coefficient between a plane and a line defined by start and direction.
+        (A ray defined as: l_0 + t * l where t is a scalar)
+        :param start: l_0 - a start point of the ray
+        :param direction: l - the direction of the ray
+        :return: The t value for which the line intersects with the plane, if there is no intersection None.
+        """
         if abs(dot := np.dot(self.normal, direction.as_np_array())) <= 1e-10:
             return None
         return np.dot(self.point - start.as_np_array(), self.normal) / dot
 
     @staticmethod
-    def calc_normal(expr: sp.Expr, symbols: List[sp.Symbol]) -> Tuple[np.array, np.array]:
-        # pt = np.zeros(len(symbols), dtype=float)
-        # normal = np.zeros(len(symbols), dtype=float)
-        #
-        # for i, v in enumerate(symbols):
-        #     if (coeff := float(expr.coeff(v))) == 0:
-        #         continue
-        #     pt[i] = float(-expr.subs({v: 0}.update({for k, sym in enumerate(symbols) if k < i}))) / coeff
-        #     break
-        #
-        # for i, v in enumerate(symbols):
-        #     normal[i] = float(sp.diff(expr, v))
-        # return normal, pt
-        # Compute numeric normal
+    def __calc_normal(expr: sp.Expr, symbols: List[sp.Symbol]) -> Tuple[np.array, np.array]:
+        """
+        Calculate the normal and a point on the plane.
+        :param expr: The expression describing the plane.
+        :param symbols: The symbols describing the plane.
+        :return: A tuple of the normal and a point on the plane.
+        """
         normal = np.array([float(expr.diff(v)) for v in symbols], dtype=float)
 
         # Compute a numeric point on the plane
@@ -43,7 +45,6 @@ class Plane:
                 c = float(expr.subs({sym: 0 for sym in symbols}))
                 pt[i] = -c / a
                 break
-
         return normal, pt
 
     def __hash__(self):

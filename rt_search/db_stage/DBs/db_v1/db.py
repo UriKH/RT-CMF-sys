@@ -55,7 +55,7 @@ class DB(DBScheme):
         """
         data = self.__get_as_json(constant)
         cmfs = []
-        for func_json in tqdm((data if data else []), desc="Loading CMFs from DB", **sys_config.TQDM_CONFIG):
+        for func_json in (data if data else []):
             try:
                 cmfs.append(
                     getattr(funcs, func_json[TYPE_ANNOTATE]).from_json(json.dumps(func_json[DATA_ANNOTATE])).to_cmf()
