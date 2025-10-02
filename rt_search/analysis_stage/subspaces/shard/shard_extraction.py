@@ -193,7 +193,7 @@ class ShardExtractor:
             hps = ''
             for hp in filtered:
                 hps += f'* {hp}\n'
-            Logger(f'Shard hyperplanes for this CMF (with the respect to the shift) are: {hps}').log(msg_prefix='\n')
+            Logger(f'Shard hyperplanes for this CMF (with the respect to the shift) are:\n{hps}').log(msg_prefix='\n')
         return filtered, symbols
 
     def get_encoded_shards(self) -> List[ShardVec]:
