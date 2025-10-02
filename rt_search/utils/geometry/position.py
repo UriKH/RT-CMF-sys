@@ -4,8 +4,10 @@ import ramanujantools.position as rt_pos
 import sympy as sp
 import numpy as np
 
+from ...system.serializable import Serializable
 
-class Position(rt_pos.Position):
+
+class Position(rt_pos.Position, Serializable):
     """
     Position wrapper to the ramanujantools.position.Position class. \n
     Here we add some extra functionality - the starting representation is a list of sympy expressions instead of a dict.
@@ -77,3 +79,6 @@ class Position(rt_pos.Position):
 
     def as_np_array(self):
         return np.array(self.as_list())
+
+    def as_json_serializable(self):
+        return {str(sym): str(v) if not isinstance(v, int | float) else v for sym, v in self.items()}

@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 from ..searchable import Searchable
 from rt_search.utils.types import *
+from ..trajectory_generator import TrajectoryGenerator
 
 if TYPE_CHECKING:
     from .shard_extraction import ShardExtractor
@@ -16,13 +17,14 @@ class Shard(Searchable):
 
     def __init__(self,
                  shard_id: ShardVec,
-                 extractor: "ShardExtractor"):
+                 extractor: "ShardExtractor",
+                 tg: Optional[TrajectoryGenerator] = None):
         """
         :param shard_id: A +-1's vector. Each index corresponds to a hyperplane,
         representing if all the points in the shard are above the hyperplane or blow it (+1 = above, -1 = below).
         :param extractor: The ShardExtractor instance that created this Shard.
         """
-        super().__init__(extractor.const_name, len(extractor.symbols), extractor.cmf, extractor.symbols)
+        super().__init__(extractor.const_name, len(extractor.symbols), extractor.cmf, extractor.symbols, tg)
         self.hps = extractor.hps
         self.shard_id = shard_id
         self.extractor = extractor

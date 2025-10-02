@@ -2,6 +2,10 @@ from ..types import *
 from dataclasses import dataclass
 import numpy as np
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .position import Position
+
 
 @dataclass
 class Plane:
@@ -14,7 +18,7 @@ class Plane:
     def __post_init__(self):
         self.normal, self.point = self.__calc_normal(self.expression, self.symbols)
 
-    def intersection_with_line_coeff(self, start: Position, direction: Position):
+    def intersection_with_line_coeff(self, start: "Position", direction: "Position"):
         """
         Calculate the intersection coefficient between a plane and a line defined by start and direction.
         (A ray defined as: l_0 + t * l where t is a scalar)

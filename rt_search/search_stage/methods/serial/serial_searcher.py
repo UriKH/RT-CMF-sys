@@ -12,7 +12,6 @@ from rt_search.system.system import System
 
 import sympy as sp
 import mpmath as mp
-import random
 from LIReC.db.access import db
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
@@ -27,7 +26,7 @@ class SerialSearcher(SearchMethod):
 
     def __init__(self,
                  space: Searchable,
-                 constant, # sympy constant or mp.mpf
+                 constant,  # sympy constant or mp.mpf
                  data_manager: DataManager = None,
                  share_data: bool = True,
                  use_LIReC: bool = True,
@@ -44,7 +43,6 @@ class SerialSearcher(SearchMethod):
                          or search_config.PARALLEL_SEARCH)
         self.pool = ProcessPoolExecutor() if self.parallel else None
 
-    # @Logger('').time_it
     def generate_trajectories(self,
                               method: str,
                               length: int,
@@ -53,7 +51,12 @@ class SerialSearcher(SearchMethod):
         random = n is not None
         if clear:
             self.trajectories.clear()
-        trajectories = PointGenerator.generate_via_shape(length, self.space.dim, method, True, random, n)
+
+        if random or n is not None:
+            trajectories = PointGenerator.generate_via_shape(length, self.space.dim, method, True, random, n)
+        else:
+            trajectories = self.space.tg.get_trajectories(method, length, True)
+
         arbitrary_start = self.space.choose_start_point()
         if not arbitrary_start:
             Logger(
@@ -69,13 +72,6 @@ class SerialSearcher(SearchMethod):
             self.trajectories.update({t for valid, t in zip(res, trajectories) if valid})
         else:
             self.trajectories.update({t for t in trajectories if self.space.trajectory_in_space(t, arbitrary_start)})
-
-    @staticmethod
-    def pick_fraction(lst: list | set, percentage: float) -> list:
-        n = len(lst)
-        k = round(n * percentage)   # nearest integer
-        k = min(max(k, 1), n)       # ensure at least 1 and at most n
-        return random.sample(list(lst), k)
 
     def generate_start_points(self,
                               method: str,

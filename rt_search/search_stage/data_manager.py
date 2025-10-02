@@ -1,3 +1,4 @@
+from rt_search.system.serializable import Serializable
 from rt_search.utils.types import *
 
 from dataclasses import dataclass, field
@@ -7,7 +8,7 @@ from collections import UserDict
 
 
 @dataclass
-class SearchVector:
+class SearchVector(Serializable):
     """
     A class representing a search vector in a specific space
     """
@@ -17,9 +18,12 @@ class SearchVector:
     def __hash__(self):
         return hash((self.start, self.trajectory))
 
+    def as_json_serializable(self):
+        return {'start': self.start.as_json_serializable(), 'trajectory': self.trajectory.as_json_serializable()}
+
 
 @dataclass
-class SearchData:
+class SearchData(Serializable):
     """
     A class representing a search data alongside a specific search vector
     """
@@ -32,6 +36,18 @@ class SearchData:
     initial_values: Matrix = None
     LIReC_identify: bool = False
     errors: Dict[str, Exception | None] = field(default_factory=dict)
+
+    def as_json_serializable(self):
+        return {
+            'sv': self.sv.as_json_serializable(),
+            'limit': self.limit,
+            'delta': self.delta,
+            'eigen_values': self.eigen_values,
+            'gcd_slope': self.gcd_slope,
+            'initial_values': self.initial_values.tolist(),
+            'LIReC_identify': self.LIReC_identify
+            # 'errors': str(self.errors) # TODO: deal with saving errors
+        }
 
 
 class DataManager(UserDict[SearchVector, SearchData]):
@@ -101,3 +117,18 @@ class DataManager(UserDict[SearchVector, SearchData]):
             for sv, data in self.items()
         ]
         return pd.DataFrame(rows)
+
+    def as_json_serializable(self) -> list:
+        return [
+            {
+                "sv": sv.as_json_serializable(),
+                "delta": data.delta,
+                "limit": data.limit,
+                "eigen_values":  {str(k): str(v) for k, v in data.eigen_values.items()} if data.eigen_values else None,
+                "gcd_slope": data.gcd_slope,
+                "initial_values": str(data.initial_values.tolist()) if data.initial_values else None,
+                "LIReC_identify": data.LIReC_identify,
+                "errors": [{'where': where, 'type': type(error).__name__, 'msg': str(error)} for where, error in data.errors.items()]
+            }
+            for sv, data in self.items()
+        ]

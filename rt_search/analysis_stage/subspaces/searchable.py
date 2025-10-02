@@ -1,15 +1,20 @@
 from abc import ABC, abstractmethod
+
+from rt_search.analysis_stage.subspaces.trajectory_generator import TrajectoryGenerator
 from rt_search.utils.types import *
+from rt_search.utils.geometry.position import Position
 
 
 class Searchable(ABC):
-    def __init__(self, name: str, dim: int, cmf: CMF, symbols: List[sp.Symbol]):
+    def __init__(self, name: str, dim: int, cmf: CMF, symbols: List[sp.Symbol],
+                 tg: Optional[TrajectoryGenerator] = None):
         self.dim = dim
         self.cmf = cmf
         self.symbols = symbols
         self._start_points: Set[Position] = set()
         self.data = None
         self.const_name = name
+        self.tg = tg
 
     @abstractmethod
     def in_space(self, point: Position) -> Tuple[bool, Any]:

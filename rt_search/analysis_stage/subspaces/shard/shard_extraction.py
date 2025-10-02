@@ -18,6 +18,8 @@ from numpy import linalg
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
 
+from ..trajectory_generator import TrajectoryGenerator
+
 
 class ShardExtractor:
     """
@@ -230,8 +232,9 @@ class ShardExtractor:
         return self._encoded_shards
 
     def get_shards(self) -> List[Shard]:
+        tg = TrajectoryGenerator(self.symbols)
         if self._shards is None:
-            self._shards = [Shard(shard_id, self) for shard_id in self.get_encoded_shards()]
+            self._shards = [Shard(shard_id, self, tg) for shard_id in self.get_encoded_shards()]
         return self._shards
 
     def compute_feasible_points(self) -> Tuple[Dict[ShardVec, List[Position]], List[Position]]:
