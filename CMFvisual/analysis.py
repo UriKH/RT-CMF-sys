@@ -43,7 +43,10 @@ def plot_arrow(ax, start, end, color='blue'):
     vec = end - start
     ax.quiver(start[0], start[1], start[2],
               vec[0], vec[1], vec[2],
-              arrow_length_ratio=0.1, color=color, linewidth=3)
+              arrow_length_ratio=0,
+              color=color,
+              linewidth=3,
+              normalize=False)
 
 
 # ====== Example intersection check (stub, replace with your function) ======
@@ -93,6 +96,9 @@ def visualize(hyperplanes: List[Plane], arrows_from: Position, arrows_to: List[P
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
     ax.set_box_aspect([1, 1, 1])
+    ax.set_xlim([-10, 10])
+    ax.set_ylim([-10, 10])
+    ax.set_zlim([-10, 10])
     plt.show()
 
 

@@ -59,8 +59,8 @@ class Analyzer(AnalyzerScheme):
                 find_eigen_values=analysis_config.ANALYZE_EIGEN_VALUES
             )
 
-            identified = dm.is_valid()
-            best_delta = dm.best_delta()[0]
+            identified = dm.identified_percentage
+            best_delta = dm.best_delta[0]
             if analysis_config.PRINT_FOR_EVERY_SEARCHABLE:
                 if best_delta is None:
                     Logger(f'Identified {identified * 100:.2f}% of trajectories, best delta: {best_delta}',
@@ -72,9 +72,9 @@ class Analyzer(AnalyzerScheme):
                 managers[shard] = dm
             else:
                 Logger(
-                    f'Ignoring shard - identified <= {analysis_config.IDENTIFY_THRESHOLD}% of tested trajectories.',
+                    f'Ignoring shard - identified <= {analysis_config.IDENTIFY_THRESHOLD ** 100}% of tested trajectories.',
                     Logger.Levels.info
-                ).log()
+                ).log(msg_prefix='\n')
         return managers
 
     def prioritize(self, managers: Dict[Searchable, DataManager], ranks=3) -> Dict[Searchable, Dict[str, int]]:
@@ -98,7 +98,7 @@ class Analyzer(AnalyzerScheme):
 
         ranked = {}
         for shard, dm in managers.items():
-            best_delta = dm.best_delta()[0]
+            best_delta = dm.best_delta[0]
             if best_delta is None:
                 continue
             ranked[shard] = {

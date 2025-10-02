@@ -92,6 +92,9 @@ class Logger:
 
     @staticmethod
     def log_exec(func):
+        if not callable(func):
+            raise Exception('Function is not callable, bad decorator')
+
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             Logger(f'executing {func.__name__}', Logger.Levels.info).log()
@@ -100,6 +103,13 @@ class Logger:
 
     @staticmethod
     def buffer_print(total: int, text: str, char: chr):
+        """
+        Format a message into a buffer
+        :param total: The buffer size
+        :param text: Text to be printed
+        :param char: Buffer constructed by the char
+        :return: The formatted buffer string
+        """
         txt_len = len(text) + 2
         t = int((total - txt_len) / 2)
         if txt_len + 2 * t != 150:

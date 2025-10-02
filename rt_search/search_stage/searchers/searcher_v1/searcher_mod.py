@@ -13,6 +13,10 @@ from tqdm import tqdm
 
 
 class SearcherModV1(SearcherModScheme):
+    """
+
+    """
+
     def __init__(self, searcahbles: List[Searchable], use_LIReC: bool):
         super().__init__(
             description='Searcher module - orchestrating a deep search within a prioritized list of spaces',
@@ -22,7 +26,7 @@ class SearcherModV1(SearcherModScheme):
         self.use_LIReC = use_LIReC
 
     @CatchErrorInModule(with_trace=sys_config.MODULE_ERROR_SHOW_TRACE, fatal=True)
-    def execute(self):
+    def execute(self) -> Dict[Searchable, DataManager]:
         dms: Dict[Searchable, DataManager] = dict()
         for space in tqdm(self.searcahbles, desc='Searching the searchable spaces: ', **sys_config.TQDM_CONFIG):
             searcher = SerialSearcher(space, System.get_const_as_sp(space.const_name), use_LIReC=self.use_LIReC)

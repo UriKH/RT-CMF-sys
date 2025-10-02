@@ -19,20 +19,21 @@ from ..configs import (
 
 class System:
     """
-    configurations:
-    * list of constants to search for
-    * what features we are interested in (delta, eigenvalues, etc.)
-    * export - to where and at which stages
-    * import - from where and at which stage
-    * modules config - ()
+    A class representing the System itself.
     """
 
     def __init__(self,
                  dbs: List[DBModScheme],
                  analyzers: List[Type[AnalyzerModScheme]],
                  searcher: Type[SearcherModScheme]):
+        """
+        Constructing a system runnable instance for a given combination of modules.
+        :param dbs: A list of DBModScheme instances used as sources
+        :param analyzers: A list of AnalyzerModScheme types used for prioritization + preparation before the search
+        :param searcher: A SearcherModScheme type used to deepen the search done by the analyzers
+        """
         self.dbs = dbs
-        self.analyzers = analyzers  # TODO: we might want to allow multiple analyzers so check this later!
+        self.analyzers = analyzers
         self.searcher = searcher
         if db_config.USAGE != DBUsages.RETRIEVE_DATA and len(dbs) > 1:
             raise ValueError("Multiple DBModConnector instances are not allowed when not retrieving data from DBs.")
@@ -66,13 +67,12 @@ class System:
             s = self.searcher(priorities[const], True)
             results[const] = s.execute()
 
-        print(results)  # TODO: remove this
         for const in priorities.keys():
             best_delta = -sp.oo
             best_sv = None
             best_space = None
             for space, dms in results[const].items():
-                delta, sv = dms.best_delta()
+                delta, sv = dms.best_delta
                 if delta is None:
                     continue
                 if best_delta < delta:
@@ -85,6 +85,13 @@ class System:
 
     @staticmethod
     def validate_constant(constant: str, throw: bool = False) -> bool:
+        """
+        Check if a constant is defined in sympy.
+        :param constant: Constant name as string
+        :param throw: if True, throw an error on fail
+        :raise UnknownConstant if constant is unknown
+        :return: True if constant is defined in sympy.
+        """
         try:
             System.get_const_as_sp(constant)
             return True
@@ -95,6 +102,12 @@ class System:
 
     @staticmethod
     def get_const_as_mpf(constant: str) -> mp.mpf:
+        """
+        Convert string to a mpmath.mpf value
+        :param constant: Constant name as string
+        :raise UnknownConstant if constant is unknown
+        :return: the mp.mpf value
+        """
         try:
             constant = sys_config.SYMPY_TO_MPMATH[constant]
         except Exception:
@@ -115,6 +128,12 @@ class System:
 
     @staticmethod
     def get_const_as_sp(constant: str):
+        """
+        Convert string to a sympy known value
+        :param constant: Constant name as string
+        :raise UnknownConstant if constant is unknown
+        :return: the sympy constant
+        """
         pieces = constant.split("-")
         if len(pieces) == 1:
             try:
@@ -130,12 +149,22 @@ class System:
 
     @staticmethod
     def get_constants(constants: List[str] | str):
+        """
+        Retrieve the constants as sympy constants from strings
+        :param constants: A list of constant names
+        :return: The sympy constants
+        """
         if isinstance(constants, str):
             constants = [constants]
         return {c: System.get_const_as_sp(c) for c in constants}
 
     @staticmethod
     def __aggregate_analyzers(dicts: List[Dict[str, List[Searchable]]]) -> Dict[str, List[Searchable]]:
+        """
+        Aggregates the priority lists from several analyzers into one
+        :param dicts: A list of mappings from constant name to a list of its relevant subspaces
+        :return: The aggregated priority dictionaries
+        """
         all_keys = set().union(*dicts)
         result = {}
 
@@ -167,7 +196,5 @@ class System:
                 consensus = list(nx.topological_sort(G))
             except nx.NetworkXUnfeasible:
                 raise Exception('This was not supposed to happen')
-                # Cycles = ties, break them by degree or fallback
-                # consensus = sorted(searchables, key=lambda x: -sum(prefs[(x, y)] for y in searchables if x != y))
             result[key] = consensus
         return result

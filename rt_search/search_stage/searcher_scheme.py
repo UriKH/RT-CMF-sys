@@ -9,6 +9,12 @@ from ..system.module import Module
 
 
 class SearchMethod(ABC):
+    """
+    The SearchMethod represents a general search method. \n
+    A search method is a minimal object that its sole purpose is to preform the search on a given searchable. \n
+    This is the base class for all search methods that will be used by the search modules.
+    """
+
     def __init__(self,
                  space: Searchable,
                  const: mp.mpf,
@@ -16,6 +22,14 @@ class SearchMethod(ABC):
                  data_manager: DataManager = None,
                  share_data: bool = True,
                  deep_search: bool = True):
+        """
+        :param space: A subspace the search method is designated to work search in
+        :param const: The constant to look for in the subspace
+        :param use_LIReC: Preform search by computing data with LIReC
+        :param data_manager: A data manager to be used by the search method
+        :param share_data: Decide whether to share data between methods or not
+        :param deep_search: Indicate whether to use deep search or not
+        """
         self.space = space
         self.const = const
         self.use_LIReC = use_LIReC
@@ -47,6 +61,10 @@ class SearchMethod(ABC):
 
 
 class SearcherModScheme(Module):
+    """
+    A Scheme for all search modules.
+    """
+
     @staticmethod
-    def execute(self):
+    def execute(self) -> Dict[Searchable, DataManager]:
         raise NotImplementedError
