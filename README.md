@@ -3,6 +3,10 @@
 ## Installation
 For installation as a package run: `pip install git+https://github.com/UriKH/RT-CMF-sys.git`  
 
+## System general flow
+The system running flow is similar to the following (WIP)
+
+![CMF system flow (1)](https://github.com/user-attachments/assets/9d527043-e207-40e7-a9a6-2c59b3dc5b6d)
 
 ## Usage
 Interaction with the system is via the System class (`from access import System`) and using the config files.
