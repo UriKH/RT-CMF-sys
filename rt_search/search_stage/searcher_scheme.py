@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from copy import copy
 import mpmath as mp
+import random
 
 from ..analysis_stage.subspaces.searchable import Searchable
 from .data_manager import DataManager
@@ -58,6 +59,13 @@ class SearchMethod(ABC):
     @abstractmethod
     def enrich_trajectories(self):
         raise NotImplementedError
+
+    @staticmethod
+    def pick_fraction(lst: list | set, percentage: float) -> list:
+        n = len(lst)
+        k = round(n * percentage)   # nearest integer
+        k = min(max(k, 1), n)       # ensure at least 1 and at most n
+        return random.sample(list(lst), k)
 
 
 class SearcherModScheme(Module):

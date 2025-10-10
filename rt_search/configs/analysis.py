@@ -13,8 +13,9 @@ class AnalysisConfig(Configurable):
 
     # ============================= Parallelism and efficiency =============================
     USE_CACHING: bool = True  # use caching for lru_cache
-    PARALLEL_SHARD_ANALYSIS: bool = False                           # preform shard analysis on parallel
-    SHARD_VALIDATION_CHUNK: int = 15
+    PARALLEL_SHARD_VALIDATION: bool = True                           # preform shard analysis on parallel
+    PARALLEL_SHARD_EXTRACTION: bool = False
+    SHARD_VALIDATION_CHUNK: int = 300
     HP_CALC_CHUNK: int = 10
 
     NUM_TRAJECTORIES_FROM_DIM: callable = (lambda dim: 10 ** dim)     # #trajectories to analyze given searchable dims
@@ -28,7 +29,7 @@ class AnalysisConfig(Configurable):
 
     # ============================= Analysis features =============================
     USE_LIReC: bool = True                  # use LIReC in analysis instead of RT functions
-    PARTIAL_SEARCH_FACTOR: float = 0.3      # search only a part of the trajectories generated
+    PARTIAL_SEARCH_FACTOR: float = 0.2      # search only a part of the trajectories generated
     ANALYZE_LIMIT: bool = False             # calculate the limit
     ANALYZE_EIGEN_VALUES: bool = False      # calculate the trajectory matrix eigen values
     ANALYZE_GCD_SLOPE: bool = False         # calculate the gcd slope of the trajectory
