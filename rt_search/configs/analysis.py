@@ -13,8 +13,9 @@ class AnalysisConfig(Configurable):
 
     # ============================= Parallelism and efficiency =============================
     USE_CACHING: bool = True  # use caching for lru_cache
-    PARALLEL_SHARD_ANALYSIS: bool = False                           # preform shard analysis on parallel
-    SHARD_VALIDATION_CHUNK: int = 15
+    PARALLEL_SHARD_VALIDATION: bool = True                           # preform shard analysis on parallel
+    PARALLEL_SHARD_EXTRACTION: bool = False
+    SHARD_VALIDATION_CHUNK: int = 300
     HP_CALC_CHUNK: int = 10
 
     NUM_TRAJECTORIES_FROM_DIM: callable = (lambda dim: 10 ** dim)     # #trajectories to analyze given searchable dims

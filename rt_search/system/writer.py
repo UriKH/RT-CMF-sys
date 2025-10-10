@@ -24,8 +24,10 @@ class DBWriter(threading.Thread):
         # Create table if not exists
         cur.execute("""
             CREATE TABLE IF NOT EXISTS results (
-                constant TEXT PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                constant TEXT,
                 CMF TEXT,
+                chunk_size INTEGER,
                 results TEXT
             )
         """)
@@ -48,7 +50,7 @@ class DBWriter(threading.Thread):
     @staticmethod
     def __flush(cur, conn, buffer: List[Tuple[str, CMF, "DataManager"]]):
         cur.executemany(
-            "INSERT OR REPLACE INTO results (constant, CMF, results) VALUES (?, ?, ?)",
-            [(const, str(cmf), json.dumps(res.as_json_serializable())) for const, cmf, res in buffer]
+            "INSERT INTO results (constant, CMF, chunk_size, results) VALUES (?, ?, ?, ?)",
+            [(const, str(cmf), len(res), json.dumps(res.as_json_serializable())) for const, cmf, res in buffer]
         )
         conn.commit()

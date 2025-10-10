@@ -122,7 +122,7 @@ class System:
 
         n = int(pieces[1])
         try:
-            return getattr(sp, constant)(n)
+            return getattr(sp, pieces[0])(n)
         except Exception:
             raise UnknownConstant(constant + UnknownConstant.default_msg)
 
@@ -143,7 +143,7 @@ class System:
 
         n = int(pieces[1])
         try:
-            return getattr(sp, constant)(n)
+            return getattr(sp, pieces[0])(n)
         except Exception:
             raise UnknownConstant(constant + UnknownConstant.default_msg)
 

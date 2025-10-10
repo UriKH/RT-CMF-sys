@@ -29,7 +29,7 @@ class ShardExtractor:
         self.const_name = const_name
         self.cmf: CMF = cmf
         self.shifts: Position = shifts
-        self.pool = ProcessPoolExecutor() if analysis_config.PARALLEL_SHARD_ANALYSIS else None
+        self.pool = ProcessPoolExecutor() if analysis_config.PARALLEL_SHARD_VALIDATION else None
         self.hps, self.symbols = self.__extract_shard_hyperplanes(cmf)
         Logger(
             f'\n* symbols for this CMF: {self.symbols}\n* Shifts: {self.shifts}', Logger.Levels.info
@@ -63,12 +63,15 @@ class ShardExtractor:
     @staticmethod
     def _clac_hyperplanes_worker(mat, shift: Position):
         def check_linear_solutions(lhs, rhs) -> bool:
+            # TODO: deal with non-linear shards (add conversion to rational + multiply by lcm)
             expr = lhs - rhs
             expr = expr.subs({sym: sym + shift[sym] for sym in expr.free_symbols})
-            coeffs = [float(expr.diff(v)) for v in expr.free_symbols]
+            coeffs = [int(expr.diff(v)) for v in expr.free_symbols]
             free = expr.subs({sym: 0 for sym in expr.free_symbols})
-            gcd = sp.gcd(coeffs)
-            return sp.Abs(free) % sp.Abs(gcd) == 0 or free == 0
+            gcd = sp.gcd(coeffs) if coeffs else 0
+            if gcd == 0:
+                return free == 0
+            return sp.Abs(free) % gcd == 0
 
         def __solve_shards(mat: sp.Matrix) -> Tuple[Set[EqTup], Set[EqTup]]:
             """
@@ -95,7 +98,7 @@ class ShardExtractor:
 
         undef, z_det = __solve_shards(mat)
         combined = undef.union(z_det)
-        return  {s for s in combined if check_linear_solutions(*s)}
+        return {s for s in combined if check_linear_solutions(*s)}
 
     @staticmethod
     @lru_cache(maxsize=128 if analysis_config.USE_CACHING else 0)
@@ -162,7 +165,7 @@ class ShardExtractor:
             new_lst = set(tuple(tup) for tup in clean)
             return list(new_lst)  # type checker shouts, but this is correct!
 
-        if analysis_config.PARALLEL_SHARD_ANALYSIS:
+        if analysis_config.PARALLEL_SHARD_EXTRACTION:
             results = self.pool.map(
                 partial(ShardExtractor._clac_hyperplanes_worker, shift=self.shifts),
                 cmf.matrices.values(),
@@ -177,7 +180,7 @@ class ShardExtractor:
         data = remove_duplicates(data)
         symbols = list(cmf.matrices.keys())
         planes = [Plane(exp1 - exp2, symbols) for exp1, exp2 in data]
-        filtered = [planes[-1]]
+        filtered = [planes[-1]] if planes else []
 
         # make sure planes are uniuqe
         i = len(planes) - 2
@@ -213,7 +216,7 @@ class ShardExtractor:
 
         perms = list(product([+1, -1], repeat=len(self.hps)))
 
-        if analysis_config.PARALLEL_SHARD_ANALYSIS:
+        if analysis_config.PARALLEL_SHARD_VALIDATION:
             vals = self.pool.map(
                 partial(ShardExtractor._validate_shard_worker, hps=self.hps, symbols=self.symbols),
                 perms,

@@ -1,6 +1,6 @@
 from rt_search.analysis_stage.subspaces.searchable import Searchable
 from ...data_manager import DataManager
-from ...search_dump import DBWriter
+from rt_search.system.writer import DBWriter
 from ...searcher_scheme import SearcherModScheme
 from ...methods.serial.serial_searcher import SerialSearcher
 from . import config as search_config

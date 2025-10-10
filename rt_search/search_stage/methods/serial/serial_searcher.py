@@ -1,4 +1,5 @@
 import copy
+from idlelib.iomenu import errors
 
 from rt_search.analysis_stage.subspaces.searchable import Searchable
 from ...data_manager import *
@@ -52,7 +53,7 @@ class SerialSearcher(SearchMethod):
         if clear:
             self.trajectories.clear()
 
-        if random or n is not None:
+        if random:
             trajectories = PointGenerator.generate_via_shape(length, self.space.dim, method, True, random, n)
         else:
             trajectories = self.space.tg.get_trajectories(method, length, True)
@@ -146,10 +147,15 @@ class SerialSearcher(SearchMethod):
         sv = SearchVector(start, t)
         sd = SearchData(sv)
 
-        traj_m = cmf.trajectory_matrix(
-            trajectory=t,
-            start=start
-        )
+        try:
+            traj_m = cmf.trajectory_matrix(
+                trajectory=t,
+                start=start
+            )
+        except Exception as e:
+            Logger(f'Could not compute trajectory matrix for start={start}, trajectory={t}', Logger.Levels.warning).log(msg_prefix='\n')
+            sd.errors['traj_mat'] = e
+            return sd
         try:
             if find_limit:
                 limit = traj_m.limit({n: 1}, 2000, {n: 0})
@@ -262,15 +268,16 @@ class SerialSearcher(SearchMethod):
 
         if self.parallel:
             results = self.pool.map(
-                partial(self._search_worker,
-                        cmf=self.space.cmf,
-                        constant=self.const_name,
-                        use_LIReC=self.use_LIReC,
-                        parallel=True,
-                        find_limit=find_limit,
-                        find_eigen_values=find_eigen_values,
-                        find_gcd_slope=find_gcd_slope
-                        ),
+                partial(
+                    self._search_worker,
+                    cmf=self.space.cmf,
+                    constant=self.const_name,
+                    use_LIReC=self.use_LIReC,
+                    parallel=True,
+                    find_limit=find_limit,
+                    find_eigen_values=find_eigen_values,
+                    find_gcd_slope=find_gcd_slope
+                ),
                 pairs, chunksize=search_config.SEARCH_VECTOR_CHUNK)
             for res in results:
                 if res:
