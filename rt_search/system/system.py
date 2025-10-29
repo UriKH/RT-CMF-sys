@@ -2,18 +2,19 @@ import mpmath as mp
 from collections import defaultdict
 import networkx as nx
 from itertools import combinations
+from enum import Enum, auto
 
 from ..analysis_stage.subspaces.searchable import Searchable
 from ..analysis_stage.analysis_scheme import AnalyzerModScheme
-from ..configs.database import DBUsages
 from .errors import UnknownConstant
 from ..db_stage.db_scheme import DBModScheme
+from rt_search.db_stage.funcs.formatter import Formatter
 from ..search_stage.searcher_scheme import SearcherModScheme
 from ..utils.types import *
 from ..utils.logger import Logger
+from ..utils.IO.importer import Importer
 from ..configs import (
-    sys_config,
-    db_config
+    sys_config
 )
 
 
@@ -22,8 +23,14 @@ class System:
     A class representing the System itself.
     """
 
+    class RunModes(Enum):
+        DB_ONLY = auto()
+        JSON_TO_DB = auto()
+        JSON_ONLY = auto()
+        MANUAL = auto()
+
     def __init__(self,
-                 dbs: List[DBModScheme],
+                 dbs: List[DBModScheme | str | Dict[str, Formatter]],
                  analyzers: List[Type[AnalyzerModScheme]],
                  searcher: Type[SearcherModScheme]):
         """
@@ -35,8 +42,8 @@ class System:
         self.dbs = dbs
         self.analyzers = analyzers
         self.searcher = searcher
-        if db_config.USAGE != DBUsages.RETRIEVE_DATA and len(dbs) > 1:
-            raise ValueError("Multiple DBModConnector instances are not allowed when not retrieving data from DBs.")
+        # if db_config.USAGE != DBUsages.RETRIEVE_DATA and len(dbs) > 1:
+        #     raise ValueError("Multiple DBModConnector instances are not allowed when not retrieving data from DBs.")
 
     def run(self, constants: List[str] | str = None):
         """
@@ -50,7 +57,7 @@ class System:
             constants = [constants]
 
         constants = self.get_constants(constants)
-        cmf_data = DBModScheme.aggregate(self.dbs, list(constants.keys()), True)
+        cmf_data = self.__db_stage(constants)
 
         for constant, funcs in cmf_data.items():
             functions = '\n'
@@ -82,6 +89,64 @@ class System:
                 f'Best delta for "{const}": {best_delta} in trajectory: {best_sv} in searchable: {best_space}',
                 Logger.Levels.info
             ).log()
+
+    def __db_stage(self, constants: Dict[str, Any]) -> Dict[str, CMFlist]:
+        modules = []
+        to_import = []
+        raw = []
+        files = []
+
+        importer = Importer[Formatter]()
+
+        for db in self.dbs:
+            match db:
+                case DBModScheme():
+                    modules.append(db)
+                case str():
+                    if db.split('.')[-1] == 'json':
+                        try:
+                            file = open(db, 'r')
+                        except Exception as e:
+                            raise IOError(f'Unable to open {db}: {e}')
+                        files.append(file)
+                        to_import.append(file)
+                    else:
+                        to_import.append(db)
+                case dict():
+                    if len(db.keys()) != 1 or len(db.values()) != 1 or not isinstance(list(db.values())[0], Formatter):
+                        raise ValueError('Dictionary must be of format: {<constant name> : <Formatter subclass>(...)}')
+                    raw.append(db)
+
+        imported = importer(to_import, True)
+        for file in files:
+            file.close()
+        cmf_data = DBModScheme.aggregate(modules, list(constants.keys()), True)
+
+        # concatenate the 3 dictionaries
+        for const in imported:
+            s = {v.to_cmf() for v in imported[const]}
+            if const in cmf_data:
+                cmf_data[const].union(s)
+            else:
+                cmf_data[const] = s
+        for d in raw:
+            for const in d:
+                if const in cmf_data:
+                    cmf_data[const].add(d[const].to_cmf())
+                else:
+                    cmf_data[const] = {d[const].to_cmf()}
+
+        # convert back to dict[str, list]
+        as_list = dict()
+        for k, v in cmf_data.items():
+            as_list[k] = list(v)
+        return as_list
+
+    def __analysis_stage(self):
+        pass
+
+    def __search_stage(self):
+        pass
 
     @staticmethod
     def validate_constant(constant: str, throw: bool = False) -> bool:

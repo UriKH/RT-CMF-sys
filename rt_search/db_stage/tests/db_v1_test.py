@@ -112,7 +112,7 @@ class TestDB(unittest.TestCase):
                 """
             )
         with safe(self):
-            TestDB.test_db.from_json(self.json_path)
+            TestDB.test_db.from_json_obj(self.json_path)
             self.assertEqual(TestDB.test_db.select('pi'), [(
                 pfq1 := pFq(2, 1, sp.Rational(1, 3)), Position([0, 0, 0], list(pfq1.matrices.keys()))
             )])

@@ -2,8 +2,9 @@ import json
 from dataclasses import dataclass, field
 from ramanujantools.cmf.pfq import pFq
 
-from .formatter import Formatter
+from rt_search.db_stage.funcs.formatter import Formatter
 from rt_search.utils.types import *
+from . import FORMATTER_REGISTRY
 
 
 @dataclass
@@ -36,7 +37,7 @@ class pFq_formatter(Formatter):
             self.shifts = Position(self.shifts)
 
     @classmethod
-    def from_json(cls, s_json: str) -> "pFq_formatter":
+    def _from_json_obj(cls, s_json: str) -> "pFq_formatter":
         """
         Converts a JSON string to a pFq_formatter.
         :param s_json: The JSON string representation of the pFq_formatter (only attributes).
@@ -47,7 +48,7 @@ class pFq_formatter(Formatter):
         data['shifts'] = [sp.sympify(shift) if isinstance(shift, str) else shift for shift in data['shifts']]
         return cls(**data)
 
-    def to_json(self) -> dict:
+    def _to_json_obj(self) -> dict:
         """
         Converts the pFq_formatter to a JSON string (i.e., convert sp.Expr to str)
         :return: A dictionary representation of the pFq_formatter matching the JSON format.
@@ -67,10 +68,13 @@ class pFq_formatter(Formatter):
         return cmf, self.shifts
 
     def __repr__(self):
-        return json.dumps(self.to_json())
+        return json.dumps(self._to_json_obj())
 
     def __str__(self):
         return f'<{self.__class__.__name__}: {self.__repr__()}>'
 
     def __hash__(self):
         return hash((self.p, self.q, self.z, self.shifts))
+
+
+FORMATTER_REGISTRY['pFq_formatter'] = pFq_formatter

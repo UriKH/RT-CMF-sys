@@ -1,17 +1,15 @@
 import os.path
 from peewee import SqliteDatabase, Model, CharField
 import json
-from tqdm import tqdm
 
 from .config import *
 from ...db_scheme import DBScheme
-from ...funcs.formatter import Formatter
+from rt_search.db_stage.funcs.formatter import Formatter
 from ...errors import *
 from rt_search.db_stage import funcs
-from rt_search.db_stage.funcs.config import *
+from rt_search.db_stage.config import *
 from rt_search.utils.types import *
 from rt_search.system.system import System
-from rt_search.configs import sys_config
 
 
 class DB(DBScheme):
@@ -57,9 +55,7 @@ class DB(DBScheme):
         cmfs = []
         for func_json in (data if data else []):
             try:
-                cmfs.append(
-                    getattr(funcs, func_json[TYPE_ANNOTATE]).from_json(json.dumps(func_json[DATA_ANNOTATE])).to_cmf()
-                )
+                cmfs.append(Formatter.from_json_obj(func_json).to_cmf())
             except AttributeError:
                 raise NoSuchInspirationFunction(NoSuchInspirationFunction.default_msg + func_json[TYPE_ANNOTATE])
         return cmfs
@@ -79,7 +75,7 @@ class DB(DBScheme):
             funcs = [funcs]
         if not self.Table.select().where(self.Table.constant == constant).exists():
             raise ConstantDoesNotExist()
-        data = [func.to_db_json() for func in funcs]
+        data = [func.to_json_obj() for func in funcs]
         if not override:
             for fun in self.__get_as_json(constant):
                 if fun not in data:
@@ -103,7 +99,7 @@ class DB(DBScheme):
             funcs = [funcs]
         if self.Table.select().where(self.Table.constant == constant).exists():
             raise ConstantAlreadyExists(ConstantAlreadyExists.default_msg + constant)
-        self.Table.insert(constant=constant, family=json.dumps([func.to_db_json() for func in funcs])).execute()
+        self.Table.insert(constant=constant, family=json.dumps([func.to_json_obj() for func in funcs])).execute()
 
     def delete(self,
                constants: str | List[str],
@@ -124,7 +120,7 @@ class DB(DBScheme):
             data = self.__get_as_json(constant)
             for func in funcs:
                 try:
-                    data.remove(func.to_db_json())
+                    data.remove(func.to_json_obj())
                 except ValueError:
                     continue
             (self.Table.update({self.Table.family.name: json.dumps(data)})
@@ -144,7 +140,7 @@ class DB(DBScheme):
         data = self.__get_as_json(constant)
         if self.__check_if_defined(func, data):
             raise FunctionAlreadyExists(FunctionAlreadyExists.default_msg + str(func))
-        data.append(func.to_db_json())
+        data.append(func.to_json_obj())
         DB.Table.update(constant=constant, family=json.dumps(data)).execute()
 
     def remove_inspiration_function(self, constant: str, func: Formatter) -> None:
@@ -157,7 +153,7 @@ class DB(DBScheme):
         data = self.__get_as_json(constant)
         if not self.__check_if_defined(func, data):
             raise FunctionDoesNotExist(FunctionDoesNotExist.default_msg + str(func) + f" in {constant}")
-        data.remove(func.to_db_json())
+        data.remove(func.to_json_obj())
         (self.Table.update({self.Table.family.name: json.dumps(data)})
          .where(self.Table.constant == constant).execute())
 
@@ -174,7 +170,7 @@ class DB(DBScheme):
             return True
 
         for func_json in data:
-            if func.to_db_json() == func_json:
+            if func.to_json_obj() == func_json:
                 return True
         return False
 
@@ -201,13 +197,13 @@ class DB(DBScheme):
                 if 'kwargs' in d.keys():
                     func(
                         d["constant"],
-                        getattr(funcs, d['data'][TYPE_ANNOTATE]).from_json(json.dumps(d['data'][DATA_ANNOTATE])),
+                        getattr(funcs, d['data'][TYPE_ANNOTATE]).from_json_obj(json.dumps(d['data'][DATA_ANNOTATE])),
                         **json.loads(d['kwargs'])
                     )
                 else:
                     func(
                         d["constant"],
-                        getattr(funcs, d['data'][TYPE_ANNOTATE]).from_json(json.dumps(d['data'][DATA_ANNOTATE])),
+                        getattr(funcs, d['data'][TYPE_ANNOTATE]).from_json_obj(json.dumps(d['data'][DATA_ANNOTATE])),
                     )
         except TypeError as e:
             raise e

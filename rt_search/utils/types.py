@@ -1,6 +1,6 @@
 from ramanujantools.cmf import CMF
 import sympy as sp
-from typing import Union, List, Tuple, Dict, Set, Any, FrozenSet, Optional, Type
+from typing import Union, List, Tuple, Dict, Set, Any, FrozenSet, Optional, Type, TextIO
 
 from ..utils.geometry.position import Position
 
