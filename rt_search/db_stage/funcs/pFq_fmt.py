@@ -11,6 +11,7 @@ from . import FORMATTER_REGISTRY
 class pFq_formatter(Formatter):
     """
     Represents a pFq and its CMF + allows conversion to and from JSON.
+    :var const: The constant related to this pFq function
     :var p: The p value of the pFq.
     :var q: The q value of the pFq.
     :var z: The z value of the pFq.
@@ -54,8 +55,11 @@ class pFq_formatter(Formatter):
         :return: A dictionary representation of the pFq_formatter matching the JSON format.
         """
         return {
-            "p": self.p, "q": self.q, "z": str(self.z) if isinstance(self.z, sp.Expr) else self.z, "shifts":
-                [str(shift) if isinstance(shift, sp.Expr) else shift for shift in self.shifts.as_list()]
+            **super()._to_json_obj(),
+            "p": self.p,
+            "q": self.q,
+            "z": str(self.z) if isinstance(self.z, sp.Expr) else self.z,
+            "shifts": [str(shift) if isinstance(shift, sp.Expr) else shift for shift in self.shifts.as_list()]
         }
 
     def to_cmf(self) -> CMFtup:

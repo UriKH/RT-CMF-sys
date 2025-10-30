@@ -21,10 +21,10 @@ class JSONExportable(Exportable):
         default_msg = 'Invalid destination type '
 
     @abstractmethod
-    def to_json_obj(self, obj: Optional[object] = None) -> dict | list:
+    def to_json_obj(self) -> dict | list:
         """
-        Convert the object into a JSON string
-        :return: The JSON string
+        Convert the object into a JSON like object
+        :return: The JSON like object
         """
         raise NotImplementedError
 

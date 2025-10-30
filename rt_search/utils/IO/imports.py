@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
-from collections import defaultdict
 
 from typing_extensions import runtime_checkable, Protocol
 from ..types import *
 import json
-from rt_search.db_stage.config import *
+from typing import TypeVar, Generic
 
 
 @runtime_checkable
@@ -17,7 +16,9 @@ class ImportableProto(Protocol):
     accepted_type: type
 
     @classmethod
-    def import_it(cls, data): ...
+    def import_it(cls, data) -> List["ImportableProto"]: ...
+
+    def __hash__(self) -> int: ...
 
 
 class Importable(ABC):
@@ -30,6 +31,11 @@ class Importable(ABC):
     @abstractmethod
     def import_it(cls, *args):
         raise NotImplementedError
+
+    def __hash__(self) -> int: ...
+
+
+T = TypeVar('T', bound="JSONImportable")
 
 
 class JSONImportable(Importable):
@@ -49,37 +55,41 @@ class JSONImportable(Importable):
         raise NotImplementedError
 
     @classmethod
-    def from_json(cls, src: str | SupportsRead) -> Dict[str, Any]:
+    def from_json(cls, src: str | SupportsRead) -> List[T]:
         """
-        Create the object from a JSON file or a json like string.
-        :param src: The JSON file or string.
-        :return: an object
+        Create the object from a JSON file.
+        :param src: The JSON file or path.
+        :return: an object list
         """
-        def do_unpack(data):
-            results = defaultdict(set)
+        def do_unpack(data) -> List[T]:
+            results = set()
             if type(data) is list:
                 for d in data:
                     obj = cls.from_json_obj(d)
-                    results[d[CONST_ANNOTATE]].add(obj)
+                    results.add(obj)
             else:
-                results[data[CONST_ANNOTATE]] = {cls.from_json_obj(data)}
-            return results
+                results = {cls.from_json_obj(data)}
+            return list(results)
 
-        if isinstance(src, str):
+        if isinstance(src, str) and src.split('.')[-1] == 'json':
             with open(src, 'r') as f:
                 data = json.load(f)
                 return do_unpack(data)
         elif isinstance(src, SupportsRead):
             return do_unpack(json.load(src))
-        else:
-            raise cls.JSONImportError(cls.JSONImportError.default_msg + str(type(src)))
+        raise cls.JSONImportError(cls.JSONImportError.default_msg + str(type(src)))
 
     @classmethod
-    def import_it(cls, src: dict | str | SupportsRead) -> Dict[str, Any]:
-        if isinstance(src, str):
-            return cls.from_json(json.loads(src))
-        if isinstance(src, dict):
-            return {src[CONST_ANNOTATE]: {cls.from_json_obj(src)}}
-        if isinstance(src, SupportsRead):
-            return cls.from_json(src)
-        raise cls.JSONImportError(cls.JSONImportError.default_msg + str(type(src)))
+    def import_it(cls, src: dict | str | SupportsRead) -> List[T]:
+        """
+        Given a dictionary representing an object / a json file path / or the file itself
+        :param src: source to import from
+        :return: a list of objects
+        """
+        match src:
+            case str() | SupportsRead():
+                return cls.from_json(src)
+            case dict():
+                return cls.from_json_obj(src)
+            case _:
+                raise cls.JSONImportError(cls.JSONImportError.default_msg + str(type(src)))

@@ -1,28 +1,24 @@
-from collections import defaultdict
 from typing import TypeVar, Generic
 
-from ..types import *
-from .imports import ImportableProto
 
-T = TypeVar('T', bound=ImportableProto)
+from ..types import *
+from .imports import Importable
+
+T = TypeVar('T', bound=Importable)
 
 
 class Importer(Generic[T]):
-    def __init__(self, cls: Type[T]):
-        self.cls = cls  # store the real class
+    def __init__(self, t: Optional[Type[T]] = None):
+        self.cls = t
 
-    def __call__(self, data: Any, multiple: bool):
-        objs = defaultdict(set)
+    def __call__(self, data: Any, multiple: bool) -> List[T]:
+        objs = set()
         if multiple:
             for d in data:
                 if not isinstance(d, self.cls.accepted_type):
                     raise Exception()
-                imported = self.cls.import_it(d)
-                for k in imported:
-                    if k not in objs:
-                        objs[k] = imported[k]
-                    else:
-                        objs[k].union(imported[k])
+                objs.add(self.cls.import_it(d))
+            objs = list(objs)
         else:
             if not isinstance(data, self.cls.accepted_type):
                 raise Exception()

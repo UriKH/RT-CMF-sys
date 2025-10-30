@@ -8,9 +8,13 @@ from rt_search.utils.IO import (
     exports as ex
 )
 from . import FORMATTER_REGISTRY
+from dataclasses import dataclass
 
 
+@dataclass
 class Formatter(imp.JSONImportable, ex.JSONExportable):
+    const: str
+
     @abstractmethod
     def __repr__(self):
         raise NotImplementedError
@@ -31,9 +35,8 @@ class Formatter(imp.JSONImportable, ex.JSONExportable):
     def get_type_name(cls) -> str:
         return cls.__class__.__name__
 
-    @abstractmethod
-    def _to_json_obj(self) -> dict | list:
-        raise NotImplementedError
+    def _to_json_obj(self) -> dict:
+        return {'const': self.const}
 
     @classmethod
     @abstractmethod
