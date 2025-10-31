@@ -1,13 +1,15 @@
 from abc import ABC, abstractmethod
 
 from rt_search.analysis_stage.subspaces.trajectory_generator import TrajectoryGenerator
+from rt_search.utils.IO.exports import JSONExportable
+from rt_search.utils.IO.imports import JSONImportable
 from rt_search.utils.types import *
 from rt_search.utils.geometry.position import Position
 
 
-class Searchable(ABC):
+class Searchable(JSONImportable, JSONExportable):
     def __init__(self, name: str, dim: int, cmf: CMF, symbols: List[sp.Symbol],
-                 tg: Optional[TrajectoryGenerator] = None):
+                 tg: Optional[TrajectoryGenerator] = None): # TG should not be optional
         self.dim = dim
         self.cmf = cmf
         self.symbols = symbols

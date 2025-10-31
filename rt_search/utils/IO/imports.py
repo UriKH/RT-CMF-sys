@@ -1,23 +1,7 @@
 from abc import ABC, abstractmethod
-
-from typing_extensions import runtime_checkable, Protocol
 import json
 from typing import TypeVar, List
-
-
-@runtime_checkable
-class SupportsRead(Protocol):
-    def read(self, *args, **kwargs) -> str: ...
-
-
-@runtime_checkable
-class ImportableProto(Protocol):
-    accepted_type: type
-
-    @classmethod
-    def import_(cls, data) -> List["ImportableProto"]: ...
-
-    def __hash__(self) -> int: ...
+from .protocols import SupportsRead
 
 
 class Importable(ABC):
@@ -62,7 +46,7 @@ class JSONImportable(Importable):
         """
         def do_unpack(data) -> List[T]:
             results = set()
-            if type(data) is list:
+            if isinstance(data, list):
                 for d in data:
                     obj = cls.from_json_obj(d)
                     results.add(obj)

@@ -1,3 +1,4 @@
+import json
 from typing import TYPE_CHECKING
 
 from ..searchable import Searchable
@@ -97,3 +98,17 @@ class Shard(Searchable):
     def get_start_points(self) -> Set[Position]:
         self.extractor.populate_cmf_start_points()
         return self._start_points
+
+    @classmethod
+    def from_json_obj(cls, src: dict):
+        return cls(json.loads(src['shard_id']),
+                   ShardExtractor.from_json_obj(src['extractor']),
+                   TrajectoryGenerator.from_json_obj(src['tg']))
+
+    def to_json_obj(self) -> dict:
+        return {
+            'hps': [hp.to_json_obj() for hp in self.hps],
+            'shard_id': self.shard_id,
+            'tg': self.tg.to_json_obj(),
+            'extractor': self.extractor.to_json_obj()
+        }

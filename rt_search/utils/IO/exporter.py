@@ -15,7 +15,7 @@ class Exporter(Generic[T]):
     def __call__(self, data: T | List[T]) -> List[str]:
         results = []
         if isinstance(data, list):
-            with open(self.path, 'a') as f:
+            with open(self.path, 'a+') as f:
                 for d in data:
                     results.append(d.export_(f))
             return results

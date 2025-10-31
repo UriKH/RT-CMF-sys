@@ -1,3 +1,5 @@
+from rt_search.utils.IO.exports import JSONExportable
+from rt_search.utils.IO.imports import JSONImportable
 from rt_search.utils.types import *
 from rt_search.utils.geometry.plane import Plane
 from rt_search.configs import (
@@ -21,7 +23,7 @@ from concurrent.futures import ProcessPoolExecutor
 from ..trajectory_generator import TrajectoryGenerator
 
 
-class ShardExtractor:
+class ShardExtractor(JSONImportable, JSONExportable):
     """
     A functional class in charge of the Shards extraction for later use
     """
@@ -349,3 +351,14 @@ class ShardExtractor:
 
         point.set_axis(hps[0].symbols)
         return (encoded := tuple(sign(float(plane.expression.subs(point).evalf())) for plane in hps)), 0 not in encoded
+
+    @classmethod
+    def from_json_obj(cls, src: dict):
+        return cls(src['const_name'], CMF.from_json_obj(src['cmf']), Position.from_json_obj(src['shifts']))
+
+    def to_json_obj(self) -> dict | list:
+        return {
+            'const_name': self.const_name,
+            'cmf': self.cmf.to_json_obj(),
+            'shifts': self.shifts.to_json_obj()
+        }

@@ -1,3 +1,5 @@
+from ..IO.exports import JSONExportable
+from ..IO.imports import JSONImportable
 from ..types import *
 from dataclasses import dataclass
 import numpy as np
@@ -8,7 +10,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class Plane:
+class Plane(JSONExportable, JSONImportable):
     """
     A class representing a plane given as a sympy expression using also a normal and a point on the plane.
     """
@@ -53,3 +55,15 @@ class Plane:
 
     def __hash__(self):
         return hash((self.expression, tuple(self.symbols)))
+
+    @classmethod
+    def from_json_obj(cls, src: dict):
+        return cls(sp.sympify(src["expression"]), sp.sympify(src["symbols"]))
+
+    def to_json_obj(self) -> dict | list:
+        return {
+            'expression': sp.srepr(self.expression),
+            'symbols': sp.srepr(self.symbols),
+            'point': self.point.tolist(),
+            'normal': self.normal.tolist()
+        }

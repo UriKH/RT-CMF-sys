@@ -34,7 +34,7 @@ class System:
 
     def __init__(self,
                  if_srcs: List[DBModScheme | str | Formatter],
-                 analyzers: List[Type[AnalyzerModScheme]],
+                 analyzers: List[Type[AnalyzerModScheme] | str | Searchable],
                  searcher: Type[SearcherModScheme]):
         """
         Constructing a system runnable instance for a given combination of modules.
@@ -45,6 +45,7 @@ class System:
         self.if_srcs = if_srcs
         self.analyzers = analyzers
         self.searcher = searcher
+        # self.if_srcs_contain_dbs = any(isin)
 
     def run(self, constants: List[str] | str = None):
         """
@@ -72,8 +73,6 @@ class System:
                     exporter = Exporter[ShiftCMF](file_path)
                     exporter(l)
 
-                print(f"Saved {file_path}")
-
         for constant, funcs in cmf_data.items():
             functions = '\n'
             for i, func in enumerate(funcs):
@@ -82,8 +81,20 @@ class System:
                 f'Searching for {constant} using inspiration functions: {functions}', Logger.Levels.info
             ).log(msg_prefix='\n')
 
-        analyzers_results = [analyzer(cmf_data).execute() for analyzer in self.analyzers]
-        priorities = self.__aggregate_analyzers(analyzers_results)
+        priorities = self.__analysis_stage(cmf_data)
+        if path := sys_config.EXPORT_ANALYSIS_PRIORITIES:
+            os.makedirs(path, exist_ok=True)
+
+            for const, l in priorities.items():
+                # Sanitize filename (optional, avoids invalid characters)
+                safe_key = "".join(c for c in const if c.isalnum() or c in ('-', '_'))
+                file_path = os.path.join(path, f"{safe_key}.json")
+
+                # Write JSON list to file
+                with open(file_path, "w", encoding="utf-8") as f:
+                    exporter = Exporter[Searchable](file_path)
+                    exporter(l)
+
         results = dict()
         for const in priorities.keys():
             s = self.searcher(priorities[const], True)
@@ -140,8 +151,39 @@ class System:
             as_list[k] = list(v)
         return as_list
 
-    def __analysis_stage(self):
-        pass
+    def __analysis_stage(self, cmf_data: Dict[str, List[ShiftCMF]]) -> Dict[str, List[Searchable]]:
+        """
+        Preform the analysis stage work
+        :param cmf_data: data produced in the DB stage
+        :return: The results of the analysis
+        """
+        analyzers = []
+        results = defaultdict(set)
+        importer = Importer[Searchable]()
+
+        for analyzer in self.analyzers:
+            match analyzer:
+                case t if issubclass(t, AnalyzerModScheme):
+                    analyzers.append(analyzer)
+                case Searchable():
+                    results[analyzer.const_name].add(analyzer)
+                case str():
+                    f_data = importer(analyzer, False)
+                    for obj in f_data:
+                        results[obj.const_name].add(obj)
+                case _:
+                    raise TypeError(f'unknown analyzer type {analyzer}')
+
+        analyzers_results = [analyzer(cmf_data).execute() for analyzer in analyzers]
+        priorities = self.__aggregate_analyzers(analyzers_results)
+
+        # add unprioritized elements to the end
+        for c, l in results.items():
+            if c not in priorities:
+                continue
+            diff = results[c].difference(set(cmf_data[c]))
+            priorities[c].extend(diff)
+        return priorities
 
     def __search_stage(self):
         pass

@@ -1,14 +1,9 @@
 from abc import ABC, abstractmethod
+import json
+import os
 
 from ..types import *
-
-import json
-from typing import Protocol, runtime_checkable
-
-
-@runtime_checkable
-class SupportsWrite[T](Protocol):
-    def write(self, s: T, *args, **kwargs) -> object: ...
+from .protocols import *
 
 
 class Exportable(ABC):
@@ -33,7 +28,7 @@ class JSONExportable(Exportable):
         raise NotImplementedError
 
     def to_json(self,
-                dst: Optional[str | SupportsWrite[str]] = None,
+                dst: Optional[str | SupportsIO[str]] = None,
                 return_anyway: bool = False
                 ) -> Optional[str]:
         """
@@ -49,15 +44,42 @@ class JSONExportable(Exportable):
             if dst is None:
                 return s
 
-        if isinstance(dst, str):
-            with open(dst, "a") as f:
-                json.dump(obj, f)
-                return s
-        elif isinstance(dst, SupportsWrite):
-            json.dump(obj, dst)
+        def smart_write(fp):
+            # Check if file exists and non-empty
+            fp.seek(0, os.SEEK_END)
+            file_size = fp.tell()
+
+            if file_size == 0:
+                # First write: create new JSON list
+                fp.write("[\n")
+                json.dump(obj, fp, indent=2)
+                fp.write("\n]")
+                fp.flush()
+                return
+
+            seek_back = min(file_size, 32)
+            fp.seek(file_size - seek_back)
+            tail = fp.read(seek_back) # read 32 last bytes
+
+            close_index = tail.rfind(']') # find index of ']'
+            close_pos = file_size - seek_back + close_index + 2
+
+            fp.seek(close_pos)
+            fp.truncate()
+            fp.write(",\n")
+            json.dump(obj, fp, indent=2)
+            fp.write("\n]\n")
+            fp.flush()
+
+        if isinstance(dst, str | SupportsIO):
+            if isinstance(dst, str):
+                with open(dst, "a+") as f:
+                    smart_write(f)
+            elif isinstance(dst, SupportsIO):
+                smart_write(dst)
             return s
         else:
-            raise self.JSONExportableError(self.JSONExportableError.default_msg + type(dst))
+            raise self.JSONExportableError(self.JSONExportableError.default_msg + str(type(dst)))
 
-    def export_(self, dst: Optional[str | SupportsWrite[str]] = None) -> str:
+    def export_(self, dst: Optional[str | SupportsIO] = None) -> str:
         return self.to_json(dst, return_anyway=True)
