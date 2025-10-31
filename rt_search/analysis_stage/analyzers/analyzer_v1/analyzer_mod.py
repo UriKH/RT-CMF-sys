@@ -13,6 +13,7 @@ from rt_search.configs import (
 from .config import *
 
 from tqdm import tqdm
+from dataclasses import astuple
 
 
 class AnalyzerModV1(AnalyzerModScheme):
@@ -20,7 +21,7 @@ class AnalyzerModV1(AnalyzerModScheme):
     The class represents the module for CMF analysis and shard search filtering and prioritization.
     """
 
-    def __init__(self, cmf_data: Dict[str, List[CMFtup]]):
+    def __init__(self, cmf_data: Dict[str, List[ShiftCMF]]):
         super().__init__(
             description='Module for CMF analysis and shard search filtering and prioritization',
             version='1'
@@ -51,12 +52,12 @@ class AnalyzerModV1(AnalyzerModScheme):
             Logger(
                 Logger.buffer_print(sys_config.LOGGING_BUFFER_SIZE, f'Analyzing for {constant}', '=')
             ).log(msg_prefix='\n')
-            for cmf, shift in cmf_tups:
+            for t in cmf_tups:
                 Logger(
-                    Logger.buffer_print(sys_config.LOGGING_BUFFER_SIZE, f'Current CMF: {cmf} with shift {shift}', '=')
+                    Logger.buffer_print(sys_config.LOGGING_BUFFER_SIZE, f'Current CMF: {t.cmf} with shift {t.shift}', '=')
                 ).log(msg_prefix='\n')
-                analyzer = Analyzer(constant, cmf, shift, System.get_const_as_sp(constant))
-                dim = cmf.dim()
+                analyzer = Analyzer(constant, t.cmf, t.shift, System.get_const_as_sp(constant))
+                dim = t.cmf.dim()
                 dms = analyzer.search(
                     length=PointGenerator.calc_sphere_radius(analysis_config.NUM_TRAJECTORIES_FROM_DIM(dim), dim)
                 )

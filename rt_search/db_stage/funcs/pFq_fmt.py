@@ -1,10 +1,11 @@
 import json
 from dataclasses import dataclass, field
-from ramanujantools.cmf.pfq import pFq
+from rt_search.utils.cmf import pFq
 
 from rt_search.db_stage.funcs.formatter import Formatter
 from rt_search.utils.types import *
 from . import FORMATTER_REGISTRY
+from rt_search.utils.cmf import ShiftCMF
 
 
 @dataclass
@@ -18,6 +19,7 @@ class pFq_formatter(Formatter):
     :var shifts: The shifts in starting point in the CMF where a sp.Rational indicates a shift.
     While 0 indicates no shift (None if not doesn't matter).
     """
+    # const: str
     p: int
     q: int
     z: sp.Expr
@@ -62,14 +64,14 @@ class pFq_formatter(Formatter):
             "shifts": [str(shift) if isinstance(shift, sp.Expr) else shift for shift in self.shifts.as_list()]
         }
 
-    def to_cmf(self) -> CMFtup:
+    def to_cmf(self) -> ShiftCMF:
         """
         Converts the pFq_formatter to a CMF.
         :return: A tuple (CMF, shifts)
         """
         cmf = pFq(self.p, self.q, self.z)
         self.shifts.set_axis(list(cmf.matrices.keys()))
-        return cmf, self.shifts
+        return ShiftCMF(cmf, self.shifts)
 
     def __repr__(self):
         return json.dumps(self._to_json_obj())

@@ -3,8 +3,8 @@ from collections import defaultdict
 import networkx as nx
 from itertools import combinations
 from enum import Enum, auto
-
-from jupyterlab.browser_check import LogErrorHandler
+import os
+import json
 
 from ..analysis_stage.subspaces.searchable import Searchable
 from ..analysis_stage.analysis_scheme import AnalyzerModScheme
@@ -12,6 +12,7 @@ from .errors import UnknownConstant
 from ..db_stage.db_scheme import DBModScheme
 from rt_search.db_stage.funcs.formatter import Formatter
 from ..search_stage.searcher_scheme import SearcherModScheme
+from ..utils.IO.exporter import Exporter
 from ..utils.types import *
 from ..utils.logger import Logger
 from ..utils.IO.importer import Importer
@@ -32,16 +33,16 @@ class System:
         MANUAL = auto()
 
     def __init__(self,
-                 dbs: List[DBModScheme | str | Formatter],
+                 if_srcs: List[DBModScheme | str | Formatter],
                  analyzers: List[Type[AnalyzerModScheme]],
                  searcher: Type[SearcherModScheme]):
         """
         Constructing a system runnable instance for a given combination of modules.
-        :param dbs: A list of DBModScheme instances used as sources
+        :param if_srcs: A list of DBModScheme instances used as sources
         :param analyzers: A list of AnalyzerModScheme types used for prioritization + preparation before the search
         :param searcher: A SearcherModScheme type used to deepen the search done by the analyzers
         """
-        self.dbs = dbs
+        self.if_srcs = if_srcs
         self.analyzers = analyzers
         self.searcher = searcher
 
@@ -58,6 +59,20 @@ class System:
 
         constants = self.get_constants(constants)
         cmf_data = self.__db_stage(constants)
+        if path := sys_config.EXPORT_CMFS:
+            os.makedirs(path, exist_ok=True)
+
+            for const, l in cmf_data.items():
+                # Sanitize filename (optional, avoids invalid characters)
+                safe_key = "".join(c for c in const if c.isalnum() or c in ('-', '_'))
+                file_path = os.path.join(path, f"{safe_key}.json")
+
+                # Write JSON list to file
+                with open(file_path, "w", encoding="utf-8") as f:
+                    exporter = Exporter[ShiftCMF](file_path)
+                    exporter(l)
+
+                print(f"Saved {file_path}")
 
         for constant, funcs in cmf_data.items():
             functions = '\n'
@@ -90,13 +105,13 @@ class System:
                 Logger.Levels.info
             ).log()
 
-    def __db_stage(self, constants: Dict[str, Any]) -> Dict[str, CMFlist]:
+    def __db_stage(self, constants: Dict[str, Any]) -> Dict[str, List[ShiftCMF]]:
         modules = []
 
         importer = Importer[Formatter]()
         cmf_data = defaultdict(set)
 
-        for db in self.dbs:
+        for db in self.if_srcs:
             if isinstance(db, DBModScheme):
                 modules.append(db)
             elif isinstance(db, str):

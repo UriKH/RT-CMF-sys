@@ -15,7 +15,7 @@ class DBModScheme(Module):
     @CatchErrorInModule(with_trace=sys_config.MODULE_ERROR_SHOW_TRACE, fatal=True)
     def aggregate(cls, dbs: List["DBModScheme"],
                   constants: Optional[List[str] | str] = None,
-                  close_after_exec: bool = False) -> DefaultDict[str, set[CMFtup]]:
+                  close_after_exec: bool = False) -> DefaultDict[str, set[ShiftCMF]]:
         """
         Aggregate results from multiple DBModConnector instances.
         i.e., combine data from multiple databases
@@ -36,17 +36,17 @@ class DBModScheme(Module):
         return results
 
     @abstractmethod
-    def format_result(self, result) -> Dict[str, CMFlist]:
+    def format_result(self, result) -> Dict[str, List[ShiftCMF]]:
         raise NotImplementedError
 
     @abstractmethod
-    def execute(self, constants: Optional[List[str] | str] = None) -> Dict[str, CMFlist] | None:
+    def execute(self, constants: Optional[List[str] | str] = None) -> Dict[str, List[ShiftCMF]] | None:
         raise NotImplementedError
 
 
 class DBScheme(ABC):
     @abstractmethod
-    def select(self, constant: str) -> CMFlist:
+    def select(self, constant: str) -> List[ShiftCMF]:
         """
         Retrieve the CMFs of the inspiration funcs corresponding to the given constant.
         :param constant: The constant for which to retrieve the CMFs.

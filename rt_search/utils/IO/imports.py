@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 
 from typing_extensions import runtime_checkable, Protocol
-from ..types import *
 import json
-from typing import TypeVar, Generic
+from typing import TypeVar, List
 
 
 @runtime_checkable
@@ -16,7 +15,7 @@ class ImportableProto(Protocol):
     accepted_type: type
 
     @classmethod
-    def import_it(cls, data) -> List["ImportableProto"]: ...
+    def import_(cls, data) -> List["ImportableProto"]: ...
 
     def __hash__(self) -> int: ...
 
@@ -29,7 +28,7 @@ class Importable(ABC):
 
     @classmethod
     @abstractmethod
-    def import_it(cls, *args):
+    def import_(cls, *args):
         raise NotImplementedError
 
     def __hash__(self) -> int: ...
@@ -80,7 +79,7 @@ class JSONImportable(Importable):
         raise cls.JSONImportError(cls.JSONImportError.default_msg + str(type(src)))
 
     @classmethod
-    def import_it(cls, src: dict | str | SupportsRead) -> List[T]:
+    def import_(cls, src: dict | str | SupportsRead) -> List[T]:
         """
         Given a dictionary representing an object / a json file path / or the file itself
         :param src: source to import from

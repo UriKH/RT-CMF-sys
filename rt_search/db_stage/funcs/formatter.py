@@ -10,6 +10,8 @@ from rt_search.utils.IO import (
 from . import FORMATTER_REGISTRY
 from dataclasses import dataclass
 
+from ...utils.cmf import ShiftCMF
+
 
 @dataclass
 class Formatter(imp.JSONImportable, ex.JSONExportable):
@@ -28,7 +30,7 @@ class Formatter(imp.JSONImportable, ex.JSONExportable):
         raise NotImplementedError
 
     @abstractmethod
-    def to_cmf(self) -> CMFtup:
+    def to_cmf(self) -> ShiftCMF:
         raise NotImplementedError
 
     @classmethod

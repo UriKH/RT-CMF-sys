@@ -33,5 +33,7 @@ class SystemConfig(Configurable):
             "zeta": mp.zeta,
         }
 
+    EXPORT_CMFS: str = None
+
 
 sys_config: SystemConfig = SystemConfig()

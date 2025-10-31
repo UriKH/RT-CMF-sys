@@ -45,7 +45,7 @@ class DB(DBScheme):
         """
         self.db.close()
 
-    def select(self, constant: str) -> CMFlist:
+    def select(self, constant: str) -> List[ShiftCMF]:
         """
         Retrieve the CMFs of the inspiration funcs corresponding to the given constant.
         :param constant: The constant for which to retrieve the CMFs.

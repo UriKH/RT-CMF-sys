@@ -17,12 +17,12 @@ class Importer(Generic[T]):
             for d in data:
                 if not isinstance(d, self.cls.accepted_type):
                     raise Exception()
-                objs.add(self.cls.import_it(d))
+                objs.add(self.cls.import_(d))
             objs = list(objs)
         else:
             if not isinstance(data, self.cls.accepted_type):
                 raise Exception()
-            objs = self.cls.import_it(data)
+            objs = self.cls.import_(data)
         return objs
 
     @classmethod
