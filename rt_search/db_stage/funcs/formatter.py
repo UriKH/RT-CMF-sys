@@ -1,19 +1,21 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+import json
 
 from rt_search.utils.types import *
-from .config import *
+from rt_search.db_stage.config import *
+from rt_search.utils.IO import (
+    imports as imp,
+    exports as ex
+)
+from . import FORMATTER_REGISTRY
+from dataclasses import dataclass
+
+from ...utils.cmf import ShiftCMF
 
 
 @dataclass
-class Formatter(ABC):
-    @abstractmethod
-    def from_json(self, s_json: str) -> "Formatter":
-        raise NotImplementedError
-
-    @abstractmethod
-    def to_json(self) -> dict:
-        raise NotImplementedError
+class Formatter(imp.JSONImportable, ex.JSONExportable):
+    const: str
 
     @abstractmethod
     def __repr__(self):
@@ -28,11 +30,35 @@ class Formatter(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def to_cmf(self) -> CMFtup:
+    def to_cmf(self) -> ShiftCMF:
         raise NotImplementedError
 
-    def get_type_name(self) -> str:
-        return self.__class__.__name__
+    @classmethod
+    def get_type_name(cls) -> str:
+        return cls.__class__.__name__
 
-    def to_db_json(self) -> Dict[str, Any]:
-        return {TYPE_ANNOTATE: self.get_type_name(), DATA_ANNOTATE: self.to_json()}
+    def _to_json_obj(self) -> dict:
+        return {'const': self.const}
+
+    @classmethod
+    @abstractmethod
+    def _from_json_obj(cls, obj: dict | list) -> object:
+        raise NotImplementedError
+
+    def to_json_obj(self) -> Dict[str, Any]:
+        if not issubclass(self.__class__, Formatter):
+            raise TypeError(f'Not a Formatter subclass: {type(self)}')
+        return {TYPE_ANNOTATE: self.get_type_name(), DATA_ANNOTATE: self._to_json_obj()}
+
+    @classmethod
+    def from_json_obj(cls, src: dict):
+        try:
+            if (src[TYPE_ANNOTATE] not in FORMATTER_REGISTRY or
+                    not issubclass(t := FORMATTER_REGISTRY[src[TYPE_ANNOTATE]], Formatter)):
+                raise TypeError
+            return t._from_json_obj(json.dumps(src[DATA_ANNOTATE]))
+        except AttributeError:
+            raise NotImplementedError(f'constructor for {src[TYPE_ANNOTATE]} is not implemented.'
+                                      f' Make sure that the name of the file is the same as the class')
+        except TypeError:
+            raise NotImplementedError(f'All formatters must inherit from {cls.__name__} and be in registry')

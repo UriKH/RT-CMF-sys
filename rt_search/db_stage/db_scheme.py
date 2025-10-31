@@ -1,9 +1,12 @@
 from abc import ABC, abstractmethod
+from collections import defaultdict
+from typing import DefaultDict
+
 from tqdm import tqdm
 
 from rt_search.system.module import Module, CatchErrorInModule
 from rt_search.utils.types import *
-from .funcs.formatter import Formatter
+from rt_search.db_stage.funcs.formatter import Formatter
 from ..configs import sys_config
 
 
@@ -12,7 +15,7 @@ class DBModScheme(Module):
     @CatchErrorInModule(with_trace=sys_config.MODULE_ERROR_SHOW_TRACE, fatal=True)
     def aggregate(cls, dbs: List["DBModScheme"],
                   constants: Optional[List[str] | str] = None,
-                  close_after_exec: bool = False) -> Dict[str, CMFlist]:
+                  close_after_exec: bool = False) -> DefaultDict[str, set[ShiftCMF]]:
         """
         Aggregate results from multiple DBModConnector instances.
         i.e., combine data from multiple databases
@@ -22,28 +25,28 @@ class DBModScheme(Module):
         :param close_after_exec: Close the database after execution
         :return: A dictionary mapping each constant to a list of CMFs and their respective shifts
         """
-        results = dict()
+        results = defaultdict(set)
         for db in tqdm(dbs, desc=f'Extracting data from DBs', **sys_config.TQDM_CONFIG):
             if not issubclass(db.__class__, cls):
                 raise ValueError(f"Invalid DBModConnector instance: {db}")
             for const, l in db.format_result(db.execute(constants)).items():
-                results[const] = list(set(results.get(const, []) + l))
+                results[const] = set(results.get(const, []) + l)
             if close_after_exec:
                 del db
         return results
 
     @abstractmethod
-    def format_result(self, result) -> Dict[str, CMFlist]:
+    def format_result(self, result) -> Dict[str, List[ShiftCMF]]:
         raise NotImplementedError
 
     @abstractmethod
-    def execute(self, constants: Optional[List[str] | str] = None) -> Dict[str, CMFlist] | None:
+    def execute(self, constants: Optional[List[str] | str] = None) -> Dict[str, List[ShiftCMF]] | None:
         raise NotImplementedError
 
 
 class DBScheme(ABC):
     @abstractmethod
-    def select(self, constant: str) -> CMFlist:
+    def select(self, constant: str) -> List[ShiftCMF]:
         """
         Retrieve the CMFs of the inspiration funcs corresponding to the given constant.
         :param constant: The constant for which to retrieve the CMFs.

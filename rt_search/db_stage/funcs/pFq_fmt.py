@@ -1,24 +1,28 @@
 import json
 from dataclasses import dataclass, field
-from ramanujantools.cmf.pfq import pFq
+from rt_search.utils.cmf import pFq
 
-from .formatter import Formatter
+from rt_search.db_stage.funcs.formatter import Formatter
 from rt_search.utils.types import *
+from . import FORMATTER_REGISTRY
+from rt_search.utils.cmf import ShiftCMF
 
 
 @dataclass
 class pFq_formatter(Formatter):
     """
     Represents a pFq and its CMF + allows conversion to and from JSON.
+    :var const: The constant related to this pFq function
     :var p: The p value of the pFq.
     :var q: The q value of the pFq.
     :var z: The z value of the pFq.
     :var shifts: The shifts in starting point in the CMF where a sp.Rational indicates a shift.
     While 0 indicates no shift (None if not doesn't matter).
     """
+    # const: str
     p: int
     q: int
-    z: sp.Expr
+    z: sp.Expr | int
     shifts: Position | List[sp.Expr] = field(default_factory=list)
 
     def __post_init__(self):
@@ -36,7 +40,7 @@ class pFq_formatter(Formatter):
             self.shifts = Position(self.shifts)
 
     @classmethod
-    def from_json(cls, s_json: str) -> "pFq_formatter":
+    def _from_json_obj(cls, s_json: str) -> "pFq_formatter":
         """
         Converts a JSON string to a pFq_formatter.
         :param s_json: The JSON string representation of the pFq_formatter (only attributes).
@@ -47,30 +51,36 @@ class pFq_formatter(Formatter):
         data['shifts'] = [sp.sympify(shift) if isinstance(shift, str) else shift for shift in data['shifts']]
         return cls(**data)
 
-    def to_json(self) -> dict:
+    def _to_json_obj(self) -> dict:
         """
         Converts the pFq_formatter to a JSON string (i.e., convert sp.Expr to str)
         :return: A dictionary representation of the pFq_formatter matching the JSON format.
         """
         return {
-            "p": self.p, "q": self.q, "z": str(self.z) if isinstance(self.z, sp.Expr) else self.z, "shifts":
-                [str(shift) if isinstance(shift, sp.Expr) else shift for shift in self.shifts.as_list()]
+            **super()._to_json_obj(),
+            "p": self.p,
+            "q": self.q,
+            "z": str(self.z) if isinstance(self.z, sp.Expr) else self.z,
+            "shifts": [str(shift) if isinstance(shift, sp.Expr) else shift for shift in self.shifts.as_list()]
         }
 
-    def to_cmf(self) -> CMFtup:
+    def to_cmf(self) -> ShiftCMF:
         """
         Converts the pFq_formatter to a CMF.
         :return: A tuple (CMF, shifts)
         """
         cmf = pFq(self.p, self.q, self.z)
         self.shifts.set_axis(list(cmf.matrices.keys()))
-        return cmf, self.shifts
+        return ShiftCMF(cmf, self.shifts)
 
     def __repr__(self):
-        return json.dumps(self.to_json())
+        return json.dumps(self._to_json_obj())
 
     def __str__(self):
         return f'<{self.__class__.__name__}: {self.__repr__()}>'
 
     def __hash__(self):
         return hash((self.p, self.q, self.z, self.shifts))
+
+
+FORMATTER_REGISTRY['pFq_formatter'] = pFq_formatter

@@ -2,18 +2,22 @@ import mpmath as mp
 from collections import defaultdict
 import networkx as nx
 from itertools import combinations
+from enum import Enum, auto
+import os
+import json
 
 from ..analysis_stage.subspaces.searchable import Searchable
 from ..analysis_stage.analysis_scheme import AnalyzerModScheme
-from ..configs.database import DBUsages
 from .errors import UnknownConstant
 from ..db_stage.db_scheme import DBModScheme
+from rt_search.db_stage.funcs.formatter import Formatter
 from ..search_stage.searcher_scheme import SearcherModScheme
+from ..utils.IO.exporter import Exporter
 from ..utils.types import *
 from ..utils.logger import Logger
+from ..utils.IO.importer import Importer
 from ..configs import (
-    sys_config,
-    db_config
+    sys_config
 )
 
 
@@ -22,21 +26,25 @@ class System:
     A class representing the System itself.
     """
 
+    class RunModes(Enum):
+        DB_ONLY = auto()
+        JSON_TO_DB = auto()
+        JSON_ONLY = auto()
+        MANUAL = auto()
+
     def __init__(self,
-                 dbs: List[DBModScheme],
+                 if_srcs: List[DBModScheme | str | Formatter],
                  analyzers: List[Type[AnalyzerModScheme]],
                  searcher: Type[SearcherModScheme]):
         """
         Constructing a system runnable instance for a given combination of modules.
-        :param dbs: A list of DBModScheme instances used as sources
+        :param if_srcs: A list of DBModScheme instances used as sources
         :param analyzers: A list of AnalyzerModScheme types used for prioritization + preparation before the search
         :param searcher: A SearcherModScheme type used to deepen the search done by the analyzers
         """
-        self.dbs = dbs
+        self.if_srcs = if_srcs
         self.analyzers = analyzers
         self.searcher = searcher
-        if db_config.USAGE != DBUsages.RETRIEVE_DATA and len(dbs) > 1:
-            raise ValueError("Multiple DBModConnector instances are not allowed when not retrieving data from DBs.")
 
     def run(self, constants: List[str] | str = None):
         """
@@ -50,7 +58,21 @@ class System:
             constants = [constants]
 
         constants = self.get_constants(constants)
-        cmf_data = DBModScheme.aggregate(self.dbs, list(constants.keys()), True)
+        cmf_data = self.__db_stage(constants)
+        if path := sys_config.EXPORT_CMFS:
+            os.makedirs(path, exist_ok=True)
+
+            for const, l in cmf_data.items():
+                # Sanitize filename (optional, avoids invalid characters)
+                safe_key = "".join(c for c in const if c.isalnum() or c in ('-', '_'))
+                file_path = os.path.join(path, f"{safe_key}.json")
+
+                # Write JSON list to file
+                with open(file_path, "w", encoding="utf-8") as f:
+                    exporter = Exporter[ShiftCMF](file_path)
+                    exporter(l)
+
+                print(f"Saved {file_path}")
 
         for constant, funcs in cmf_data.items():
             functions = '\n'
@@ -82,6 +104,47 @@ class System:
                 f'Best delta for "{const}": {best_delta} in trajectory: {best_sv} in searchable: {best_space}',
                 Logger.Levels.info
             ).log()
+
+    def __db_stage(self, constants: Dict[str, Any]) -> Dict[str, List[ShiftCMF]]:
+        modules = []
+
+        importer = Importer[Formatter]()
+        cmf_data = defaultdict(set)
+
+        for db in self.if_srcs:
+            if isinstance(db, DBModScheme):
+                modules.append(db)
+            elif isinstance(db, str):
+                f_data = importer(db, False)
+                for obj in f_data:
+                    cmf_data[obj.const].add(obj.to_cmf())
+            elif isinstance(db, Formatter):
+                cmf_data[db.const].add(db.to_cmf())
+            else:
+                raise ValueError(f'string is not a json file: {db}')
+
+        cmf_data_2 = DBModScheme.aggregate(modules, list(constants.keys()), True)
+
+        for const in cmf_data_2.keys():
+            cmf_data[const].union(cmf_data_2[const])
+
+        # convert back to dict[str, list]
+        as_list = dict()
+        for k, v in cmf_data.items():
+            if k not in constants:
+                Logger(
+                    f'constant {k} is not in search list, its inspiration functions will be ignored',\
+                    level=Logger.Levels.warning
+                ).log(msg_prefix='\n')
+                continue
+            as_list[k] = list(v)
+        return as_list
+
+    def __analysis_stage(self):
+        pass
+
+    def __search_stage(self):
+        pass
 
     @staticmethod
     def validate_constant(constant: str, throw: bool = False) -> bool:

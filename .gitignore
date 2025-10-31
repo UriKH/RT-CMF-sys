@@ -13,4 +13,3 @@ local_dev/
 *.db
 *.json
 *.cache
-/main.py

@@ -8,8 +8,8 @@ from rt_search.configs import (
 from .shard import Shard
 from rt_search.utils.geometry.point_generator import PointGenerator
 from rt_search.utils.logger import Logger
+from rt_search.utils.cmf import CMF
 
-from ramanujantools.cmf import CMF
 from itertools import product
 from functools import lru_cache, partial
 from scipy.optimize import linprog

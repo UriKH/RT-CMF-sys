@@ -22,7 +22,7 @@ class DBModV1(DBModScheme):
         self.json_path = json_path
 
     @CatchErrorInModule(with_trace=sys_config.MODULE_ERROR_SHOW_TRACE, fatal=True)
-    def execute(self, constants: Optional[List[str] | str] = None) -> Dict[str, CMFlist] | None:
+    def execute(self, constants: Optional[List[str] | str] = None) -> Dict[str, List[ShiftCMF]] | None:
         def classify_usage(usage: DBUsages) -> Optional[dict]:
             match usage:
                 case DBUsages.RETRIEVE_DATA:
@@ -55,5 +55,5 @@ class DBModV1(DBModScheme):
             case _:
                 raise NotImplementedError(f"Invalid usage: {usage.name} ")
 
-    def format_result(self, result) -> Dict[str, CMFlist]:
+    def format_result(self, result) -> Dict[str, List[ShiftCMF]]:
         return result
