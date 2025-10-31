@@ -46,7 +46,8 @@ class JSONExportable(Exportable):
         s = None
         if dst is None or return_anyway:
             s = json.dumps(obj)
-            return s
+            if dst is None:
+                return s
 
         if isinstance(dst, str):
             with open(dst, "a") as f:

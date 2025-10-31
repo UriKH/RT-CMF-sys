@@ -23,4 +23,4 @@ class Exporter(Generic[T]):
 
     @classmethod
     def __class_getitem__(cls, item: Type[T]):
-        return lambda: cls(item)
+        return lambda path: cls(path, item)

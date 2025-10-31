@@ -22,7 +22,7 @@ class pFq_formatter(Formatter):
     # const: str
     p: int
     q: int
-    z: sp.Expr
+    z: sp.Expr | int
     shifts: Position | List[sp.Expr] = field(default_factory=list)
 
     def __post_init__(self):
