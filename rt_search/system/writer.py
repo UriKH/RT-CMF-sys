@@ -51,6 +51,6 @@ class DBWriter(threading.Thread):
     def __flush(cur, conn, buffer: List[Tuple[str, CMF, "DataManager"]]):
         cur.executemany(
             "INSERT INTO results (constant, CMF, chunk_size, results) VALUES (?, ?, ?, ?)",
-            [(const, str(cmf), len(res), json.dumps(res.as_json_serializable())) for const, cmf, res in buffer]
+            [(const, str(cmf), len(res), res.to_json()) for const, cmf, res in buffer]
         )
         conn.commit()

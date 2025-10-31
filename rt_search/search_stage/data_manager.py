@@ -1,5 +1,8 @@
-from rt_search.system.serializable import Serializable
 from rt_search.utils.types import *
+from rt_search.utils.IO import (
+    exports as exp,
+    imports as imp
+)
 
 from dataclasses import dataclass, field
 from ramanujantools import Matrix
@@ -8,7 +11,7 @@ from collections import UserDict
 
 
 @dataclass
-class SearchVector(Serializable):
+class SearchVector(exp.JSONExportable, imp.JSONImportable):
     """
     A class representing a search vector in a specific space
     """
@@ -18,12 +21,16 @@ class SearchVector(Serializable):
     def __hash__(self):
         return hash((self.start, self.trajectory))
 
-    def as_json_serializable(self):
-        return {'start': self.start.as_json_serializable(), 'trajectory': self.trajectory.as_json_serializable()}
+    def to_json_obj(self):
+        return {'start': self.start.to_json_obj(), 'trajectory': self.trajectory.to_json_obj()}
+
+    @classmethod
+    def from_json_obj(cls, src: dict):
+        return cls(Position.from_json_obj(src['start']), Position.from_json_obj(src['trajectory']))
 
 
 @dataclass
-class SearchData(Serializable):
+class SearchData(exp.JSONExportable):
     """
     A class representing a search data alongside a specific search vector
     """
@@ -37,9 +44,9 @@ class SearchData(Serializable):
     LIReC_identify: bool = False
     errors: Dict[str, Exception | None] = field(default_factory=dict)
 
-    def as_json_serializable(self):
+    def to_json_obj(self):
         return {
-            'sv': self.sv.as_json_serializable(),
+            'sv': self.sv.to_json_obj(),
             'limit': self.limit,
             'delta': self.delta,
             'eigen_values': self.eigen_values,
@@ -50,7 +57,7 @@ class SearchData(Serializable):
         }
 
 
-class DataManager(UserDict[SearchVector, SearchData]):
+class DataManager(UserDict[SearchVector, SearchData], exp.JSONExportable):
     """
     DataManager represents a set of results found in a specific search in a CMF
     """
@@ -118,10 +125,10 @@ class DataManager(UserDict[SearchVector, SearchData]):
         ]
         return pd.DataFrame(rows)
 
-    def as_json_serializable(self) -> list:
+    def to_json_obj(self) -> list:
         return [
             {
-                "sv": sv.as_json_serializable(),
+                "sv": sv.to_json_obj(),
                 "delta": data.delta,
                 "limit": data.limit,
                 "eigen_values":  {str(k): str(v) for k, v in data.eigen_values.items()} if data.eigen_values else None,
