@@ -1,9 +1,33 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0" version="28.2.8">
   <diagram name="Page-1" id="KuG4gA4bBI0n0GWI4acN">
-    <mxGraphModel>
+    <mxGraphModel dx="1071" dy="578" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="2s-MMo-laoQbgs-z7Zpv-1" value="Importer" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="2s-MMo-laoQbgs-z7Zpv-2" value="Exporter" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="110" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="2s-MMo-laoQbgs-z7Zpv-3" value="We use these to import and export objects of a certain type or from a given source." style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="10" y="20" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="2s-MMo-laoQbgs-z7Zpv-4" value="Importable" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="2s-MMo-laoQbgs-z7Zpv-5" value="Exportable" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="110" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="2s-MMo-laoQbgs-z7Zpv-6" value="Abstract classes objects inherit from" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="2s-MMo-laoQbgs-z7Zpv-7" value="Object representation in file" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="210" y="180" width="380" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="2s-MMo-laoQbgs-z7Zpv-10" value="&lt;div&gt;&lt;b&gt;&lt;u&gt;How to store objects&lt;/u&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Will be stored as a list of dictionaries as followes:&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;{&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&#39;type&#39;: &amp;lt;classname&amp;gt;,&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&#39;object&#39;: &amp;lt;pickled object&amp;gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;}&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;The object is not critically readable as it should be easily uploaded using Importer for later use...&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;&lt;u&gt;How to store data&lt;/u&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;As a list of dictionaries again!&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Should the data be readable? usually no as no one is going to actually read the 9000 lines JSON...&lt;br&gt;Use pickle again but add metadata to the files which could be readable so users will know which file is relevant to what.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" vertex="1" parent="2s-MMo-laoQbgs-z7Zpv-7">
+          <mxGeometry x="40" y="10" width="320" height="200" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
