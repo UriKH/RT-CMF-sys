@@ -11,6 +11,7 @@ from ..analysis_stage.analysis_scheme import AnalyzerModScheme
 from .errors import UnknownConstant
 from ..db_stage.db_scheme import DBModScheme
 from rt_search.db_stage.funcs.formatter import Formatter
+from ..search_stage.data_manager import DataManager
 from ..search_stage.searcher_scheme import SearcherModScheme
 from ..utils.IO.exporter import Exporter
 from ..utils.types import *
@@ -95,26 +96,7 @@ class System:
                     exporter = Exporter[Searchable](file_path)
                     exporter(l)
 
-        results = dict()
-        for const in priorities.keys():
-            s = self.searcher(priorities[const], True)
-            results[const] = s.execute()
-
-        for const in priorities.keys():
-            best_delta = -sp.oo
-            best_sv = None
-            best_space = None
-            for space, dms in results[const].items():
-                delta, sv = dms.best_delta
-                if delta is None:
-                    continue
-                if best_delta < delta:
-                    best_delta, best_sv = delta, sv
-                    best_space = space
-            Logger(
-                f'Best delta for "{const}": {best_delta} in trajectory: {best_sv} in searchable: {best_space}',
-                Logger.Levels.info
-            ).log()
+        self.__search_stage(priorities)
 
     def __db_stage(self, constants: Dict[str, Any]) -> Dict[str, List[ShiftCMF]]:
         modules = []
@@ -185,8 +167,37 @@ class System:
             priorities[c].extend(diff)
         return priorities
 
-    def __search_stage(self):
-        pass
+    def __search_stage(self, priorities: dict[str, List[Searchable]]):
+        results = dict()
+        for const in priorities.keys():
+            s = self.searcher(priorities[const], True)
+            results[const] = s.execute()
+
+            # if path := sys_config.EXPORT_SEARCH_RESULTS:
+            #     os.makedirs(path, exist_ok=True)
+                # TODO: print result summary for this constant, real export in the searcher class
+
+        for const in priorities.keys():
+            best_delta = -sp.oo
+            best_sv = None
+            best_space = None
+            dir_path = os.path.join(sys_config.EXPORT_SEARCH_RESULTS, const)
+            for entry in os.scandir(dir_path):
+                if not entry.is_file():
+                    continue
+                with open(entry.path, "r") as f:
+                    data = json.load(f)
+                    dm = DataManager.from_json_obj(data['result'])
+                    delta, sv = dm.best_delta
+                    if delta is None:
+                        continue
+                    if best_delta < delta:
+                        best_delta, best_sv = delta, sv
+                        # best_space = space
+            Logger(
+                f'Best delta for "{const}": {best_delta} in trajectory: {best_sv} in searchable: {best_space}',
+                Logger.Levels.info
+            ).log()
 
     @staticmethod
     def validate_constant(constant: str, throw: bool = False) -> bool:

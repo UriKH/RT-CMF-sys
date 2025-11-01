@@ -35,6 +35,7 @@ class SystemConfig(Configurable):
 
     EXPORT_CMFS: Optional[str] = None
     EXPORT_ANALYSIS_PRIORITIES: Optional[str] = None
+    EXPORT_SEARCH_RESULTS: Optional[str] = None
 
 
 sys_config: SystemConfig = SystemConfig()

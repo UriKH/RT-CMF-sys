@@ -72,6 +72,11 @@ class SearcherModScheme(Module):
     """
     A Scheme for all search modules.
     """
+    # TODO: fix init values and pass the arguments to exec. there should be no need in constructor in subclasses here
+    def __init__(self, name: Optional[str] = None,
+                 description: Optional[str] = None,
+                 version: Optional[str] = None):
+        super().__init__(name, description, version)
 
     @staticmethod
     def execute(self) -> Dict[Searchable, DataManager]:

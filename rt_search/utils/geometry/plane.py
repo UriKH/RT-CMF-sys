@@ -63,7 +63,7 @@ class Plane(JSONExportable, JSONImportable):
     def to_json_obj(self) -> dict | list:
         return {
             'expression': sp.srepr(self.expression),
-            'symbols': sp.srepr(self.symbols),
-            'point': self.point.tolist(),
-            'normal': self.normal.tolist()
+            'symbols': sp.srepr(self.symbols)
+            # 'point': self.point.tolist(),
+            # 'normal': self.normal.tolist()
         }

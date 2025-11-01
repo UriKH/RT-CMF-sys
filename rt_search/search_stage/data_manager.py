@@ -30,7 +30,7 @@ class SearchVector(exp.JSONExportable, imp.JSONImportable):
 
 
 @dataclass
-class SearchData(exp.JSONExportable):
+class SearchData(exp.JSONExportable, imp.JSONImportable):
     """
     A class representing a search data alongside a specific search vector
     """
@@ -56,8 +56,15 @@ class SearchData(exp.JSONExportable):
             # 'errors': str(self.errors) # TODO: deal with saving errors
         }
 
+    @classmethod
+    def from_json_obj(cls, src: dict):
+        return cls(
+            SearchVector.from_json_obj(src['sv']), src['limit'], src['delta'], src['eigen_values'],
+            src['gcd_slope'], src['initial_values'], src['LIReC_identify']
+        )
 
-class DataManager(UserDict[SearchVector, SearchData], exp.JSONExportable):
+
+class DataManager(UserDict[SearchVector, SearchData], exp.JSONExportable, imp.JSONImportable):
     """
     DataManager represents a set of results found in a specific search in a CMF
     """
@@ -125,17 +132,29 @@ class DataManager(UserDict[SearchVector, SearchData], exp.JSONExportable):
         ]
         return pd.DataFrame(rows)
 
-    def to_json_obj(self) -> list:
-        return [
-            {
-                "sv": sv.to_json_obj(),
-                "delta": data.delta,
-                "limit": data.limit,
-                "eigen_values":  {str(k): str(v) for k, v in data.eigen_values.items()} if data.eigen_values else None,
-                "gcd_slope": data.gcd_slope,
-                "initial_values": str(data.initial_values.tolist()) if data.initial_values else None,
-                "LIReC_identify": data.LIReC_identify,
-                "errors": [{'where': where, 'type': type(error).__name__, 'msg': str(error)} for where, error in data.errors.items()]
-            }
-            for sv, data in self.items()
-        ]
+    def to_json_obj(self) -> dict:
+        return {
+            'data': [
+                {
+                    "sv": sv.to_json_obj(),
+                    "delta": data.delta,
+                    "limit": data.limit,
+                    "eigen_values": {str(k): str(v) for k, v in
+                                     data.eigen_values.items()} if data.eigen_values else None,
+                    "gcd_slope": data.gcd_slope,
+                    "initial_values": str(data.initial_values.tolist()) if data.initial_values else None,
+                    "LIReC_identify": data.LIReC_identify,
+                    "errors": [{'where': where, 'type': type(error).__name__, 'msg': str(error)} for where, error in
+                               data.errors.items()]
+                } for sv, data in self.items()
+            ],
+            'use_LIReC': self.use_LIReC
+        }
+
+    @classmethod
+    def from_json_obj(cls, src: dict):
+        dm = cls(src['use_LIReC'])
+        for d in src['data']:
+            sd = SearchData.from_json_obj(d)
+            dm[sd.sv] = sd
+        return dm
