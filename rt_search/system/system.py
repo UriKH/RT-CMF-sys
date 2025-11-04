@@ -314,3 +314,17 @@ class System:
                 raise Exception('This was not supposed to happen')
             result[key] = consensus
         return result
+
+
+"""
+Ideal usage is as follows:
+Importation and exportation method is used based on the given file type! (extracted using file suffix i.e. '.json' or '.pkl')
+
+Read objects from a file using:
+    importer = Importer[Type]()
+    objects = importer('my_file.json')  or  importer('<directory path>') <- returns a dictionary matching each subfolder / file name to the contained object
+
+Write objects to a file using:
+    exporter = Exporter[Type]()
+    exporter('my_file.json', objects)
+"""
