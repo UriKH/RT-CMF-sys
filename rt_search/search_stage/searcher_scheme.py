@@ -62,6 +62,8 @@ class SearchMethod(ABC):
 
     @staticmethod
     def pick_fraction(lst: list | set, percentage: float) -> list:
+        if percentage == 1:
+            return lst
         n = len(lst)
         k = round(n * percentage)   # nearest integer
         k = min(max(k, 1), n)       # ensure at least 1 and at most n

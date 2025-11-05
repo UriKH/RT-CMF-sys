@@ -36,10 +36,11 @@ class SearcherModV1(SearcherModScheme):
         # writer.start()
 
         # create folder
-        os.makedirs(
-            dir_path := os.path.join(sys_config.EXPORT_SEARCH_RESULTS, self.searchables[0].const_name),
-            exist_ok=True
-        )
+        if self.searchables:
+            os.makedirs(
+                dir_path := os.path.join(sys_config.EXPORT_SEARCH_RESULTS, self.searchables[0].const_name),
+                exist_ok=True
+            )
 
         dms: Dict[Searchable, DataManager] = dict()
         it = 1
