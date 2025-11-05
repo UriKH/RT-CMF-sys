@@ -1,6 +1,3 @@
-import copy
-from idlelib.iomenu import errors
-
 from rt_search.analysis_stage.subspaces.searchable import Searchable
 from ...data_manager import *
 from ...searcher_scheme import SearchMethod
