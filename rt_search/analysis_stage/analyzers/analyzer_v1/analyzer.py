@@ -49,6 +49,9 @@ class Analyzer(AnalyzerScheme):
                     condition=analysis_config.WARN_ON_EMPTY_SHARDS
                 ).log(msg_prefix='\n')
                 continue
+
+            # print(f'chosen start point for shard {shard} is {start} ')
+
             searcher = SerialSearcher(shard, self.constant, use_LIReC=analysis_config.USE_LIReC, deep_search=False)
             searcher.generate_trajectories(method, length, clear=False)
             dm = searcher.search(
@@ -68,13 +71,17 @@ class Analyzer(AnalyzerScheme):
                 else:
                     Logger(f'Identified {identified * 100:.2f}% of trajectories, best delta: {best_delta:.4f}',
                            Logger.Levels.info).log(msg_prefix='\n')
-            if identified > analysis_config.IDENTIFY_THRESHOLD:
+            if identified > analysis_config.IDENTIFY_THRESHOLD and best_delta is not None:
                 managers[shard] = dm
             else:
-                Logger(
-                    f'Ignoring shard - identified <= {analysis_config.IDENTIFY_THRESHOLD ** 100}% of tested trajectories.',
-                    Logger.Levels.info
-                ).log(msg_prefix='\n')
+                if best_delta is not None:
+                    Logger(
+                        f'Ignoring shard - identified <= {analysis_config.IDENTIFY_THRESHOLD ** 100}% '
+                        f'of tested trajectories',
+                        Logger.Levels.info
+                    ).log(msg_prefix='\n')
+                else:
+                    Logger(f'No best delta was found', Logger.Levels.info).log(msg_prefix='\n')
         return managers
 
     def prioritize(self, managers: Dict[Searchable, DataManager], ranks=3) -> Dict[Searchable, Dict[str, int]]:
