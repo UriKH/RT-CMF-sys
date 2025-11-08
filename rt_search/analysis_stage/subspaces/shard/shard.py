@@ -93,6 +93,16 @@ class Shard(Searchable):
             return None
         temp = self._start_points.pop()
         self._start_points.add(temp)
+        x0, x1, y0 = sp.symbols('x0 x1 y0')
+        # point_pool = [
+        #     Position([sp.Rational(1,2), sp.Rational(1,2), sp.Rational(-7,2)], [x0, x1, y0]),
+        #     Position([sp.Rational(-7, 2), sp.Rational(5, 2), sp.Rational(3, 2)], [x0, x1, y0]),
+        #     Position([sp.Rational(13, 2), sp.Rational(3, 2), sp.Rational(7, 2)], [x0, x1, y0]),
+        #     Position([sp.Rational(-9, 2), sp.Rational(-3, 2), sp.Rational(5, 2)], [x0, x1, y0])
+        # ]
+        # for point in point_pool:
+        #     if self.in_space(point)[0]:
+        #         return point
         return temp
 
     def get_start_points(self) -> Set[Position]:

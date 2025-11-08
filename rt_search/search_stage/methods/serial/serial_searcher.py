@@ -130,7 +130,7 @@ class SerialSearcher(SearchMethod):
                 denom = sp.denom(estimated)
                 if denom == 1:
                     raise ZeroDivisionError('Denominator 1 caused zero division in delta calculation')
-                if denom < 100:
+                if denom < 1e6:
                     raise ResultIgnored(ResultIgnored.default_msg + ResultIgnored.cause_small_denom)
                 delta = -1 - sp.log(error_v) / sp.log(denom)
             except Exception as e:
