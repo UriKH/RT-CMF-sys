@@ -10,7 +10,7 @@ def trajectory_compute_func(d):
 
 
 def trajectory_compute_func_analysis(d):
-    return max(10 ** d * 2, 10)
+    return max(10 ** (d-1), 10)
 
 
 if __name__ == '__main__':

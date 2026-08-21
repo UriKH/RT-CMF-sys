@@ -34,7 +34,7 @@ class SmartTQDM(tqdm):
             if (self.n - self._last_logged_n) >= self.min_log_step:
                 percent = int(100 * self.n / self.total)
                 Logger(
-                    f"System Progress: {self.n} / {self.total} ({percent}%)",
+                    f"{'-' * 10} System Progress: {self.n} / {self.total} ({percent}%) {'-' * 10}",
                     Logger.Levels.debug
                 ).log()
                 self._last_logged_n = self.n

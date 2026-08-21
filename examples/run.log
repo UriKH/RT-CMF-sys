@@ -1,0 +1,879 @@
+2026-04-06 18:28:43,265 | DEBUG    | logger.py:log | ======================================================================================================================================================
+2026-04-06 18:28:43,292 | DEBUG    | logger.py:log | ====================================================================== NEW RUN =======================================================================
+2026-04-06 18:28:43,314 | DEBUG    | logger.py:log | ======================================================================================================================================================
+2026-04-06 18:28:43,349 | INFO     | logger.py:log | Loading CMFs ...
+2026-04-06 18:28:43,505 | INFO     | logger.py:log | CMFs for log-2 exported to ./mycmfs/log-2
+2026-04-06 18:28:43,544 | INFO     | logger.py:log | Searching for log-2 using inspiration functions: 
+1. CMF: pFq((2, 1, -1)) with offset (0, 0, 0)
+
+2026-04-06 18:28:44,363 | MESSAGE  | logger.py:log | Launching 21 jobs across 8 cores...
+2026-04-06 18:29:07,026 | INFO     | logger.py:log | In CMF no. 1: found 7 hyperplanes and 12 shards 
+2026-04-06 18:29:07,172 | DEBUG    | logger.py:log | ---------- System Progress: 1 / 1 (100%) ----------
+2026-04-06 18:29:07,261 | DEBUG    | logger.py:log | ---------- System Progress: 1 / 1 (100%) ----------
+2026-04-06 18:29:07,493 | MESSAGE  | logger.py:log | ================================================================ Analyzing for log-2 =================================================================
+2026-04-06 18:29:07,720 | MESSAGE  | logger.py:log | 
+========== SHARD NO. 1 ==========
+2026-04-06 18:29:07,851 | INFO     | logger.py:log | Chosen shard start point: Position({x0: -10, x1: -10, y0: -8})
+2026-04-06 18:29:07,996 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[1 0 -1]
+ [0 1 -1]
+ [0 0 1]
+ [0 1 0]
+ [1 0 0]
+ [0 1 -1]
+ [1 0 -1]]
+b:
+[0 0 0 0 0 -1 -1]
+
+2026-04-06 18:29:08,122 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:29:08,252 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:29:08,390 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:29:08,543 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:29:08,965 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.098285 seconds]
+2026-04-06 18:29:09,131 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:29:09,270 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:29:09,416 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000069 seconds]
+2026-04-06 18:29:09,551 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:29:09,679 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:29:09,905 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:29:10,203 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.005326 seconds]
+2026-04-06 18:29:10,398 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:29:10,613 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:29:10,789 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.933730 seconds]
+2026-04-06 18:29:10,948 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:29:11,174 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:29:11,438 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000114 seconds]
+2026-04-06 18:29:11,602 | DEBUG    | logger.py:log | Exited: process [in 3.186439 seconds]
+2026-04-06 18:29:12,828 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 4.181000% of total sphere.
+2026-04-06 18:29:12,965 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 5 rays: 3.06
+2026-04-06 18:29:13,109 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:29:13,278 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 2
+2026-04-06 18:29:13,445 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 3.21...
+2026-04-06 18:29:13,642 | DEBUG    | logger.py:log | Raycaster: Generating 15 Continuous Guide Rays...
+2026-04-06 18:29:13,851 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:29:14,111 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:29:14,309 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.004395 seconds]
+2026-04-06 18:29:24,999 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 10.937623 seconds]
+2026-04-06 18:29:25,129 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:29:39,618 | DEBUG    | logger.py:log | Raycaster Yielded 8 unique, shortest trajectories in 14.286s
+2026-04-06 18:29:39,787 | DEBUG    | logger.py:log | Quota exceeded (8). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:29:39,964 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 26.57°
+2026-04-06 18:29:40,144 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 28.74°
+2026-04-06 18:29:41,630 | INFO     | logger.py:log | Identified 0.00% of trajectories as containing "log-2"
+2026-04-06 18:29:41,754 | WARNING  | logger.py:log | No best delta was found
+2026-04-06 18:29:41,894 | DEBUG    | logger.py:log | ---------- System Progress: 1 / 12 (8%) ----------
+2026-04-06 18:29:41,986 | MESSAGE  | logger.py:log | 
+========== SHARD NO. 2 ==========
+2026-04-06 18:29:42,073 | INFO     | logger.py:log | Chosen shard start point: Position({x0: -10, x1: -10, y0: 1})
+2026-04-06 18:29:42,223 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[1 0 -1]
+ [0 1 -1]
+ [0 0 -1]
+ [0 1 0]
+ [1 0 0]
+ [0 1 -1]
+ [1 0 -1]]
+b:
+[0 0 0 0 0 -1 -1]
+
+2026-04-06 18:29:42,381 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:29:42,550 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:29:42,726 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:29:42,890 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:29:43,108 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.041318 seconds]
+2026-04-06 18:29:43,253 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:29:43,414 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:29:43,570 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000187 seconds]
+2026-04-06 18:29:43,739 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:29:43,884 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:29:44,062 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:29:44,279 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000729 seconds]
+2026-04-06 18:29:44,437 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:29:44,576 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:29:44,744 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.691656 seconds]
+2026-04-06 18:29:44,933 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:29:45,110 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:29:45,267 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000137 seconds]
+2026-04-06 18:29:45,391 | DEBUG    | logger.py:log | Exited: process [in 2.717241 seconds]
+2026-04-06 18:29:46,439 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 12.265000% of total sphere.
+2026-04-06 18:29:46,562 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 12 rays: 2.86
+2026-04-06 18:29:46,698 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:29:46,850 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 3
+2026-04-06 18:29:46,989 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 3.00...
+2026-04-06 18:29:47,137 | DEBUG    | logger.py:log | Raycaster: Generating 36 Continuous Guide Rays...
+2026-04-06 18:29:47,478 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:29:47,694 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:29:47,936 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.005130 seconds]
+2026-04-06 18:29:48,189 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.490574 seconds]
+2026-04-06 18:29:48,391 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:29:48,668 | DEBUG    | logger.py:log | Raycaster Yielded 21 unique, shortest trajectories in 0.039s
+2026-04-06 18:29:48,914 | DEBUG    | logger.py:log | Quota exceeded (21). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:29:49,059 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 18.43°
+2026-04-06 18:29:49,211 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 21.87°
+2026-04-06 18:29:50,212 | WARNING  | logger.py:log | Using column 1 instead of column 0 in walk matrix delta computation [start=Position({x0: -10, x1: -10, y0: 1}), trajectory=Position({x0: -1, x1: 0, y0: 1})]
+2026-04-06 18:29:51,042 | WARNING  | logger.py:log | Using column 1 instead of column 0 in walk matrix delta computation [start=Position({x0: -10, x1: -10, y0: 1}), trajectory=Position({x0: -1, x1: -1, y0: 0})]
+2026-04-06 18:29:52,844 | WARNING  | logger.py:log | Using column 1 instead of column 0 in walk matrix delta computation [start=Position({x0: -10, x1: -10, y0: 1}), trajectory=Position({x0: 0, x1: -1, y0: 1})]
+2026-04-06 18:29:53,982 | INFO     | logger.py:log | Identified 0.00% of trajectories as containing "log-2"
+2026-04-06 18:29:54,102 | WARNING  | logger.py:log | No best delta was found
+2026-04-06 18:29:54,233 | DEBUG    | logger.py:log | ---------- System Progress: 2 / 12 (16%) ----------
+2026-04-06 18:29:54,320 | MESSAGE  | logger.py:log | 
+========== SHARD NO. 3 ==========
+2026-04-06 18:29:54,435 | INFO     | logger.py:log | Chosen shard start point: Position({x0: -10, x1: -7, y0: -8})
+2026-04-06 18:29:55,021 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[1 0 -1]
+ [0 -1 1]
+ [0 0 1]
+ [0 1 0]
+ [1 0 0]
+ [0 -1 1]
+ [1 0 -1]]
+b:
+[0 0 0 0 0 1 -1]
+
+2026-04-06 18:29:55,238 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:29:55,387 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:29:55,541 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:29:55,701 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:29:55,895 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.029184 seconds]
+2026-04-06 18:29:56,101 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:29:56,289 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:29:56,458 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000157 seconds]
+2026-04-06 18:29:56,591 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:29:56,741 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:29:56,916 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:29:57,128 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000430 seconds]
+2026-04-06 18:29:57,377 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:29:57,634 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:29:57,810 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.893085 seconds]
+2026-04-06 18:29:57,940 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:29:58,099 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:29:58,260 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000078 seconds]
+2026-04-06 18:29:58,403 | DEBUG    | logger.py:log | Exited: process [in 2.873596 seconds]
+2026-04-06 18:29:59,365 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 2.091000% of total sphere.
+2026-04-06 18:29:59,469 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 5 rays: 3.85
+2026-04-06 18:29:59,585 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:29:59,720 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 2
+2026-04-06 18:29:59,859 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 4.04...
+2026-04-06 18:30:00,029 | DEBUG    | logger.py:log | Raycaster: Generating 15 Continuous Guide Rays...
+2026-04-06 18:30:00,218 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:30:00,398 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:30:00,780 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.005263 seconds]
+2026-04-06 18:30:01,848 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.588960 seconds]
+2026-04-06 18:30:02,108 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:30:03,741 | DEBUG    | logger.py:log | Raycaster Yielded 4 unique, shortest trajectories in 0.001s
+2026-04-06 18:30:04,192 | DEBUG    | logger.py:log | Discretization Gap hit: Yielded 4 bounded rays. Target: 5.
+2026-04-06 18:30:04,827 | DEBUG    | logger.py:log | 
+   -> Momentum Expansion: Multiplying R_max by 1.100
+2026-04-06 18:30:05,219 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 4.45...
+2026-04-06 18:30:05,469 | DEBUG    | logger.py:log | Raycaster: Generating 15 Continuous Guide Rays...
+2026-04-06 18:30:05,690 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:30:05,981 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:30:06,252 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.005187 seconds]
+2026-04-06 18:30:06,473 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.576017 seconds]
+2026-04-06 18:30:06,641 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:30:06,881 | DEBUG    | logger.py:log | Raycaster Yielded 4 unique, shortest trajectories in 0.028s
+2026-04-06 18:30:07,027 | DEBUG    | logger.py:log | Discretization Gap hit: Yielded 4 bounded rays. Target: 5.
+2026-04-06 18:30:07,223 | DEBUG    | logger.py:log | 
+   -> Momentum Expansion: Multiplying R_max by 1.100
+2026-04-06 18:30:07,378 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 4.89...
+2026-04-06 18:30:07,506 | DEBUG    | logger.py:log | Raycaster: Generating 15 Continuous Guide Rays...
+2026-04-06 18:30:07,653 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:30:07,846 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:30:08,016 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.003773 seconds]
+2026-04-06 18:30:08,183 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.365136 seconds]
+2026-04-06 18:30:08,344 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:30:08,635 | DEBUG    | logger.py:log | Raycaster Yielded 6 unique, shortest trajectories in 0.045s
+2026-04-06 18:30:08,751 | DEBUG    | logger.py:log | Quota exceeded (6). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:30:08,908 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 19.47°
+2026-04-06 18:30:09,061 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 20.48°
+2026-04-06 18:30:10,220 | INFO     | logger.py:log | Identified 0.00% of trajectories as containing "log-2"
+2026-04-06 18:30:10,321 | WARNING  | logger.py:log | No best delta was found
+2026-04-06 18:30:10,449 | DEBUG    | logger.py:log | ---------- System Progress: 3 / 12 (25%) ----------
+2026-04-06 18:30:10,528 | MESSAGE  | logger.py:log | 
+========== SHARD NO. 4 ==========
+2026-04-06 18:30:10,605 | INFO     | logger.py:log | Chosen shard start point: Position({x0: -10, x1: 1, y0: -8})
+2026-04-06 18:30:10,790 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[1 0 -1]
+ [0 -1 1]
+ [0 0 1]
+ [0 -1 0]
+ [1 0 0]
+ [0 -1 1]
+ [1 0 -1]]
+b:
+[0 0 0 0 0 1 -1]
+
+2026-04-06 18:30:10,971 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:30:11,140 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:30:11,293 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:30:11,462 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:30:11,694 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.027388 seconds]
+2026-04-06 18:30:11,841 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:30:12,008 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:30:12,237 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000096 seconds]
+2026-04-06 18:30:12,409 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:30:12,565 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:30:12,743 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:30:12,943 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000236 seconds]
+2026-04-06 18:30:13,101 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:30:13,266 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:30:13,429 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.701227 seconds]
+2026-04-06 18:30:13,592 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:30:13,744 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:30:13,872 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000069 seconds]
+2026-04-06 18:30:14,001 | DEBUG    | logger.py:log | Exited: process [in 2.732117 seconds]
+2026-04-06 18:30:14,967 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 6.342000% of total sphere.
+2026-04-06 18:30:15,095 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 6 rays: 2.83
+2026-04-06 18:30:15,333 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:30:15,475 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 2
+2026-04-06 18:30:15,603 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 2.97...
+2026-04-06 18:30:15,760 | DEBUG    | logger.py:log | Raycaster: Generating 18 Continuous Guide Rays...
+2026-04-06 18:30:15,959 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:30:16,136 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:30:16,305 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.003174 seconds]
+2026-04-06 18:30:16,525 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.367352 seconds]
+2026-04-06 18:30:16,724 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:30:16,977 | DEBUG    | logger.py:log | Raycaster Yielded 9 unique, shortest trajectories in 0.019s
+2026-04-06 18:30:17,188 | DEBUG    | logger.py:log | Quota exceeded (9). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:30:17,456 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 22.50°
+2026-04-06 18:30:17,619 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 25.57°
+2026-04-06 18:30:20,641 | INFO     | logger.py:log | Identified 83.33% of trajectories as containing "log-2"
+    > Best delta:	 0.2837
+    > Trajectory:	 SearchVector(start=Position({x0: -10, x1: 1, y0: -8}), trajectory=Position({x0: -1, x1: 1, y0: 0}))
+    > CMF:		 pFq((2, 1, -1))
+    > p,q vectors:	[[-3506, -33181], [-5040, -47880]]
+2026-04-06 18:30:20,730 | DEBUG    | logger.py:log | ---------- System Progress: 4 / 12 (33%) ----------
+2026-04-06 18:30:20,831 | MESSAGE  | logger.py:log | 
+========== SHARD NO. 5 ==========
+2026-04-06 18:30:20,920 | INFO     | logger.py:log | Chosen shard start point: Position({x0: -10, x1: 1, y0: 3})
+2026-04-06 18:30:21,199 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[1 0 -1]
+ [0 1 -1]
+ [0 0 -1]
+ [0 -1 0]
+ [1 0 0]
+ [0 1 -1]
+ [1 0 -1]]
+b:
+[0 0 0 0 0 -1 -1]
+
+2026-04-06 18:30:21,440 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:30:21,628 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:30:21,795 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:30:21,993 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:30:22,240 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.030599 seconds]
+2026-04-06 18:30:22,450 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:30:22,716 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:30:22,888 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000090 seconds]
+2026-04-06 18:30:23,042 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:30:23,195 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:30:23,453 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:30:23,914 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000452 seconds]
+2026-04-06 18:30:24,768 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:30:24,973 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:30:25,200 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 1.777971 seconds]
+2026-04-06 18:30:25,416 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:30:25,739 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:30:26,183 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000082 seconds]
+2026-04-06 18:30:26,387 | DEBUG    | logger.py:log | Exited: process [in 4.554730 seconds]
+2026-04-06 18:30:28,007 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 6.202000% of total sphere.
+2026-04-06 18:30:28,197 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 6 rays: 2.85
+2026-04-06 18:30:28,494 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:30:28,655 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 2
+2026-04-06 18:30:28,889 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 2.99...
+2026-04-06 18:30:29,049 | DEBUG    | logger.py:log | Raycaster: Generating 18 Continuous Guide Rays...
+2026-04-06 18:30:29,187 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:30:29,380 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:30:29,798 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.005487 seconds]
+2026-04-06 18:30:29,998 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.616735 seconds]
+2026-04-06 18:30:30,197 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:30:30,381 | DEBUG    | logger.py:log | Raycaster Yielded 8 unique, shortest trajectories in 0.001s
+2026-04-06 18:30:30,500 | DEBUG    | logger.py:log | Quota exceeded (8). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:30:30,634 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 30.91°
+2026-04-06 18:30:30,844 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 29.83°
+2026-04-06 18:30:33,122 | INFO     | logger.py:log | Identified 0.00% of trajectories as containing "log-2"
+2026-04-06 18:30:33,217 | WARNING  | logger.py:log | No best delta was found
+2026-04-06 18:30:33,322 | DEBUG    | logger.py:log | ---------- System Progress: 5 / 12 (41%) ----------
+2026-04-06 18:30:33,465 | MESSAGE  | logger.py:log | 
+========== SHARD NO. 6 ==========
+2026-04-06 18:30:33,643 | INFO     | logger.py:log | Chosen shard start point: Position({x0: -10, x1: 2, y0: 1})
+2026-04-06 18:30:33,803 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[1 0 -1]
+ [0 -1 1]
+ [0 0 -1]
+ [0 -1 0]
+ [1 0 0]
+ [0 -1 1]
+ [1 0 -1]]
+b:
+[0 0 0 0 0 1 -1]
+
+2026-04-06 18:30:33,970 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:30:34,118 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:30:34,268 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:30:34,412 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:30:34,573 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.029127 seconds]
+2026-04-06 18:30:34,765 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:30:35,044 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:30:35,230 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000076 seconds]
+2026-04-06 18:30:35,370 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:30:35,544 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:30:35,744 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:30:36,127 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000300 seconds]
+2026-04-06 18:30:36,391 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:30:36,586 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:30:36,764 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 1.042407 seconds]
+2026-04-06 18:30:36,947 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:30:37,201 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:30:37,532 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000104 seconds]
+2026-04-06 18:30:37,716 | DEBUG    | logger.py:log | Exited: process [in 3.414946 seconds]
+2026-04-06 18:30:39,106 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 6.296000% of total sphere.
+2026-04-06 18:30:39,240 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 6 rays: 2.83
+2026-04-06 18:30:39,373 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:30:39,497 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 2
+2026-04-06 18:30:39,621 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 2.98...
+2026-04-06 18:30:39,882 | DEBUG    | logger.py:log | Raycaster: Generating 18 Continuous Guide Rays...
+2026-04-06 18:30:40,140 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:30:40,343 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:30:40,525 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.003891 seconds]
+2026-04-06 18:30:40,700 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.387709 seconds]
+2026-04-06 18:30:40,873 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:30:41,082 | DEBUG    | logger.py:log | Raycaster Yielded 8 unique, shortest trajectories in 0.025s
+2026-04-06 18:30:41,228 | DEBUG    | logger.py:log | Quota exceeded (8). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:30:41,392 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 30.91°
+2026-04-06 18:30:41,543 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 29.83°
+2026-04-06 18:30:44,442 | INFO     | logger.py:log | Identified 100.00% of trajectories as containing "log-2"
+    > Best delta:	 0.2791
+    > Trajectory:	 SearchVector(start=Position({x0: -10, x1: 2, y0: 1}), trajectory=Position({x0: -1, x1: 1, y0: 0}))
+    > CMF:		 pFq((2, 1, -1))
+    > p,q vectors:	[[-1073190, -5813123], [-1548288, -8386560]]
+2026-04-06 18:30:44,547 | DEBUG    | logger.py:log | ---------- System Progress: 6 / 12 (50%) ----------
+2026-04-06 18:30:44,624 | MESSAGE  | logger.py:log | 
+========== SHARD NO. 7 ==========
+2026-04-06 18:30:44,812 | INFO     | logger.py:log | Chosen shard start point: Position({x0: -9, x1: -9, y0: -10})
+2026-04-06 18:30:45,135 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[-1 0 1]
+ [0 -1 1]
+ [0 0 1]
+ [0 1 0]
+ [1 0 0]
+ [0 -1 1]
+ [-1 0 1]]
+b:
+[0 0 0 0 0 1 1]
+
+2026-04-06 18:30:45,316 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:30:45,454 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:30:45,586 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:30:45,727 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:30:45,902 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.020495 seconds]
+2026-04-06 18:30:46,093 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:30:46,506 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:30:46,696 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000112 seconds]
+2026-04-06 18:30:46,835 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:30:47,007 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:30:47,160 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:30:47,341 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000175 seconds]
+2026-04-06 18:30:47,633 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:30:47,834 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:30:47,978 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.827322 seconds]
+2026-04-06 18:30:48,100 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:30:48,227 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:30:48,364 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000067 seconds]
+2026-04-06 18:30:48,495 | DEBUG    | logger.py:log | Exited: process [in 2.910465 seconds]
+2026-04-06 18:30:49,399 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 4.139000% of total sphere.
+2026-04-06 18:30:49,507 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 5 rays: 3.07
+2026-04-06 18:30:49,602 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:30:49,699 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 2
+2026-04-06 18:30:49,800 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 3.22...
+2026-04-06 18:30:49,955 | DEBUG    | logger.py:log | Raycaster: Generating 15 Continuous Guide Rays...
+2026-04-06 18:30:50,108 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:30:50,266 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:30:50,404 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.003575 seconds]
+2026-04-06 18:30:50,577 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.317355 seconds]
+2026-04-06 18:30:50,686 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:30:50,823 | DEBUG    | logger.py:log | Raycaster Yielded 7 unique, shortest trajectories in 0.002s
+2026-04-06 18:30:50,923 | DEBUG    | logger.py:log | Quota exceeded (7). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:30:51,057 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 26.57°
+2026-04-06 18:30:51,197 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 26.79°
+2026-04-06 18:30:53,453 | INFO     | logger.py:log | Identified 100.00% of trajectories as containing "log-2"
+    > Best delta:	 -0.2094
+    > Trajectory:	 SearchVector(start=Position({x0: -9, x1: -9, y0: -10}), trajectory=Position({x0: 0, x1: -1, y0: -2}))
+    > CMF:		 pFq((2, 1, -1))
+    > p,q vectors:	[[-4918777, -20122155], [-7096320, -29030400]]
+2026-04-06 18:30:53,643 | DEBUG    | logger.py:log | ---------- System Progress: 7 / 12 (58%) ----------
+2026-04-06 18:30:53,763 | MESSAGE  | logger.py:log | 
+========== SHARD NO. 8 ==========
+2026-04-06 18:30:53,874 | INFO     | logger.py:log | Chosen shard start point: Position({x0: -9, x1: 1, y0: -10})
+2026-04-06 18:30:54,064 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[-1 0 1]
+ [0 -1 1]
+ [0 0 1]
+ [0 -1 0]
+ [1 0 0]
+ [0 -1 1]
+ [-1 0 1]]
+b:
+[0 0 0 0 0 1 1]
+
+2026-04-06 18:30:54,193 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:30:54,318 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:30:54,448 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:30:54,603 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:30:54,786 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.020208 seconds]
+2026-04-06 18:30:54,982 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:30:55,145 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:30:55,317 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000075 seconds]
+2026-04-06 18:30:55,457 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:30:55,577 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:30:55,768 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:30:55,925 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000288 seconds]
+2026-04-06 18:30:56,113 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:30:56,393 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:30:56,717 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.817073 seconds]
+2026-04-06 18:30:57,510 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:30:57,688 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:30:57,834 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000104 seconds]
+2026-04-06 18:30:57,968 | DEBUG    | logger.py:log | Exited: process [in 3.515704 seconds]
+2026-04-06 18:30:59,892 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 6.314000% of total sphere.
+2026-04-06 18:31:00,121 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 6 rays: 2.83
+2026-04-06 18:31:00,323 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:31:00,717 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 2
+2026-04-06 18:31:01,242 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 2.97...
+2026-04-06 18:31:01,503 | DEBUG    | logger.py:log | Raycaster: Generating 18 Continuous Guide Rays...
+2026-04-06 18:31:01,732 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:31:02,015 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:31:02,276 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.005464 seconds]
+2026-04-06 18:31:02,648 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.545612 seconds]
+2026-04-06 18:31:02,813 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:31:03,140 | DEBUG    | logger.py:log | Raycaster Yielded 9 unique, shortest trajectories in 0.040s
+2026-04-06 18:31:03,359 | DEBUG    | logger.py:log | Quota exceeded (9). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:31:03,547 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 30.91°
+2026-04-06 18:31:03,713 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 29.83°
+2026-04-06 18:31:05,315 | INFO     | logger.py:log | Identified 0.00% of trajectories as containing "log-2"
+2026-04-06 18:31:05,432 | WARNING  | logger.py:log | No best delta was found
+2026-04-06 18:31:05,581 | DEBUG    | logger.py:log | ---------- System Progress: 8 / 12 (66%) ----------
+2026-04-06 18:31:05,747 | MESSAGE  | logger.py:log | 
+========== SHARD NO. 9 ==========
+2026-04-06 18:31:05,945 | INFO     | logger.py:log | Chosen shard start point: Position({x0: 1, x1: 1, y0: -10})
+2026-04-06 18:31:06,151 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[-1 0 1]
+ [0 -1 1]
+ [0 0 1]
+ [0 -1 0]
+ [-1 0 0]
+ [0 -1 1]
+ [-1 0 1]]
+b:
+[0 0 0 0 0 1 1]
+
+2026-04-06 18:31:06,428 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:31:06,844 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:31:07,144 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:31:07,441 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:31:07,689 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.042857 seconds]
+2026-04-06 18:31:07,914 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:31:08,088 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:31:08,240 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000091 seconds]
+2026-04-06 18:31:08,428 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:31:08,633 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:31:08,826 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:31:09,045 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000301 seconds]
+2026-04-06 18:31:09,274 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:31:09,426 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:31:09,576 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.792193 seconds]
+2026-04-06 18:31:09,766 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:31:09,947 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:31:10,086 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000070 seconds]
+2026-04-06 18:31:10,207 | DEBUG    | logger.py:log | Exited: process [in 3.242390 seconds]
+2026-04-06 18:31:11,146 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 12.468000% of total sphere.
+2026-04-06 18:31:11,257 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 13 rays: 2.92
+2026-04-06 18:31:11,362 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:31:11,477 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 3
+2026-04-06 18:31:11,607 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 3.07...
+2026-04-06 18:31:11,776 | DEBUG    | logger.py:log | Raycaster: Generating 39 Continuous Guide Rays...
+2026-04-06 18:31:11,909 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:31:12,071 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:31:12,278 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.003873 seconds]
+2026-04-06 18:31:12,473 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.392155 seconds]
+2026-04-06 18:31:12,600 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:31:12,803 | DEBUG    | logger.py:log | Raycaster Yielded 24 unique, shortest trajectories in 0.002s
+2026-04-06 18:31:12,963 | DEBUG    | logger.py:log | Quota exceeded (24). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:31:13,075 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 18.43°
+2026-04-06 18:31:13,186 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 21.61°
+2026-04-06 18:31:15,874 | INFO     | logger.py:log | Identified 0.00% of trajectories as containing "log-2"
+2026-04-06 18:31:15,988 | WARNING  | logger.py:log | No best delta was found
+2026-04-06 18:31:16,114 | DEBUG    | logger.py:log | ---------- System Progress: 9 / 12 (75%) ----------
+2026-04-06 18:31:16,204 | MESSAGE  | logger.py:log | 
+========== SHARD NO. 10 ==========
+2026-04-06 18:31:16,334 | INFO     | logger.py:log | Chosen shard start point: Position({x0: 1, x1: 1, y0: 3})
+2026-04-06 18:31:16,503 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[1 0 -1]
+ [0 1 -1]
+ [0 0 -1]
+ [0 -1 0]
+ [-1 0 0]
+ [0 1 -1]
+ [1 0 -1]]
+b:
+[0 0 0 0 0 -1 -1]
+
+2026-04-06 18:31:16,655 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:31:16,860 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:31:17,088 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:31:17,314 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:31:17,601 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.051389 seconds]
+2026-04-06 18:31:17,762 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:31:17,995 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:31:18,218 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000089 seconds]
+2026-04-06 18:31:18,356 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:31:18,509 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:31:18,763 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:31:18,967 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000442 seconds]
+2026-04-06 18:31:19,130 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:31:19,330 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:31:19,561 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.822811 seconds]
+2026-04-06 18:31:19,724 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:31:19,978 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:31:20,158 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000096 seconds]
+2026-04-06 18:31:20,288 | DEBUG    | logger.py:log | Exited: process [in 3.297736 seconds]
+2026-04-06 18:31:21,636 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 4.158000% of total sphere.
+2026-04-06 18:31:21,946 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 5 rays: 3.06
+2026-04-06 18:31:22,097 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:31:22,684 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 2
+2026-04-06 18:31:24,066 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 3.22...
+2026-04-06 18:31:25,461 | DEBUG    | logger.py:log | Raycaster: Generating 15 Continuous Guide Rays...
+2026-04-06 18:31:25,700 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:31:25,968 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:31:26,348 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.005403 seconds]
+2026-04-06 18:31:26,765 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.677338 seconds]
+2026-04-06 18:31:27,017 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:31:27,703 | DEBUG    | logger.py:log | Raycaster Yielded 8 unique, shortest trajectories in 0.001s
+2026-04-06 18:31:28,115 | DEBUG    | logger.py:log | Quota exceeded (8). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:31:28,326 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 26.57°
+2026-04-06 18:31:28,555 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 26.79°
+2026-04-06 18:31:33,346 | INFO     | logger.py:log | Identified 60.00% of trajectories as containing "log-2"
+    > Best delta:	 -0.2221
+    > Trajectory:	 SearchVector(start=Position({x0: 1, x1: 1, y0: 3}), trajectory=Position({x0: 1, x1: 0, y0: 2}))
+    > CMF:		 pFq((2, 1, -1))
+    > p,q vectors:	[[1, -2], [2, -3]]
+2026-04-06 18:31:33,484 | DEBUG    | logger.py:log | ---------- System Progress: 10 / 12 (83%) ----------
+2026-04-06 18:31:33,598 | MESSAGE  | logger.py:log | 
+========== SHARD NO. 11 ==========
+2026-04-06 18:31:33,726 | INFO     | logger.py:log | Chosen shard start point: Position({x0: 1, x1: 4, y0: 3})
+2026-04-06 18:31:33,971 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[1 0 -1]
+ [0 -1 1]
+ [0 0 -1]
+ [0 -1 0]
+ [-1 0 0]
+ [0 -1 1]
+ [1 0 -1]]
+b:
+[0 0 0 0 0 1 -1]
+
+2026-04-06 18:31:34,139 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:31:34,280 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:31:34,426 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:31:34,564 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:31:34,765 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.029103 seconds]
+2026-04-06 18:31:34,944 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:31:35,138 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:31:35,286 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000130 seconds]
+2026-04-06 18:31:35,418 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:31:35,560 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:31:35,702 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:31:35,840 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000188 seconds]
+2026-04-06 18:31:36,006 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:31:36,209 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:31:36,380 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.649024 seconds]
+2026-04-06 18:31:36,525 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:31:36,656 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:31:36,783 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000067 seconds]
+2026-04-06 18:31:36,890 | DEBUG    | logger.py:log | Exited: process [in 2.502725 seconds]
+2026-04-06 18:31:37,794 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 2.077000% of total sphere.
+2026-04-06 18:31:37,922 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 5 rays: 3.86
+2026-04-06 18:31:38,041 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:31:38,166 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 2
+2026-04-06 18:31:38,308 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 4.05...
+2026-04-06 18:31:38,437 | DEBUG    | logger.py:log | Raycaster: Generating 15 Continuous Guide Rays...
+2026-04-06 18:31:38,616 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:31:38,795 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:31:38,967 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.002894 seconds]
+2026-04-06 18:31:39,106 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.352104 seconds]
+2026-04-06 18:31:39,213 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:31:39,361 | DEBUG    | logger.py:log | Raycaster Yielded 4 unique, shortest trajectories in 0.020s
+2026-04-06 18:31:39,458 | DEBUG    | logger.py:log | Discretization Gap hit: Yielded 4 bounded rays. Target: 5.
+2026-04-06 18:31:39,567 | DEBUG    | logger.py:log | 
+   -> Momentum Expansion: Multiplying R_max by 1.100
+2026-04-06 18:31:39,695 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 4.46...
+2026-04-06 18:31:39,877 | DEBUG    | logger.py:log | Raycaster: Generating 15 Continuous Guide Rays...
+2026-04-06 18:31:40,051 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:31:40,215 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:31:40,353 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.002776 seconds]
+2026-04-06 18:31:40,518 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.308174 seconds]
+2026-04-06 18:31:40,638 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:31:40,776 | DEBUG    | logger.py:log | Raycaster Yielded 5 unique, shortest trajectories in 0.001s
+2026-04-06 18:31:40,913 | DEBUG    | logger.py:log | Quota exceeded (5). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:31:41,054 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 18.43°
+2026-04-06 18:31:41,217 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 17.68°
+2026-04-06 18:31:42,126 | INFO     | logger.py:log | Identified 0.00% of trajectories as containing "log-2"
+2026-04-06 18:31:42,275 | WARNING  | logger.py:log | No best delta was found
+2026-04-06 18:31:42,482 | DEBUG    | logger.py:log | ---------- System Progress: 11 / 12 (91%) ----------
+2026-04-06 18:31:42,599 | MESSAGE  | logger.py:log | 
+========== SHARD NO. 12 ==========
+2026-04-06 18:31:42,717 | INFO     | logger.py:log | Chosen shard start point: Position({x0: 2, x1: 2, y0: 1})
+2026-04-06 18:31:42,914 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[-1 0 1]
+ [0 -1 1]
+ [0 0 -1]
+ [0 -1 0]
+ [-1 0 0]
+ [0 -1 1]
+ [-1 0 1]]
+b:
+[0 0 0 0 0 1 1]
+
+2026-04-06 18:31:43,012 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:31:43,123 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:31:43,276 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:31:43,468 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:31:43,854 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.035944 seconds]
+2026-04-06 18:31:44,028 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:31:44,174 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:31:44,300 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000082 seconds]
+2026-04-06 18:31:44,427 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:31:44,552 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:31:44,694 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:31:44,939 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000179 seconds]
+2026-04-06 18:31:45,119 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:31:45,267 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:31:45,398 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.714718 seconds]
+2026-04-06 18:31:45,518 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:31:45,634 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:31:45,755 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000067 seconds]
+2026-04-06 18:31:45,857 | DEBUG    | logger.py:log | Exited: process [in 2.632009 seconds]
+2026-04-06 18:31:46,805 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 4.122000% of total sphere.
+2026-04-06 18:31:46,921 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 5 rays: 3.07
+2026-04-06 18:31:47,022 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:31:47,118 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 2
+2026-04-06 18:31:47,244 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 3.22...
+2026-04-06 18:31:47,403 | DEBUG    | logger.py:log | Raycaster: Generating 15 Continuous Guide Rays...
+2026-04-06 18:31:47,577 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:31:47,711 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:31:47,850 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.002896 seconds]
+2026-04-06 18:31:48,034 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.292442 seconds]
+2026-04-06 18:31:48,153 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:31:48,345 | DEBUG    | logger.py:log | Raycaster Yielded 7 unique, shortest trajectories in 0.026s
+2026-04-06 18:31:48,474 | DEBUG    | logger.py:log | Quota exceeded (7). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:31:48,669 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 26.57°
+2026-04-06 18:31:48,892 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 28.74°
+2026-04-06 18:31:49,409 | WARNING  | logger.py:log | Using column 1 instead of column 0 in walk matrix delta computation [start=Position({x0: 2, x1: 2, y0: 1}), trajectory=Position({x0: 1, x1: 1, y0: 0})]
+2026-04-06 18:31:50,193 | INFO     | logger.py:log | Identified 0.00% of trajectories as containing "log-2"
+2026-04-06 18:31:50,312 | WARNING  | logger.py:log | No best delta was found
+2026-04-06 18:31:50,444 | DEBUG    | logger.py:log | ---------- System Progress: 12 / 12 (100%) ----------
+2026-04-06 18:31:50,568 | DEBUG    | logger.py:log | ---------- System Progress: 1 / 1 (100%) ----------
+2026-04-06 18:31:50,813 | INFO     | logger.py:log | Priorities for log-2 exported to ./myshards/log-2
+2026-04-06 18:31:51,023 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[1 0 -1]
+ [0 -1 1]
+ [0 0 1]
+ [0 -1 0]
+ [1 0 0]
+ [0 -1 1]
+ [1 0 -1]]
+b:
+[0 0 0 0 0 1 -1]
+
+2026-04-06 18:31:51,363 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:31:51,500 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:31:51,636 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:31:51,775 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:31:51,963 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.034604 seconds]
+2026-04-06 18:31:52,098 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:31:52,234 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:31:52,438 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000145 seconds]
+2026-04-06 18:31:52,653 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:31:52,822 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:31:52,999 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:31:53,159 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000630 seconds]
+2026-04-06 18:31:53,306 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:31:53,477 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:31:53,691 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.655346 seconds]
+2026-04-06 18:31:53,880 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:31:54,029 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:31:54,171 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000137 seconds]
+2026-04-06 18:31:54,282 | DEBUG    | logger.py:log | Exited: process [in 2.670687 seconds]
+2026-04-06 18:31:55,185 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 6.262000% of total sphere.
+2026-04-06 18:31:55,275 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 65 rays: 6.28
+2026-04-06 18:31:55,356 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:31:55,445 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 6
+2026-04-06 18:31:55,537 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 6.60...
+2026-04-06 18:31:55,630 | DEBUG    | logger.py:log | Raycaster: Generating 195 Continuous Guide Rays...
+2026-04-06 18:31:55,722 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:31:55,833 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:31:55,946 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.002841 seconds]
+2026-04-06 18:31:56,125 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.251114 seconds]
+2026-04-06 18:31:56,252 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:31:56,424 | DEBUG    | logger.py:log | Raycaster Yielded 77 unique, shortest trajectories in 0.013s
+2026-04-06 18:31:56,519 | DEBUG    | logger.py:log | Quota exceeded (77). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:31:56,627 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 3.68°
+2026-04-06 18:31:56,722 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 4.61°
+2026-04-06 18:32:14,961 | DEBUG    | logger.py:log | ---------- System Progress: 1 / 4 (25%) ----------
+2026-04-06 18:32:15,158 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[1 0 -1]
+ [0 -1 1]
+ [0 0 -1]
+ [0 -1 0]
+ [1 0 0]
+ [0 -1 1]
+ [1 0 -1]]
+b:
+[0 0 0 0 0 1 -1]
+
+2026-04-06 18:32:15,274 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:32:15,388 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:32:15,519 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:32:15,659 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:32:15,812 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.020455 seconds]
+2026-04-06 18:32:15,952 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:32:16,082 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:32:16,173 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000096 seconds]
+2026-04-06 18:32:16,265 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:32:16,362 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:32:16,490 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:32:16,621 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000212 seconds]
+2026-04-06 18:32:16,783 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:32:16,912 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:32:17,093 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.550435 seconds]
+2026-04-06 18:32:17,250 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:32:17,363 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:32:17,481 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000145 seconds]
+2026-04-06 18:32:17,566 | DEBUG    | logger.py:log | Exited: process [in 2.092829 seconds]
+2026-04-06 18:32:18,465 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 6.250000% of total sphere.
+2026-04-06 18:32:18,615 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 65 rays: 6.29
+2026-04-06 18:32:18,720 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:32:18,809 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 6
+2026-04-06 18:32:18,890 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 6.60...
+2026-04-06 18:32:19,037 | DEBUG    | logger.py:log | Raycaster: Generating 195 Continuous Guide Rays...
+2026-04-06 18:32:19,237 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:32:19,476 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:32:19,624 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.004572 seconds]
+2026-04-06 18:32:19,761 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.390419 seconds]
+2026-04-06 18:32:19,865 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:32:19,984 | DEBUG    | logger.py:log | Raycaster Yielded 76 unique, shortest trajectories in 0.004s
+2026-04-06 18:32:20,079 | DEBUG    | logger.py:log | Quota exceeded (76). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:32:20,167 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 3.68°
+2026-04-06 18:32:20,247 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 4.52°
+2026-04-06 18:32:41,001 | DEBUG    | logger.py:log | ---------- System Progress: 2 / 4 (50%) ----------
+2026-04-06 18:32:41,136 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[-1 0 1]
+ [0 -1 1]
+ [0 0 1]
+ [0 1 0]
+ [1 0 0]
+ [0 -1 1]
+ [-1 0 1]]
+b:
+[0 0 0 0 0 1 1]
+
+2026-04-06 18:32:41,218 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:32:41,322 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:32:41,422 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:32:41,529 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:32:41,686 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.025151 seconds]
+2026-04-06 18:32:41,813 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:32:41,934 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:32:42,053 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000080 seconds]
+2026-04-06 18:32:42,160 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:32:42,299 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:32:42,448 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:32:42,591 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000460 seconds]
+2026-04-06 18:32:42,717 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:32:42,881 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:32:43,040 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.582801 seconds]
+2026-04-06 18:32:43,179 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:32:43,312 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:32:43,458 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000279 seconds]
+2026-04-06 18:32:43,563 | DEBUG    | logger.py:log | Exited: process [in 2.135423 seconds]
+2026-04-06 18:32:44,670 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 4.093000% of total sphere.
+2026-04-06 18:32:44,781 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 42 rays: 6.26
+2026-04-06 18:32:44,887 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:32:44,997 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 5
+2026-04-06 18:32:45,086 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 6.57...
+2026-04-06 18:32:45,197 | DEBUG    | logger.py:log | Raycaster: Generating 126 Continuous Guide Rays...
+2026-04-06 18:32:45,326 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:32:45,492 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:32:45,637 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.005655 seconds]
+2026-04-06 18:32:45,782 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.334837 seconds]
+2026-04-06 18:32:45,883 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:32:46,024 | DEBUG    | logger.py:log | Raycaster Yielded 44 unique, shortest trajectories in 0.013s
+2026-04-06 18:32:46,107 | DEBUG    | logger.py:log | Quota exceeded (44). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:32:46,208 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 3.53°
+2026-04-06 18:32:46,288 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 4.23°
+2026-04-06 18:32:55,652 | DEBUG    | logger.py:log | ---------- System Progress: 3 / 4 (75%) ----------
+2026-04-06 18:32:55,830 | DEBUG    | logger.py:log | Shard description (Ax < b) 
+A:
+[[1 0 -1]
+ [0 1 -1]
+ [0 0 -1]
+ [0 -1 0]
+ [-1 0 0]
+ [0 1 -1]
+ [1 0 -1]]
+b:
+[0 0 0 0 0 -1 -1]
+
+2026-04-06 18:32:55,953 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 1: Conditioning...
+2026-04-06 18:32:56,081 | DEBUG    | logger.py:log | Entered: process
+2026-04-06 18:32:56,205 | DEBUG    | logger.py:log | [Stage 1] Extracting hyperplanes...
+2026-04-06 18:32:56,328 | DEBUG    | logger.py:log | Entered: _extract_constraints
+2026-04-06 18:32:56,480 | DEBUG    | logger.py:log | Exited: _extract_constraints [in 0.026331 seconds]
+2026-04-06 18:32:56,598 | DEBUG    | logger.py:log | [Stage 1] Computing raw integer nullspace (Equalities: 0)...
+2026-04-06 18:32:56,719 | DEBUG    | logger.py:log | Entered: _compute_integer_basis
+2026-04-06 18:32:56,835 | DEBUG    | logger.py:log | Exited: _compute_integer_basis [in 0.000170 seconds]
+2026-04-06 18:32:56,947 | DEBUG    | logger.py:log | [Stage 1] Flatland Dimension: 3D. Initiating Reduction Ratchet...
+2026-04-06 18:32:57,131 | DEBUG    | logger.py:log | Entered: _ratchet_lattice_reduction
+2026-04-06 18:32:57,312 | DEBUG    | logger.py:log | Entered: _calculate_defect
+2026-04-06 18:32:57,426 | DEBUG    | logger.py:log | Exited: _calculate_defect [in 0.000190 seconds]
+2026-04-06 18:32:57,525 | DEBUG    | logger.py:log |   -> LLL applied. Orthogonality Defect: 1.00
+2026-04-06 18:32:57,712 | DEBUG    | logger.py:log |   -> Final defect is 1.0
+2026-04-06 18:32:57,846 | DEBUG    | logger.py:log | Exited: _ratchet_lattice_reduction [in 0.579930 seconds]
+2026-04-06 18:32:57,979 | DEBUG    | logger.py:log | [Stage 1] Transforming inequality bounds to new conditioned space...
+2026-04-06 18:32:58,136 | DEBUG    | logger.py:log | Entered: _transform_bounds
+2026-04-06 18:32:58,403 | DEBUG    | logger.py:log | Exited: _transform_bounds [in 0.000064 seconds]
+2026-04-06 18:32:58,692 | DEBUG    | logger.py:log | Exited: process [in 2.329466 seconds]
+2026-04-06 18:33:00,521 | DEBUG    | logger.py:log | [Pipeline] Cone Volume Estimate: 4.222000% of total sphere.
+2026-04-06 18:33:00,638 | DEBUG    | logger.py:log | [Pipeline] Mathematical R_max needed for 44 rays: 6.29
+2026-04-06 18:33:00,762 | DEBUG    | logger.py:log | [Pipeline] Initializing Stage 2: Universal Raycaster...
+2026-04-06 18:33:00,855 | DEBUG    | logger.py:log | [Pipeline] Low-D Space Detected. Allowing depth penetration: max_per_ray = 5
+2026-04-06 18:33:00,950 | DEBUG    | logger.py:log | Sweeping lattice up to R_max = 6.60...
+2026-04-06 18:33:01,121 | DEBUG    | logger.py:log | Raycaster: Generating 132 Continuous Guide Rays...
+2026-04-06 18:33:01,264 | DEBUG    | logger.py:log | Entered: _generate_continuous_guide_rays
+2026-04-06 18:33:01,382 | DEBUG    | logger.py:log | Entered: _get_chebyshev_center
+2026-04-06 18:33:01,495 | DEBUG    | logger.py:log | Exited: _get_chebyshev_center [in 0.002627 seconds]
+2026-04-06 18:33:01,648 | DEBUG    | logger.py:log | Exited: _generate_continuous_guide_rays [in 0.266047 seconds]
+2026-04-06 18:33:01,744 | DEBUG    | logger.py:log | Raycaster: Sweeping lattice along Guide Rays...
+2026-04-06 18:33:01,892 | DEBUG    | logger.py:log | Raycaster Yielded 47 unique, shortest trajectories in 0.017s
+2026-04-06 18:33:01,988 | DEBUG    | logger.py:log | Quota exceeded (47). Engaging Expanding Ball (Length Sort)...
+2026-04-06 18:33:02,081 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Median NN gap: 3.37°
+2026-04-06 18:33:02,177 | DEBUG    | logger.py:log | Uniformity Check Passed: Healthy angular separation. Mean NN gap: 4.11°
+2026-04-06 18:33:11,939 | DEBUG    | logger.py:log | ---------- System Progress: 4 / 4 (100%) ----------
+2026-04-06 18:33:12,226 | INFO     | logger.py:log | Best delta for "log-2" found by the searcher is 0.3318312512928969
+* Trajectory: Position({x0: -4, x1: 4, y0: 1}) 
+* Start: Position({x0: -10, x1: 2, y0: 1})
